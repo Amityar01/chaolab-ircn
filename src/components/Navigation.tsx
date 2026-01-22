@@ -30,7 +30,7 @@ export default function Navigation({ translations }: NavigationProps) {
     <nav className="nav">
       <div className="nav-container">
         <Link href="/" className="nav-logo">
-          Lab Name
+          Chao Lab
         </Link>
 
         {/* Desktop nav */}

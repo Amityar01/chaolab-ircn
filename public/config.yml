@@ -1,8 +1,8 @@
 backend:
   name: github
-  repo: YOUR_USERNAME/YOUR_REPO  # Change this to your GitHub repo
-  branch: main
-  base_url: https://your-site.vercel.app  # Change this to your deployed URL
+  repo: Amityar01/chaolab-ircn
+  branch: master
+  base_url: https://chaolab-ircn.vercel.app
   auth_endpoint: /api/auth
 
 media_folder: public/uploads

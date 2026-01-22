@@ -6,8 +6,8 @@ import { getTranslations } from '@/lib/content';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Lab Name - Research Laboratory',
-  description: 'Research laboratory website',
+  title: 'Chao Lab - IRCN, University of Tokyo',
+  description: 'Predictive Coding & Creativity Research Laboratory at IRCN, University of Tokyo',
 };
 
 export default function RootLayout({
