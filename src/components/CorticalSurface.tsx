@@ -342,10 +342,9 @@ export default function CorticalSurface({
         <OrbitControls
           enableZoom={false}
           enablePan={false}
+          enableRotate={false}
           autoRotate
-          autoRotateSpeed={0.3}
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI / 1.8}
+          autoRotateSpeed={0.2}
         />
       </Canvas>
     </div>
