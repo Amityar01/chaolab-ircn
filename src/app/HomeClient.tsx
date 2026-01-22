@@ -1,16 +1,23 @@
 'use client';
 
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Brain, Lightbulb, ArrowRight, Sparkles, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePredictiveSystem } from '@/hooks/usePredictiveSystem';
-import NeuralNetworkBackground from '@/components/NeuralNetworkBackground';
 import type { HomepageSettings, NewsItem, ResearchTheme } from '@/types/content';
 
-// Lazy load the heavy 3D component
-const CorticalSurface = lazy(() => import('@/components/CorticalSurface'));
+// Dynamic imports with SSR disabled for browser-only components
+const CorticalSurface = dynamic(() => import('@/components/CorticalSurface'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 flex items-center justify-center"><div className="activity-indicator" style={{ width: 40, height: 40 }} /></div>
+});
+
+const NeuralNetworkBackground = dynamic(() => import('@/components/NeuralNetworkBackground'), {
+  ssr: false
+});
 
 interface HomeClientProps {
   settings: HomepageSettings | null;
@@ -49,19 +56,13 @@ export default function HomeClient({ settings, news, themes }: HomeClientProps) 
       <section className="hero">
         {/* 3D Cortical Surface */}
         {mounted && (
-          <Suspense fallback={
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="activity-indicator" style={{ width: 40, height: 40 }} />
-            </div>
-          }>
-            <CorticalSurface
-              mousePos={mouse.mousePos}
-              predictedPos={mouse.predictedPos}
-              predictionError={mouse.predictionError}
-              isOmission={omission.isOmission}
-              omissionLocation={omission.omissionLocation}
-            />
-          </Suspense>
+          <CorticalSurface
+            mousePos={mouse.mousePos}
+            predictedPos={mouse.predictedPos}
+            predictionError={mouse.predictionError}
+            isOmission={omission.isOmission}
+            omissionLocation={omission.omissionLocation}
+          />
         )}
 
         {/* Hero Content */}
