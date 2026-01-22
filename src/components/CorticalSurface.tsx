@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useMemo, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useRef, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -9,7 +9,6 @@ interface NeuralActivityProps {
   mousePos: { x: number; y: number };
   predictionError: number;
   isOmission: boolean;
-  omissionLocation: { x: number; y: number };
 }
 
 // Generate electrode positions in a grid pattern (like ECoG array)
@@ -18,9 +17,8 @@ function generateElectrodePositions(rows: number, cols: number, radius: number) 
 
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      // Map to spherical surface
-      const u = (i / (rows - 1)) * Math.PI * 0.6 + Math.PI * 0.2;
-      const v = (j / (cols - 1)) * Math.PI * 0.8 - Math.PI * 0.4;
+      const u = (i / (rows - 1)) * Math.PI * 0.5 + Math.PI * 0.25;
+      const v = (j / (cols - 1)) * Math.PI * 0.7 - Math.PI * 0.35;
 
       const x = radius * Math.sin(u) * Math.cos(v);
       const y = radius * Math.cos(u);
@@ -33,7 +31,7 @@ function generateElectrodePositions(rows: number, cols: number, radius: number) 
   return positions;
 }
 
-// Custom shader for the brain surface with activity waves
+// Calmer shader - subtle glow, gentle waves
 const brainVertexShader = `
   varying vec3 vNormal;
   varying vec3 vPosition;
@@ -42,27 +40,18 @@ const brainVertexShader = `
   uniform float time;
   uniform vec2 activityCenter;
   uniform float activityStrength;
-  uniform float predictionError;
-  uniform float omissionPulse;
 
   void main() {
     vNormal = normalize(normalMatrix * normal);
     vPosition = position;
     vUv = uv;
 
-    // Wave displacement based on activity
+    // Very subtle wave displacement
     float dist = length(position.xz - activityCenter);
-    float wave = sin(dist * 3.0 - time * 4.0) * 0.02 * activityStrength;
+    float wave = sin(dist * 2.0 - time * 1.5) * 0.008 * activityStrength;
     wave *= exp(-dist * 0.5);
 
-    // Error pulse - ripples outward
-    float errorWave = sin(length(position.xz) * 5.0 - time * 8.0) * 0.03 * predictionError;
-
-    // Omission response - whole surface pulses
-    float omissionWave = sin(time * 12.0) * 0.02 * omissionPulse;
-
-    vec3 newPosition = position + normal * (wave + errorWave + omissionWave);
-
+    vec3 newPosition = position + normal * wave;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
   }
 `;
@@ -75,61 +64,52 @@ const brainFragmentShader = `
   uniform float time;
   uniform vec2 activityCenter;
   uniform float activityStrength;
-  uniform float predictionError;
-  uniform float omissionPulse;
-  uniform vec3 predictionColor;
-  uniform vec3 errorColor;
+  uniform float errorFlash;
+  uniform float omissionFlash;
   uniform vec3 baseColor;
 
   void main() {
-    // Base fresnel effect for depth
+    // Fresnel for depth
     vec3 viewDir = normalize(cameraPosition - vPosition);
-    float fresnel = pow(1.0 - max(dot(viewDir, vNormal), 0.0), 2.0);
+    float fresnel = pow(1.0 - max(dot(viewDir, vNormal), 0.0), 2.5);
 
-    // Activity wave from mouse position
+    // Subtle activity wave from mouse
     float dist = length(vPosition.xz - activityCenter);
-    float activityWave = sin(dist * 4.0 - time * 5.0) * 0.5 + 0.5;
-    activityWave *= exp(-dist * 0.3) * activityStrength;
+    float activityWave = sin(dist * 2.5 - time * 1.5) * 0.5 + 0.5;
+    activityWave *= exp(-dist * 0.4) * activityStrength * 0.4;
 
-    // Prediction wave - traveling outward
-    float predictionWave = sin(dist * 3.0 - time * 3.0) * 0.5 + 0.5;
-    predictionWave *= exp(-dist * 0.4) * activityStrength * 0.5;
+    // Base color with fresnel rim
+    vec3 finalColor = baseColor * (0.4 + fresnel * 0.4);
 
-    // Error signal - red/orange burst
-    float errorSignal = sin(length(vPosition.xz) * 6.0 - time * 10.0) * 0.5 + 0.5;
-    errorSignal *= predictionError;
+    // Add subtle purple activity
+    finalColor += vec3(0.55, 0.36, 0.96) * activityWave * 0.3;
 
-    // Omission response - pulsing glow
-    float omissionGlow = (sin(time * 15.0) * 0.5 + 0.5) * omissionPulse;
+    // Brief error flash (blue tint)
+    finalColor += vec3(0.0, 0.6, 0.9) * errorFlash * 0.2;
 
-    // Combine colors
-    vec3 activity = predictionColor * (activityWave + predictionWave);
-    vec3 error = errorColor * errorSignal;
-    vec3 omission = vec3(0.3, 0.8, 1.0) * omissionGlow;
+    // Brief omission flash (cyan tint)
+    finalColor += vec3(0.2, 0.8, 0.9) * omissionFlash * 0.15;
 
-    vec3 finalColor = baseColor * (0.3 + fresnel * 0.3);
-    finalColor += activity;
-    finalColor += error;
-    finalColor += omission;
+    // Subtle grid lines
+    float gridX = smoothstep(0.47, 0.5, fract(vUv.x * 10.0));
+    float gridY = smoothstep(0.47, 0.5, fract(vUv.y * 10.0));
+    finalColor += vec3(0.3, 0.2, 0.5) * (gridX + gridY) * 0.08;
 
-    // Add subtle grid pattern (electrode grid hint)
-    float gridX = smoothstep(0.48, 0.5, fract(vUv.x * 12.0));
-    float gridY = smoothstep(0.48, 0.5, fract(vUv.y * 12.0));
-    finalColor += vec3(0.1) * (gridX + gridY) * 0.3;
-
-    gl_FragColor = vec4(finalColor, 0.95);
+    gl_FragColor = vec4(finalColor, 0.9);
   }
 `;
 
-function BrainMesh({ mousePos, predictionError, isOmission, omissionLocation }: NeuralActivityProps) {
+function BrainMesh({ mousePos, predictionError, isOmission }: NeuralActivityProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const { viewport } = useThree();
+  const errorFlashRef = useRef(0);
+  const omissionFlashRef = useRef(0);
+  const lastErrorRef = useRef(0);
+  const lastOmissionRef = useRef(false);
 
-  // Convert mouse position to 3D space
   const activityCenter = useMemo(() => {
-    const x = ((mousePos.x / window.innerWidth) - 0.5) * 4;
-    const z = ((mousePos.y / window.innerHeight) - 0.5) * 4;
+    const x = ((mousePos.x / window.innerWidth) - 0.5) * 3;
+    const z = ((mousePos.y / window.innerHeight) - 0.5) * 3;
     return new THREE.Vector2(x, z);
   }, [mousePos.x, mousePos.y]);
 
@@ -137,78 +117,78 @@ function BrainMesh({ mousePos, predictionError, isOmission, omissionLocation }: 
     time: { value: 0 },
     activityCenter: { value: new THREE.Vector2(0, 0) },
     activityStrength: { value: 0 },
-    predictionError: { value: 0 },
-    omissionPulse: { value: 0 },
-    predictionColor: { value: new THREE.Color('#8B5CF6') },
-    errorColor: { value: new THREE.Color('#0097E0') },
+    errorFlash: { value: 0 },
+    omissionFlash: { value: 0 },
     baseColor: { value: new THREE.Color('#1a1a2e') }
   }), []);
 
   useFrame((state) => {
     if (materialRef.current) {
-      materialRef.current.uniforms.time.value = state.clock.elapsedTime;
-      materialRef.current.uniforms.activityCenter.value.lerp(activityCenter, 0.1);
-      materialRef.current.uniforms.activityStrength.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.activityStrength.value,
-        1,
-        0.05
-      );
-      materialRef.current.uniforms.predictionError.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.predictionError.value,
-        Math.min(predictionError / 100, 1),
-        0.1
-      );
-      materialRef.current.uniforms.omissionPulse.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.omissionPulse.value,
-        isOmission ? 1 : 0,
-        isOmission ? 0.3 : 0.05
-      );
-    }
+      const mat = materialRef.current;
+      mat.uniforms.time.value = state.clock.elapsedTime;
+      mat.uniforms.activityCenter.value.lerp(activityCenter, 0.08);
 
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.001;
+      // Gentle activity buildup
+      mat.uniforms.activityStrength.value = THREE.MathUtils.lerp(
+        mat.uniforms.activityStrength.value,
+        0.8,
+        0.02
+      );
+
+      // Error flash - trigger on spike, then decay quickly
+      if (predictionError > lastErrorRef.current + 30) {
+        errorFlashRef.current = 1;
+      }
+      lastErrorRef.current = predictionError;
+      errorFlashRef.current *= 0.92; // Fast decay
+      mat.uniforms.errorFlash.value = errorFlashRef.current;
+
+      // Omission flash - trigger once on detection, then decay
+      if (isOmission && !lastOmissionRef.current) {
+        omissionFlashRef.current = 1;
+      }
+      lastOmissionRef.current = isOmission;
+      omissionFlashRef.current *= 0.94; // Fast decay
+      mat.uniforms.omissionFlash.value = omissionFlashRef.current;
     }
   });
 
   return (
     <mesh ref={meshRef} position={[0, 0, 0]}>
-      <sphereGeometry args={[2, 64, 64]} />
+      <sphereGeometry args={[1.3, 48, 48]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={brainVertexShader}
         fragmentShader={brainFragmentShader}
         uniforms={uniforms}
         transparent
-        side={THREE.DoubleSide}
+        side={THREE.FrontSide}
       />
     </mesh>
   );
 }
 
-// Electrode points that glow based on activity
+// Simpler electrode points - fewer, calmer
 function Electrodes({ mousePos, predictionError, isOmission }: NeuralActivityProps) {
   const pointsRef = useRef<THREE.Points>(null);
-  const electrodePositions = useMemo(() => generateElectrodePositions(8, 16, 2.05), []);
+  const electrodePositions = useMemo(() => generateElectrodePositions(6, 10, 1.35), []);
 
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     const positions = new Float32Array(electrodePositions.length * 3);
     const colors = new Float32Array(electrodePositions.length * 3);
-    const sizes = new Float32Array(electrodePositions.length);
 
     electrodePositions.forEach((pos, i) => {
       positions[i * 3] = pos.x;
       positions[i * 3 + 1] = pos.y;
       positions[i * 3 + 2] = pos.z;
-      colors[i * 3] = 0.5;
-      colors[i * 3 + 1] = 0.3;
-      colors[i * 3 + 2] = 1.0;
-      sizes[i] = 0.05;
+      colors[i * 3] = 0.55;
+      colors[i * 3 + 1] = 0.36;
+      colors[i * 3 + 2] = 0.96;
     });
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     return geo;
   }, [electrodePositions]);
@@ -216,39 +196,27 @@ function Electrodes({ mousePos, predictionError, isOmission }: NeuralActivityPro
   useFrame((state) => {
     if (pointsRef.current) {
       const colors = pointsRef.current.geometry.attributes.color;
-      const sizes = pointsRef.current.geometry.attributes.size;
       const time = state.clock.elapsedTime;
 
-      // Convert mouse to activity center
-      const ax = ((mousePos.x / window.innerWidth) - 0.5) * 4;
-      const az = ((mousePos.y / window.innerHeight) - 0.5) * 4;
+      const ax = ((mousePos.x / window.innerWidth) - 0.5) * 3;
+      const az = ((mousePos.y / window.innerHeight) - 0.5) * 3;
 
       electrodePositions.forEach((pos, i) => {
         const dist = Math.sqrt((pos.x - ax) ** 2 + (pos.z - az) ** 2);
-        const wave = Math.sin(dist * 3 - time * 4) * 0.5 + 0.5;
-        const activity = wave * Math.exp(-dist * 0.3);
+        // Slower, gentler wave
+        const wave = Math.sin(dist * 2 - time * 1.2) * 0.5 + 0.5;
+        const activity = wave * Math.exp(-dist * 0.4) * 0.5;
 
-        // Prediction color (purple)
-        const predictionIntensity = activity * 0.8;
-        // Error color (blue)
-        const errorIntensity = (predictionError / 100) * Math.sin(time * 8 + i) * 0.5;
-        // Omission (cyan pulse)
-        const omissionIntensity = isOmission ? Math.sin(time * 12) * 0.5 + 0.5 : 0;
-
+        // Subtle color variation
         colors.setXYZ(
           i,
-          0.55 + predictionIntensity * 0.3 + errorIntensity * 0.0, // R
-          0.36 + errorIntensity * 0.6 + omissionIntensity * 0.4, // G
-          0.96 + errorIntensity * 0.0 + omissionIntensity * 0.04 // B
+          0.55 + activity * 0.2,
+          0.36 + activity * 0.15,
+          0.96
         );
-
-        sizes.setX(i, 0.04 + activity * 0.08 + (isOmission ? 0.03 : 0));
       });
 
       colors.needsUpdate = true;
-      sizes.needsUpdate = true;
-
-      pointsRef.current.rotation.y += 0.001;
     }
   });
 
@@ -256,49 +224,15 @@ function Electrodes({ mousePos, predictionError, isOmission }: NeuralActivityPro
     <points ref={pointsRef} geometry={geometry}>
       <pointsMaterial
         vertexColors
-        size={0.08}
+        size={0.06}
         sizeAttenuation
         transparent
-        opacity={0.9}
-        blending={THREE.AdditiveBlending}
+        opacity={0.7}
       />
     </points>
   );
 }
 
-// Prediction ghost - shows where we predict the cursor will cause activity
-function PredictionGhost({ predictedPos }: { predictedPos: { x: number; y: number } }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  const targetPos = useMemo(() => {
-    const x = ((predictedPos.x / (typeof window !== 'undefined' ? window.innerWidth : 1)) - 0.5) * 4;
-    const z = ((predictedPos.y / (typeof window !== 'undefined' ? window.innerHeight : 1)) - 0.5) * 4;
-    // Project onto sphere surface
-    const r = 2.1;
-    const y = Math.sqrt(Math.max(0, r * r - x * x - z * z));
-    return new THREE.Vector3(x, y, z);
-  }, [predictedPos.x, predictedPos.y]);
-
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.position.lerp(targetPos, 0.15);
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} position={[0, 2, 0]}>
-      <sphereGeometry args={[0.15, 16, 16]} />
-      <meshBasicMaterial
-        color="#8B5CF6"
-        transparent
-        opacity={0.4}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  );
-}
-
-// Main component
 export default function CorticalSurface({
   mousePos = { x: 0, y: 0 },
   predictedPos = { x: 0, y: 0 },
@@ -313,38 +247,34 @@ export default function CorticalSurface({
   omissionLocation?: { x: number; y: number };
 }) {
   return (
-    <div className="absolute inset-0 w-full h-full">
+    <div className="absolute inset-0 w-full h-full" style={{ opacity: 0.85 }}>
       <Canvas
-        camera={{ position: [0, 2, 6], fov: 45 }}
+        camera={{ position: [0, 1.5, 4.5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: 'transparent' }}
       >
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={0.5} />
-        <pointLight position={[-10, -10, -10]} intensity={0.3} color="#8B5CF6" />
+        <ambientLight intensity={0.3} />
+        <pointLight position={[5, 5, 5]} intensity={0.4} />
+        <pointLight position={[-5, -5, -5]} intensity={0.2} color="#8B5CF6" />
 
         <BrainMesh
           mousePos={mousePos}
           predictionError={predictionError}
           isOmission={isOmission}
-          omissionLocation={omissionLocation}
         />
 
         <Electrodes
           mousePos={mousePos}
           predictionError={predictionError}
           isOmission={isOmission}
-          omissionLocation={omissionLocation}
         />
-
-        <PredictionGhost predictedPos={predictedPos} />
 
         <OrbitControls
           enableZoom={false}
           enablePan={false}
           enableRotate={false}
           autoRotate
-          autoRotateSpeed={0.2}
+          autoRotateSpeed={0.15}
         />
       </Canvas>
     </div>
