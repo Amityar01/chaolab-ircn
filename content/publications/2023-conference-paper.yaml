@@ -1,0 +1,13 @@
+id: 2023-conference-paper
+title: "Conference Presentation: Novel Approach to Research Problem"
+authors:
+  - Hanako Suzuki
+  - Taro Yamada
+year: 2023
+conference: International Conference on Example Topics (ICET 2023)
+pages: "45-52"
+doi: "10.1234/icet.2023.010"
+type: conference
+tags:
+  - conference
+  - novel-methods

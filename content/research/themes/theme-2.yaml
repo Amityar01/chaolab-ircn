@@ -1,0 +1,19 @@
+id: theme-2
+
+title:
+  en: Research Theme Two
+  ja: 研究テーマ2
+
+description:
+  en: |
+    Description of your second research theme. What problems are you
+    solving and why does it matter?
+  ja: |
+    2番目の研究テーマの説明。どのような問題を解決し、
+    なぜそれが重要なのかを説明します。
+
+image: /uploads/research/theme-2.jpg
+
+tags:
+  - applications
+  - systems

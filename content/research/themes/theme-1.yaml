@@ -1,0 +1,19 @@
+id: theme-1
+
+title:
+  en: Research Theme One
+  ja: 研究テーマ1
+
+description:
+  en: |
+    Description of your first research theme. Explain the key questions
+    you're investigating and the approaches you use.
+  ja: |
+    最初の研究テーマの説明。研究している主要な問題と
+    使用しているアプローチを説明します。
+
+image: /uploads/research/theme-1.jpg
+
+tags:
+  - machine-learning
+  - data-science

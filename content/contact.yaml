@@ -1,0 +1,18 @@
+address:
+  en: |
+    Department Name
+    University Name
+    1-2-3 Street, City
+    Country 123-4567
+  ja: |
+    〒123-4567
+    県市区町1-2-3
+    大学名
+    学部名
+
+email: lab@example.university.edu
+
+phone: "+81-3-1234-5678"
+
+# Google Maps embed URL (optional)
+# mapUrl: https://www.google.com/maps/embed?pb=...

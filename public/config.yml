@@ -1,0 +1,211 @@
+backend:
+  name: github
+  repo: YOUR_USERNAME/YOUR_REPO  # Change this to your GitHub repo
+  branch: main
+  base_url: https://your-site.vercel.app  # Change this to your deployed URL
+  auth_endpoint: /api/auth
+
+media_folder: public/uploads
+public_folder: /uploads
+
+# Bilingual text field template
+bilingual_text: &bilingual_text
+  - { label: "English", name: "en", widget: "string" }
+  - { label: "Japanese", name: "ja", widget: "string" }
+
+bilingual_text_long: &bilingual_text_long
+  - { label: "English", name: "en", widget: "text" }
+  - { label: "Japanese", name: "ja", widget: "text" }
+
+collections:
+  # Homepage Settings
+  - name: settings
+    label: Settings
+    files:
+      - name: homepage
+        label: Homepage
+        file: content/settings/homepage.yaml
+        fields:
+          - label: Lab Name
+            name: labName
+            widget: object
+            fields: *bilingual_text
+          - label: Tagline
+            name: tagline
+            widget: object
+            fields: *bilingual_text
+          - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
+
+      - name: contact
+        label: Contact Info
+        file: content/contact.yaml
+        fields:
+          - label: Address
+            name: address
+            widget: object
+            fields: *bilingual_text_long
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Phone", name: "phone", widget: "string", required: false }
+          - { label: "Google Maps URL", name: "mapUrl", widget: "string", required: false }
+
+  # Members
+  - name: faculty
+    label: Faculty
+    folder: content/members/faculty
+    create: true
+    extension: yaml
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "URL Slug", name: "slug", widget: "string" }
+      - label: Name
+        name: name
+        widget: object
+        fields: *bilingual_text
+      - label: Role
+        name: role
+        widget: object
+        fields: *bilingual_text
+      - label: Bio
+        name: bio
+        widget: object
+        required: false
+        fields: *bilingual_text_long
+      - { label: "Photo", name: "image", widget: "image", required: false }
+      - { label: "Email", name: "email", widget: "string", required: false }
+      - label: Links
+        name: links
+        widget: list
+        required: false
+        fields:
+          - { label: "Type", name: "type", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: Research Interests
+        name: research
+        widget: list
+        required: false
+        field: { label: "Interest", name: "interest", widget: "string" }
+
+  - name: students
+    label: Students
+    folder: content/members/students
+    create: true
+    extension: yaml
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "URL Slug", name: "slug", widget: "string" }
+      - label: Name
+        name: name
+        widget: object
+        fields: *bilingual_text
+      - label: Role
+        name: role
+        widget: object
+        fields: *bilingual_text
+      - label: Bio
+        name: bio
+        widget: object
+        required: false
+        fields: *bilingual_text_long
+      - { label: "Photo", name: "image", widget: "image", required: false }
+      - { label: "Email", name: "email", widget: "string", required: false }
+
+  - name: alumni
+    label: Alumni
+    folder: content/members/alumni
+    create: true
+    extension: yaml
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "URL Slug", name: "slug", widget: "string" }
+      - label: Name
+        name: name
+        widget: object
+        fields: *bilingual_text
+      - label: Role
+        name: role
+        widget: object
+        fields: *bilingual_text
+      - { label: "Photo", name: "image", widget: "image", required: false }
+
+  # Publications
+  - name: publications
+    label: Publications
+    folder: content/publications
+    create: true
+    extension: yaml
+    slug: "{{year}}-{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Title", name: "title", widget: "string" }
+      - label: Authors
+        name: authors
+        widget: list
+        field: { label: "Author", name: "author", widget: "string" }
+      - { label: "Year", name: "year", widget: "number", value_type: "int" }
+      - { label: "Journal", name: "journal", widget: "string", required: false }
+      - { label: "Conference", name: "conference", widget: "string", required: false }
+      - { label: "Volume", name: "volume", widget: "string", required: false }
+      - { label: "Pages", name: "pages", widget: "string", required: false }
+      - { label: "DOI", name: "doi", widget: "string", required: false }
+      - label: Type
+        name: type
+        widget: select
+        options: ["journal", "conference", "book", "preprint", "thesis"]
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }
+
+  # News
+  - name: news
+    label: News
+    folder: content/news
+    create: true
+    extension: md
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - label: Title
+        name: title
+        widget: object
+        fields: *bilingual_text
+      - { label: "Date", name: "date", widget: "date" }
+      - label: Category
+        name: category
+        widget: select
+        options: ["publication", "award", "event", "announcement"]
+      - label: Excerpt
+        name: excerpt
+        widget: object
+        required: false
+        fields: *bilingual_text
+      - { label: "Link", name: "link", widget: "string", required: false }
+      - { label: "Body", name: "body", widget: "markdown", required: false }
+
+  # Research Themes
+  - name: research
+    label: Research Themes
+    folder: content/research/themes
+    create: true
+    extension: yaml
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - label: Title
+        name: title
+        widget: object
+        fields: *bilingual_text
+      - label: Description
+        name: description
+        widget: object
+        fields: *bilingual_text_long
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }

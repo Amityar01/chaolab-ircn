@@ -1,0 +1,44 @@
+nav:
+  home:
+    en: Home
+    ja: ホーム
+  research:
+    en: Research
+    ja: 研究
+  members:
+    en: Members
+    ja: メンバー
+  publications:
+    en: Publications
+    ja: 業績
+  news:
+    en: News
+    ja: ニュース
+  contact:
+    en: Contact
+    ja: アクセス
+
+common:
+  footerDescription:
+    en: A research laboratory advancing knowledge in our field.
+    ja: 研究分野の知識を発展させる研究室です。
+  readMore:
+    en: Read More
+    ja: 続きを読む
+  backToTop:
+    en: Back to top
+    ja: トップに戻る
+
+categories:
+  publication:
+    en: Publication
+    ja: 論文
+  award:
+    en: Award
+    ja: 受賞
+  event:
+    en: Event
+    ja: イベント
+  announcement:
+    en: Announcement
+    ja: お知らせ
