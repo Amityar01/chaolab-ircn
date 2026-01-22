@@ -1,18 +1,15 @@
 address:
   en: |
-    Department Name
-    University Name
-    1-2-3 Street, City
-    Country 123-4567
+    International Research Center for Neurointelligence (IRCN)
+    The University of Tokyo
+    7-3-1 Hongo, Bunkyo-ku
+    Tokyo 113-0033, JAPAN
   ja: |
-    〒123-4567
-    県市区町1-2-3
-    大学名
-    学部名
+    〒113-0033
+    東京都文京区本郷7-3-1
+    東京大学
+    国際高等研究所 ニューロインテリジェンス国際研究機構（IRCN）
 
-email: lab@example.university.edu
+email: zenas.c.chao@ircn.jp
 
-phone: "+81-3-1234-5678"
-
-# Google Maps embed URL (optional)
-# mapUrl: https://www.google.com/maps/embed?pb=...
+mapUrl: https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3239.7076882095473!2d139.75830761525887!3d35.71345428018929!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188c2ffa206ea1%3A0x40a8dbbd4c5d4c89!2sThe%20University%20of%20Tokyo!5e0!3m2!1sen!2sjp!4v1642234567890!5m2!1sen!2sjp

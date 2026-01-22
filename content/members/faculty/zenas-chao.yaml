@@ -1,0 +1,63 @@
+id: zenas-chao
+slug: zenas-chao
+
+name:
+  en: Zenas C. Chao
+  ja: Zenas C. Chao
+
+role:
+  en: Principal Investigator, Associate Professor
+  ja: 主任研究者・准教授
+
+bio:
+  en: |
+    Zenas Chao has a deep fascination with the human mind and the development of machines that mimic human intelligence. He earned B.S. degrees in Life Science and Chemistry in Taiwan before pursuing Biomedical Engineering at Georgia Institute of Technology, USA. During his Ph.D., he grew neurons in petri dishes and interfaced them with robots, demonstrating that machines equipped with an artificial organic brain can learn purposeful behaviors.
+
+    Subsequently, he relocated to Japan, where he worked as a Research Scientist at the RIKEN Brain Science Institute, an Assistant Professor at the National Institute for Physiological Sciences, and a Junior Associate Professor at Kyoto University. His work in Japan focused on decoding brain signals from humans and monkeys to facilitate brain-controlled robots and computers.
+
+    In 2019, Chao joined the International Research Center for Neurointelligence (IRCN) at the University of Tokyo. Here, he applies his research experience in silico, in vitro, and in vivo, to explore neural implementations of predictive coding, which is considered by many as a grand unified theory of cognition, and to investigate the neural mechanisms underlying creativity, a pivotal component of human intelligence.
+  ja: |
+    Zenas Chaoは、人間の心と、人間の知能を模倣する機械の開発に深い関心を持っています。台湾で生命科学と化学の学士号を取得した後、アメリカのジョージア工科大学で生体医工学を専攻しました。博士課程では、シャーレで神経細胞を培養し、ロボットと接続することで、人工的な有機脳を搭載した機械が目的のある行動を学習できることを実証しました。
+
+    その後、日本に移り、理化学研究所脳科学総合研究センターで研究員、生理学研究所で助教、京都大学で講師を務めました。日本での研究は、人間と猿の脳信号をデコードし、脳で制御されるロボットやコンピュータを実現することに焦点を当てていました。
+
+    2019年、東京大学国際高等研究所ニューロインテリジェンス国際研究機構（IRCN）に着任。ここでは、in silico、in vitro、in vivoでの研究経験を活かし、多くの研究者が認知の大統一理論と考える予測符号化の神経実装を探求し、人間の知能の重要な構成要素である創造性の神経メカニズムを研究しています。
+
+image: https://ircn.jp/wp-content/uploads/2022/12/abcbe6b73c09c05ac4fc53b5073cce5d-e1670379384399.jpg
+
+email: zenas.c.chao@ircn.jp
+
+links:
+  - type: Website
+    url: https://www.zenaschao.com
+    label:
+      en: Personal Website
+      ja: 個人サイト
+  - type: Google Scholar
+    url: https://scholar.google.com/citations?user=42UJugkAAAAJ
+    label:
+      en: Google Scholar
+      ja: Google Scholar
+  - type: IRCN
+    url: https://ircn.jp/en/mission/people/zenas-c-chao
+    label:
+      en: IRCN Profile
+      ja: IRCNプロフィール
+
+research:
+  - Predictive coding circuits
+  - Neural markers for psychiatric disorders
+  - Creativity and neural mechanisms
+  - Brain-machine interfaces
+  - Large-scale network dynamics
+
+education:
+  - year: "2001-2007"
+    event: PhD, Biomedical Engineering, Georgia Institute of Technology
+  - year: "1994-1998"
+    event: Dual BS, Life Science / Chemistry, National Tsing Hua University, Taiwan
+
+tags:
+  - predictive-coding
+  - creativity
+  - neural-modeling

@@ -3,7 +3,17 @@ labName:
   ja: Chao研究室
 
 tagline:
-  en: Predictive Coding & Creativity Research at IRCN, University of Tokyo
-  ja: 東京大学IRCN 予測符号化と創造性の研究
+  en: Predictive and Creative Brain
+  ja: 予測的で創造的な脳
 
-heroImage: /uploads/hero.jpg
+description:
+  en: Investigating predictive coding in the brain and its applications to understanding and augmenting human creativity
+  ja: 脳の予測符号化を研究し、人間の創造性の理解と増強への応用を探求
+
+heroImage: https://ircn.jp/wp-content/uploads/2024/07/UTokyo-Medical-School-website-figure-777x1024.png
+
+keywords:
+  - predictive coding
+  - creativity
+  - large-scale network dynamics
+  - biologically-inspired neural modeling

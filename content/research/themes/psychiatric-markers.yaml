@@ -1,0 +1,19 @@
+id: psychiatric-markers
+
+title:
+  en: Neural Markers for Psychiatric Disorders
+  ja: 精神疾患の神経マーカー
+
+description:
+  en: |
+    A key focus of our research is to identify mechanistic neural markers associated with psychiatric disorders characterized by prediction anomalies, such as autism spectrum disorder. Understanding these neural foundations is essential for comprehending the conditions and could lead to high-resolution diagnoses and targeted interventions.
+  ja: |
+    自閉スペクトラム症などの予測異常を特徴とする精神疾患に関連するメカニズム的な神経マーカーの特定が研究の主要な焦点です。これらの神経基盤を理解することは、疾患の理解に不可欠であり、高解像度診断や標的介入につながる可能性があります。
+
+tags:
+  - prediction
+  - psychiatric-disorders
+  - autism
+  - biomarkers
+
+theme: prediction
