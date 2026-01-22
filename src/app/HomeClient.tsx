@@ -27,10 +27,7 @@ export default function HomeClient({ settings, news, themes }: HomeClientProps) 
         </span>
 
         <h1>
-          {t({
-            en: <>The <em>Chao</em> Lab</>,
-            ja: <><em>Chao</em> 研究室</>
-          })}
+          {t({ en: 'The', ja: '' })} <em>Chao</em> {t({ en: 'Lab', ja: '研究室' })}
         </h1>
 
         <p className="hero-tagline">
