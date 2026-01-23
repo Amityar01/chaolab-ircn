@@ -6,8 +6,8 @@ name:
   ja: アミット・ヤロン
 
 role:
-  en: Project Research Associate
-  ja: 特任研究員
+  en: Assistant Professor
+  ja: 助教
 
 bio:
   en: |
@@ -64,17 +64,17 @@ education:
 
 career:
   - year: "2021-present"
-    position: Project Research Associate
+    position: Assistant Professor
     institution: International Research Center for Neurointelligence (WPI-IRCN), The University of Tokyo
-    focus: Predictive coding in rodent auditory cortex, computation in dissociated cultures, multimodal integration (Supervisor: Prof. Zenas C. Chao)
+    focus: Predictive coding in rodent auditory cortex, computation in dissociated cultures, multimodal integration
   - year: "2017-2021"
     position: Postdoctoral Researcher / Research Fellow
     institution: National Center of Neurology and Psychiatry (NCNP), Tokyo, Japan
-    focus: Sensorimotor neurophysiology, primate spinal modularity (Supervisor: Prof. Kazuhiko Seki)
+    focus: Sensorimotor neurophysiology, primate spinal modularity
   - year: "2015-2017"
     position: Postdoctoral Researcher
     institution: Edmond and Lily Safra Center for Brain Sciences (ELSC), Hebrew University, Israel
-    focus: Auditory neurophysiology, stimulus-specific adaptation, regularity sensitivity (Supervisor: Prof. Israel Nelken)
+    focus: Auditory neurophysiology, stimulus-specific adaptation, regularity sensitivity
 
 tags:
   - predictive-coding
