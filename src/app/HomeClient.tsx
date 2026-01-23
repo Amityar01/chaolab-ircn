@@ -35,8 +35,14 @@ interface HomeClientProps {
 
 type ToyShape = 'brain-tl' | 'brain-tr' | 'brain-bl' | 'brain-br';
 
-const TOY_SIZE = 64;
 const TOY_MARGIN = 16;
+const TOY_SHELF_EXTRA_SPACE = 120;
+
+const getToySize = (viewportWidth: number) => {
+  if (viewportWidth < 420) return 72;
+  if (viewportWidth < 768) return 84;
+  return 112;
+};
 
 interface ToyState {
   id: string;
@@ -58,9 +64,11 @@ export default function HomeClient({
   const [showHint, setShowHint] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [toySize, setToySize] = useState(84);
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
+  const toyShelfRef = useRef<HTMLDivElement>(null);
 
   // Toy positions (draggable)
   const [toys, setToys] = useState<ToyState[]>([]);
@@ -84,6 +92,7 @@ export default function HomeClient({
 
     const updateSize = () => {
       const w = window.innerWidth;
+      const nextToySize = getToySize(w);
       // Use full document height - fireflies cover entire page
       const h = Math.max(
         document.body.scrollHeight,
@@ -91,18 +100,36 @@ export default function HomeClient({
         window.innerHeight
       );
       setViewportSize({ width: w, height: h });
+      setToySize(nextToySize);
 
       // Initialize toys in document coordinates
       setToys(prev => {
         if (prev.length > 0) return prev;
-        const vh = window.innerHeight;
-        const xLeft = TOY_MARGIN;
-        const xRight = Math.max(TOY_MARGIN, w - TOY_SIZE - TOY_MARGIN);
+        const clusterSize = nextToySize * 2;
+        const container = containerRef.current;
+        const shelf = toyShelfRef.current;
+
+        const baseX = Math.round(
+          Math.max(
+            TOY_MARGIN,
+            Math.min(w - clusterSize - TOY_MARGIN, (w - clusterSize) / 2)
+          )
+        );
+
+        let baseY = Math.round(window.innerHeight * 0.72);
+        if (container && shelf) {
+          const containerRect = container.getBoundingClientRect();
+          const shelfRect = shelf.getBoundingClientRect();
+          baseY = Math.round(
+            shelfRect.top - containerRect.top + Math.max(TOY_MARGIN, TOY_SHELF_EXTRA_SPACE / 2)
+          );
+        }
+
         return [
-          { id: 'toy_0', shape: 'brain-tl', x: xLeft, y: vh * 0.25 },
-          { id: 'toy_1', shape: 'brain-tr', x: xRight, y: vh * 0.20 },
-          { id: 'toy_2', shape: 'brain-bl', x: xLeft, y: vh * 0.65 },
-          { id: 'toy_3', shape: 'brain-br', x: xRight, y: vh * 0.55 },
+          { id: 'toy_0', shape: 'brain-tl', x: baseX, y: baseY },
+          { id: 'toy_1', shape: 'brain-tr', x: baseX + nextToySize, y: baseY },
+          { id: 'toy_2', shape: 'brain-bl', x: baseX, y: baseY + nextToySize },
+          { id: 'toy_3', shape: 'brain-br', x: baseX + nextToySize, y: baseY + nextToySize },
         ];
       });
     };
@@ -198,8 +225,8 @@ export default function HomeClient({
           id: toy.id,
           x: toy.x,
           y: toy.y,
-          width: TOY_SIZE,
-          height: TOY_SIZE,
+          width: toySize,
+          height: toySize,
         });
       });
 
@@ -214,7 +241,7 @@ export default function HomeClient({
       clearTimeout(timer);
       window.removeEventListener('resize', updateObstacles);
     };
-  }, [mounted, viewportSize.width, viewportSize.height, toys]);
+  }, [mounted, viewportSize.width, viewportSize.height, toys, toySize]);
 
   // Handle toy drag - simple viewport coordinates
   const handleToyDrag = useCallback((id: string, x: number, y: number) => {
@@ -247,7 +274,7 @@ export default function HomeClient({
           shape={toy.shape}
           x={toy.x}
           y={toy.y}
-          size={TOY_SIZE}
+          size={toySize}
           color={TOY_COLORS[i % TOY_COLORS.length]}
           onDrag={handleToyDrag}
         />
@@ -257,6 +284,14 @@ export default function HomeClient({
       <div className="relative z-10">
         {/* Hero Section */}
         <HeroSection settings={settings} />
+
+        {/* Space for the brain puzzle to start assembled under the hero */}
+        <div
+          ref={toyShelfRef}
+          aria-hidden="true"
+          className="relative pointer-events-none"
+          style={{ height: reducedMotion ? 0 : toySize * 2 + TOY_SHELF_EXTRA_SPACE }}
+        />
 
         {/* Interactive hint */}
         {showHint && !reducedMotion && (

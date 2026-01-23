@@ -113,6 +113,7 @@ export function DraggableToy({
       const glow = `drop-shadow(0 0 ${14 * glowIntensity}px ${color})`;
       const outlineStroke = 1.5;
       const detailStroke = 1;
+      const frameOpacity = isDragging ? 0.7 : 0.22;
 
       return (
         <svg width={shapeSize} height={shapeSize} viewBox="0 0 50 50" aria-hidden="true">
@@ -178,6 +179,14 @@ export function DraggableToy({
               opacity={0.18}
               strokeDasharray="3 3"
             />
+            <path
+              d="M16 50 L84 50"
+              fill="none"
+              stroke={color}
+              strokeWidth={0.7}
+              opacity={0.14}
+              strokeDasharray="3 3"
+            />
           </g>
 
           {/* "Broken edge" frame */}
@@ -190,7 +199,7 @@ export function DraggableToy({
             fill="none"
             stroke={color}
             strokeWidth={1.2}
-            opacity={0.55}
+            opacity={frameOpacity}
             strokeDasharray="5 4"
           />
         </svg>
