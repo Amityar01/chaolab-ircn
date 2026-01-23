@@ -766,6 +766,9 @@ export function FireflySystem({
         overflow: 'hidden',
         pointerEvents: 'auto',
         zIndex: 10,
+        // DEBUG: visible border to check if container is fixed
+        border: '3px solid red',
+        background: 'rgba(255,0,0,0.05)',
       }}
     >
       <svg
