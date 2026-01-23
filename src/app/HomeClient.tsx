@@ -63,12 +63,7 @@ export default function HomeClient({
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const researchSectionRef = useRef<HTMLDivElement>(null);
-  const teamRef = useRef<HTMLDivElement>(null);
-  const pubsRef = useRef<HTMLDivElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Toy positions (draggable)
   const [toys, setToys] = useState<ToyState[]>([]);
@@ -125,7 +120,7 @@ export default function HomeClient({
 
   // Update obstacles from DOM elements (document coordinates)
   useEffect(() => {
-    if (!mounted || viewportSize.width === 0) return;
+    if (!mounted || viewportSize.width === 0 || !contentRef.current) return;
 
     const getDocumentPosition = (el: HTMLElement, padding = 0) => {
       const rect = el.getBoundingClientRect();
@@ -140,49 +135,32 @@ export default function HomeClient({
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
 
-      // Add nav/header
-      const nav = containerRef.current?.querySelector('.nav');
-      if (nav) {
-        const pos = getDocumentPosition(nav as HTMLElement, 10);
-        newObstacles.push({ id: 'nav', ...pos });
-      }
+      // Find all content blocks automatically
+      const selectors = [
+        '.nav',
+        '.hero-section',
+        '.research-card',
+        '.team-preview',
+        '.publications-preview',
+        '.footer',
+        'h1', 'h2', 'h3',
+        'p',
+        '.card',
+        'section > div'
+      ];
 
-      // Add hero section
-      if (heroRef.current) {
-        const pos = getDocumentPosition(heroRef.current, 20);
-        newObstacles.push({ id: 'hero', ...pos });
-      }
-
-      // Add research section (the text/headers area)
-      if (researchSectionRef.current) {
-        const pos = getDocumentPosition(researchSectionRef.current, 15);
-        newObstacles.push({ id: 'research-section', ...pos });
-      }
-
-      // Add research cards
-      cardRefs.current.forEach((element, id) => {
-        if (!element) return;
-        const pos = getDocumentPosition(element, 10);
-        newObstacles.push({ id, ...pos });
+      let idx = 0;
+      selectors.forEach(selector => {
+        const elements = contentRef.current?.querySelectorAll(selector);
+        elements?.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          // Only add if it has reasonable size
+          if (rect.width > 50 && rect.height > 20) {
+            const pos = getDocumentPosition(el as HTMLElement, 15);
+            newObstacles.push({ id: `content-${idx++}`, ...pos });
+          }
+        });
       });
-
-      // Add team section
-      if (teamRef.current) {
-        const pos = getDocumentPosition(teamRef.current, 15);
-        newObstacles.push({ id: 'team-section', ...pos });
-      }
-
-      // Add publications section
-      if (pubsRef.current) {
-        const pos = getDocumentPosition(pubsRef.current, 15);
-        newObstacles.push({ id: 'pubs-section', ...pos });
-      }
-
-      // Add footer
-      if (footerRef.current) {
-        const pos = getDocumentPosition(footerRef.current, 10);
-        newObstacles.push({ id: 'footer', ...pos });
-      }
 
       // Add toys
       toys.forEach(toy => {
@@ -198,9 +176,9 @@ export default function HomeClient({
       setObstacles(newObstacles);
     };
 
-    // Update after layout settles and on window load
-    const timer1 = setTimeout(updateObstacles, 200);
-    const timer2 = setTimeout(updateObstacles, 500);
+    // Update after layout settles
+    const timer1 = setTimeout(updateObstacles, 300);
+    const timer2 = setTimeout(updateObstacles, 800);
     window.addEventListener('load', updateObstacles);
 
     return () => {
@@ -217,14 +195,6 @@ export default function HomeClient({
     ));
   }, []);
 
-  // Set card ref
-  const setCardRef = useCallback((id: string) => (el: HTMLDivElement | null) => {
-    if (el) {
-      cardRefs.current.set(id, el);
-    } else {
-      cardRefs.current.delete(id);
-    }
-  }, []);
 
   return (
     <div
@@ -258,7 +228,7 @@ export default function HomeClient({
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div ref={contentRef} className="relative z-10">
         {/* Header */}
         <header className="nav">
           <div className="nav-container">
@@ -299,9 +269,7 @@ export default function HomeClient({
         </header>
 
         {/* Hero Section */}
-        <div ref={heroRef}>
-          <HeroSection />
-        </div>
+        <HeroSection />
 
         {/* Interactive hint */}
         {showHint && !reducedMotion && (
@@ -323,7 +291,7 @@ export default function HomeClient({
         )}
 
         {/* Research Journey Section */}
-        <section ref={researchSectionRef} className="py-20 md:py-32 px-6 md:px-8 relative z-10">
+        <section className="py-20 md:py-32 px-6 md:px-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <p
               className="font-mono text-xs uppercase tracking-widest mb-4"
@@ -345,35 +313,37 @@ export default function HomeClient({
 
             <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               {sortedThemes.map((theme, index) => (
-                <ResearchCard
-                  key={theme.id}
-                  ref={setCardRef(theme.id)}
-                  sectionLabel={theme.sectionLabel || { en: '', ja: '' }}
-                  question={theme.question || theme.title}
-                  description={theme.description}
-                  linkHref="/research"
-                  accentColor={theme.accentColor || TOY_COLORS[index % TOY_COLORS.length]}
-                />
+                <div key={theme.id} className="research-card">
+                  <ResearchCard
+                    sectionLabel={theme.sectionLabel || { en: '', ja: '' }}
+                    question={theme.question || theme.title}
+                    description={theme.description}
+                    linkHref="/research"
+                    accentColor={theme.accentColor || TOY_COLORS[index % TOY_COLORS.length]}
+                  />
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* Team Preview */}
-        <TeamPreview
-          ref={teamRef}
-          pi={pi}
-          memberCount={memberCount}
-        />
+        <div className="team-preview">
+          <TeamPreview
+            pi={pi}
+            memberCount={memberCount}
+          />
+        </div>
 
         {/* Publications Preview */}
-        <PublicationsPreview
-          ref={pubsRef}
-          publications={publications}
-        />
+        <div className="publications-preview">
+          <PublicationsPreview
+            publications={publications}
+          />
+        </div>
 
         {/* Footer */}
-        <footer ref={footerRef} className="footer">
+        <footer className="footer">
           <div className="footer-container">
             <div className="grid md:grid-cols-3 gap-10 mb-12">
               <div>
