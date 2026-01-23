@@ -33,12 +33,14 @@ interface HomeClientProps {
   publications: Publication[];
 }
 
-// Draggable toy shapes
-const TOY_SHAPES = ['circle', 'triangle', 'diamond', 'hexagon'] as const;
+type ToyShape = 'brain-tl' | 'brain-tr' | 'brain-bl' | 'brain-br';
+
+const TOY_SIZE = 64;
+const TOY_MARGIN = 16;
 
 interface ToyState {
   id: string;
-  shape: typeof TOY_SHAPES[number];
+  shape: ToyShape;
   x: number;
   y: number;
 }
@@ -94,11 +96,13 @@ export default function HomeClient({
       setToys(prev => {
         if (prev.length > 0) return prev;
         const vh = window.innerHeight;
+        const xLeft = TOY_MARGIN;
+        const xRight = Math.max(TOY_MARGIN, w - TOY_SIZE - TOY_MARGIN);
         return [
-          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: vh * 0.25 },
-          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: vh * 0.20 },
-          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: vh * 0.65 },
-          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: vh * 0.55 },
+          { id: 'toy_0', shape: 'brain-tl', x: xLeft, y: vh * 0.25 },
+          { id: 'toy_1', shape: 'brain-tr', x: xRight, y: vh * 0.20 },
+          { id: 'toy_2', shape: 'brain-bl', x: xLeft, y: vh * 0.65 },
+          { id: 'toy_3', shape: 'brain-br', x: xRight, y: vh * 0.55 },
         ];
       });
     };
@@ -194,8 +198,8 @@ export default function HomeClient({
           id: toy.id,
           x: toy.x,
           y: toy.y,
-          width: 50,
-          height: 50,
+          width: TOY_SIZE,
+          height: TOY_SIZE,
         });
       });
 
@@ -243,7 +247,7 @@ export default function HomeClient({
           shape={toy.shape}
           x={toy.x}
           y={toy.y}
-          size={50}
+          size={TOY_SIZE}
           color={TOY_COLORS[i % TOY_COLORS.length]}
           onDrag={handleToyDrag}
         />

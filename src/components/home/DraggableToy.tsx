@@ -7,9 +7,19 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
+type ToyShape =
+  | 'circle'
+  | 'triangle'
+  | 'diamond'
+  | 'hexagon'
+  | 'brain-tl'
+  | 'brain-tr'
+  | 'brain-bl'
+  | 'brain-br';
+
 interface DraggableToyProps {
   id: string;
-  shape: 'circle' | 'triangle' | 'diamond' | 'hexagon';
+  shape: ToyShape;
   x: number;
   y: number;
   size?: number;
@@ -47,7 +57,7 @@ export function DraggableToy({
     const docY = e.clientY + window.scrollY;
     dragOffset.current = { x: docX - x, y: docY - y };
     setIsDragging(true);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
   }, [x, y]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
@@ -60,14 +70,133 @@ export function DraggableToy({
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     setIsDragging(false);
-    if ((e.target as HTMLElement).hasPointerCapture?.(e.pointerId)) {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
     }
   }, []);
 
   // Render different shapes
   const renderShape = () => {
     const shapeSize = size * 0.8;
+    const brainOutline = `
+      M50 12
+      C41 4 28 8 24 18
+      C14 22 12 36 20 44
+      C14 52 16 66 28 72
+      C28 84 40 92 50 88
+      C60 92 72 84 72 72
+      C84 66 86 52 80 44
+      C88 36 86 22 76 18
+      C72 8 59 4 50 12
+      Z
+    `.trim().replace(/\s+/g, ' ');
+
+    const renderBrainPiece = (piece: 'tl' | 'tr' | 'bl' | 'br') => {
+      const clipId = `clip-${id}`;
+      const gradId = `grad-${id}`;
+
+      const rect = (() => {
+        switch (piece) {
+          case 'tl':
+            return { x: 0, y: 0 };
+          case 'tr':
+            return { x: 50, y: 0 };
+          case 'bl':
+            return { x: 0, y: 50 };
+          case 'br':
+            return { x: 50, y: 50 };
+          default:
+            return { x: 0, y: 0 };
+        }
+      })();
+
+      const glow = `drop-shadow(0 0 ${14 * glowIntensity}px ${color})`;
+
+      return (
+        <svg width={shapeSize} height={shapeSize} viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <clipPath id={clipId}>
+              <rect x={rect.x} y={rect.y} width="50" height="50" rx="6" />
+            </clipPath>
+            <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.28} />
+              <stop offset="60%" stopColor={color} stopOpacity={0.14} />
+              <stop offset="100%" stopColor={color} stopOpacity={0.06} />
+            </linearGradient>
+          </defs>
+
+          <g clipPath={`url(#${clipId})`} style={{ filter: glow }}>
+            <path d={brainOutline} fill={`url(#${gradId})`} stroke={color} strokeWidth={3} />
+
+            {/* Gyri lines */}
+            <path
+              d="M32 22 C24 26 24 36 32 40"
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              opacity={0.35}
+              strokeLinecap="round"
+            />
+            <path
+              d="M68 22 C76 26 76 36 68 40"
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              opacity={0.35}
+              strokeLinecap="round"
+            />
+            <path
+              d="M30 48 C22 52 22 62 30 66"
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              opacity={0.25}
+              strokeLinecap="round"
+            />
+            <path
+              d="M70 48 C78 52 78 62 70 66"
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              opacity={0.25}
+              strokeLinecap="round"
+            />
+            <path
+              d="M50 18 C44 26 44 36 50 44 C56 36 56 26 50 18"
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              opacity={0.22}
+              strokeLinejoin="round"
+            />
+
+            {/* Subtle center split */}
+            <path
+              d="M50 16 L50 84"
+              fill="none"
+              stroke={color}
+              strokeWidth={1}
+              opacity={0.18}
+              strokeDasharray="3 3"
+            />
+          </g>
+
+          {/* "Broken edge" frame */}
+          <rect
+            x={rect.x + 2}
+            y={rect.y + 2}
+            width="46"
+            height="46"
+            rx="8"
+            fill="none"
+            stroke={color}
+            strokeWidth={2}
+            opacity={0.55}
+            strokeDasharray="5 4"
+          />
+        </svg>
+      );
+    };
 
     switch (shape) {
       case 'circle':
@@ -122,6 +251,18 @@ export function DraggableToy({
             />
           </svg>
         );
+
+      case 'brain-tl':
+        return renderBrainPiece('tl');
+
+      case 'brain-tr':
+        return renderBrainPiece('tr');
+
+      case 'brain-bl':
+        return renderBrainPiece('bl');
+
+      case 'brain-br':
+        return renderBrainPiece('br');
 
       default:
         return null;
