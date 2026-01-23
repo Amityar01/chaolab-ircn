@@ -3,10 +3,9 @@
 // ============================================
 // DRAGGABLE TOY COMPONENT
 // ============================================
-// Simple glowing geometric shapes - fixed to viewport
+// Simple glowing geometric shapes
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 
 interface DraggableToyProps {
   id: string;
@@ -121,20 +120,11 @@ export function DraggableToy({
     }
   };
 
-  // Use portal to render to body, bypassing parent CSS issues
-  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setPortalContainer(document.body);
-  }, []);
-
-  if (!portalContainer) return null;
-
-  const content = (
+  return (
     <div
       className={`draggable-toy ${isDragging ? 'dragging' : ''}`}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         left: x,
         top: y,
         width: size,
@@ -157,8 +147,6 @@ export function DraggableToy({
       {renderShape()}
     </div>
   );
-
-  return createPortal(content, portalContainer);
 }
 
 export default DraggableToy;

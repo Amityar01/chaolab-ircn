@@ -57,7 +57,7 @@ export default function HomeClient({
   const [mounted, setMounted] = useState(false);
   const [showHint, setShowHint] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [showBeliefs, setShowBeliefs] = useState(false);
   const [showPaths, setShowPaths] = useState(true);
 
@@ -82,88 +82,93 @@ export default function HomeClient({
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Initialize viewport size and toys
+  // Initialize canvas size (full document) and toys
   useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => setShowHint(false), 8000);
 
-    const updateViewport = () => {
+    const updateCanvasSize = () => {
       const w = window.innerWidth;
-      const h = window.innerHeight;
-      setViewportSize({ width: w, height: h });
+      // Get full document height (scrollable area)
+      const h = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight
+      );
+      setCanvasSize({ width: w, height: h });
 
-      // Initialize toys if not already done
+      // Initialize toys if not already done - use document-relative positions
       setToys(prev => {
         if (prev.length > 0) return prev;
+        const viewportH = window.innerHeight;
         return [
-          { id: 'toy_0', shape: 'circle', x: w * 0.06, y: h * 0.3 },
-          { id: 'toy_1', shape: 'triangle', x: w * 0.90, y: h * 0.25 },
-          { id: 'toy_2', shape: 'diamond', x: w * 0.04, y: h * 0.7 },
-          { id: 'toy_3', shape: 'hexagon', x: w * 0.92, y: h * 0.6 },
+          { id: 'toy_0', shape: 'circle', x: w * 0.06, y: viewportH * 0.3 },
+          { id: 'toy_1', shape: 'triangle', x: w * 0.90, y: viewportH * 0.25 },
+          { id: 'toy_2', shape: 'diamond', x: w * 0.04, y: viewportH * 0.7 },
+          { id: 'toy_3', shape: 'hexagon', x: w * 0.92, y: viewportH * 0.6 },
         ];
       });
     };
 
-    updateViewport();
-    window.addEventListener('resize', updateViewport);
+    // Initial update after a small delay to ensure DOM is ready
+    const initialTimer = setTimeout(updateCanvasSize, 100);
+    window.addEventListener('resize', updateCanvasSize);
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('resize', updateViewport);
+      clearTimeout(initialTimer);
+      window.removeEventListener('resize', updateCanvasSize);
     };
   }, []);
 
-  // Update obstacles from DOM elements
+  // Update obstacles from DOM elements (using document-relative coordinates)
   useEffect(() => {
-    if (!mounted || viewportSize.width === 0) return;
+    if (!mounted || canvasSize.width === 0) return;
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
+      const scrollY = window.scrollY;
 
-      // Add research cards
+      // Add research cards - convert to document-relative coords
       cardRefs.current.forEach((element, id) => {
         if (!element) return;
         const rect = element.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < viewportSize.height) {
-          newObstacles.push({
-            id,
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
+        newObstacles.push({
+          id,
+          x: rect.left,
+          y: rect.top + scrollY, // Document-relative Y
+          width: rect.width,
+          height: rect.height,
+        });
       });
 
       // Add team section
       if (teamRef.current) {
         const rect = teamRef.current.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < viewportSize.height) {
-          newObstacles.push({
-            id: 'team-section',
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
+        newObstacles.push({
+          id: 'team-section',
+          x: rect.left,
+          y: rect.top + scrollY,
+          width: rect.width,
+          height: rect.height,
+        });
       }
 
       // Add publications section
       if (pubsRef.current) {
         const rect = pubsRef.current.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < viewportSize.height) {
-          newObstacles.push({
-            id: 'pubs-section',
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
+        newObstacles.push({
+          id: 'pubs-section',
+          x: rect.left,
+          y: rect.top + scrollY,
+          width: rect.width,
+          height: rect.height,
+        });
       }
 
-      // Add toys
+      // Add toys (already in document-relative coords)
       toys.forEach(toy => {
         newObstacles.push({
           id: toy.id,
@@ -178,19 +183,32 @@ export default function HomeClient({
     };
 
     updateObstacles();
-    window.addEventListener('scroll', updateObstacles);
-    const interval = setInterval(updateObstacles, 150);
+
+    // Update canvas size when content changes (e.g., after images load)
+    const resizeObserver = new ResizeObserver(() => {
+      const h = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.scrollHeight
+      );
+      setCanvasSize(prev => ({ ...prev, height: h }));
+      updateObstacles();
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
 
     return () => {
-      window.removeEventListener('scroll', updateObstacles);
-      clearInterval(interval);
+      resizeObserver.disconnect();
     };
-  }, [mounted, viewportSize, toys]);
+  }, [mounted, canvasSize.width, toys]);
 
-  // Handle toy drag
+  // Handle toy drag - convert to document-relative coordinates
   const handleToyDrag = useCallback((id: string, clientX: number, clientY: number) => {
+    const scrollY = window.scrollY;
     setToys(prev => prev.map(toy =>
-      toy.id === id ? { ...toy, x: clientX - 25, y: clientY - 25 } : toy
+      toy.id === id ? { ...toy, x: clientX - 25, y: clientY + scrollY - 25 } : toy
     ));
   }, []);
 
@@ -206,15 +224,15 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen relative overflow-x-hidden"
-      style={{ background: 'var(--deep-space)' }}
+      className="min-h-screen overflow-x-hidden"
+      style={{ background: 'var(--deep-space)', position: 'relative' }}
     >
-      {/* Firefly System - fixed to viewport */}
-      {mounted && !reducedMotion && viewportSize.width > 0 && (
+      {/* Firefly System - covers full page, scrolls with content */}
+      {mounted && !reducedMotion && canvasSize.width > 0 && canvasSize.height > 0 && (
         <FireflySystem
           obstacles={obstacles}
-          width={viewportSize.width}
-          height={viewportSize.height}
+          width={canvasSize.width}
+          height={canvasSize.height}
           showBeliefs={showBeliefs}
           showPaths={showPaths}
         />

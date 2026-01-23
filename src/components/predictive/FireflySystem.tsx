@@ -6,7 +6,6 @@
 // Simple glowing orbs, grid-based beliefs, natural movement
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 
 // ============================================
 // CONFIGURATION
@@ -102,7 +101,7 @@ function FireflyOrb({
       : `hsl(${hue}, 85%, 75%)`;
 
   return (
-    <g style={{ cursor: 'pointer' }} onClick={onClick}>
+    <g style={{ cursor: 'pointer', pointerEvents: 'auto' }} onClick={onClick}>
       {/* Trail */}
       {trail.map((point, i) => {
         const opacity = (i / trail.length) * 0.3;
@@ -693,96 +692,27 @@ export function FireflySystem({
     };
   }, [fireflies.length, width, height, checkRealObstacle, findBestDirection, getBelief, getVisits, markObstacle, clearCell, updateBeliefDisplay]);
 
-  // Handle click
-  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-
-    // Check if clicked on a firefly
-    const clickedFirefly = fireflies.find(f => {
-      const dist = Math.sqrt((f.x - clickX) ** 2 + (f.y - clickY) ** 2);
-      return dist < 25;
-    });
-
-    if (clickedFirefly) {
-      setSelectedFirefly(prev =>
-        prev === clickedFirefly.id ? null : clickedFirefly.id
-      );
-      return;
-    }
-
-    // Clicked empty space - deselect or create ripple
-    if (selectedFirefly !== null) {
-      setSelectedFirefly(null);
-      return;
-    }
-
-    // Create ripple and startle nearby fireflies
-    setRipples(prev => [...prev, { x: clickX, y: clickY, startTime: Date.now() }]);
-
-    setFireflies(prev => prev.map(firefly => {
-      const dist = Math.sqrt((firefly.x - clickX) ** 2 + (firefly.y - clickY) ** 2);
-      if (dist < 100) {
-        const fleeAngle = Math.atan2(firefly.y - clickY, firefly.x - clickX);
-        return {
-          ...firefly,
-          vx: Math.cos(fleeAngle) * 3,
-          vy: Math.sin(fleeAngle) * 3,
-          wanderAngle: fleeAngle,
-          angularVel: 0,
-          surprised: true,
-          surpriseTime: Date.now(),
-        };
-      }
-      return firefly;
-    }));
-  }, [fireflies, selectedFirefly]);
+  // Handle firefly click
+  const handleFireflyClick = useCallback((fireflyId: number) => {
+    setSelectedFirefly(prev => prev === fireflyId ? null : fireflyId);
+  }, []);
 
   // Generate predicted paths
   const predictedPaths = fireflies.map((f, i) => generatePredictedPath(f, i));
 
-  // Use portal to render directly to body, bypassing any parent CSS issues
-  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+  if (width === 0 || height === 0) return null;
 
-  useEffect(() => {
-    setPortalContainer(document.body);
-  }, []);
-
-  if (width === 0 || height === 0 || !portalContainer) return null;
-
-  const content = (
-    <div
-      id="firefly-container"
-      onClick={handleClick}
+  return (
+    <svg
+      width={width}
+      height={height}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        pointerEvents: 'auto',
-        zIndex: 10,
-        // DEBUG: visible border to check if container is fixed
-        border: '3px solid red',
-        background: 'rgba(255,0,0,0.05)',
+        pointerEvents: 'none', // Don't block clicks on content
       }}
     >
-      <svg
-        width="100%"
-        height="100%"
-        viewBox={`0 0 ${width} ${height}`}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-        }}
-      >
       {/* Belief heatmap */}
       {beliefCells.map(cell => (
         <BeliefCell
@@ -808,16 +738,11 @@ export function FireflySystem({
           selected={selectedFirefly === firefly.id}
           showPrediction={showPaths}
           predictedPath={predictedPaths[i]}
-          onClick={() => setSelectedFirefly(prev =>
-            prev === firefly.id ? null : firefly.id
-          )}
+          onClick={() => handleFireflyClick(firefly.id)}
         />
       ))}
-      </svg>
-    </div>
+    </svg>
   );
-
-  return createPortal(content, portalContainer);
 }
 
 export default FireflySystem;
