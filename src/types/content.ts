@@ -107,6 +107,22 @@ export interface ProjectPartner {
   url?: string;
 }
 
+export interface ProjectFeature {
+  title: BilingualText;
+  description: BilingualText;
+}
+
+export interface ProjectPolicy {
+  title: BilingualText;
+  description: BilingualText;
+}
+
+export interface ProjectMission {
+  title: BilingualText;
+  description: BilingualText;
+  points: BilingualText[];
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -114,8 +130,12 @@ export interface Project {
   title: BilingualText;
   subtitle?: BilingualText;
   collaboration?: BilingualText;
-  description: BilingualText;
-  goals?: BilingualText[];
+  heroImage?: string;
+  introduction?: BilingualText;
+  vision?: BilingualText;
+  mission?: ProjectMission;
+  features?: ProjectFeature[];
+  policies?: ProjectPolicy[];
   partners?: ProjectPartner[];
   registerUrl?: string;
   accentColor?: string;

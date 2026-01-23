@@ -14,19 +14,80 @@ collaboration:
   en: "Daikin-UTokyo Industry-Academia Collaboration"
   ja: "ダイキン東大産学協創案件"
 
-description:
+heroImage: "/uploads/neurocreativity-graph.png"
+
+introduction:
   en: |
     This exciting project is a collaboration between the International Research Center for Neurointelligence (IRCN) at the University of Tokyo and Daikin. We're looking for creative minds to take on the challenge—come join us and have some fun while boosting your brainpower!
   ja: |
     このワクワクするプロジェクトは、東京大学の国際高等研究所ニューロインテリジェンス国際研究機構（IRCN）とダイキンのコラボレーションです！あなたのクリエイティビティに挑戦してみませんか？楽しみながら脳の力を引き出しましょう！
 
-goals:
-  - en: "Understanding the neural mechanisms underlying creative problem-solving"
-    ja: "創造的問題解決の神経メカニズムの解明"
-  - en: "Developing methods to enhance creativity potential"
-    ja: "創造性ポテンシャルを高める方法の開発"
-  - en: "Creating closed-loop systems for real-world creativity augmentation"
-    ja: "実世界の創造性増強のためのクローズドループシステムの構築"
+vision:
+  en: |
+    We're curious—why is it that sometimes solving a problem feels impossible, but after letting your subconscious work on it, you suddenly come up with a creative solution? Now imagine if we could actually track your creativity levels throughout the day—and even find a way to keep them high.
+  ja: |
+    私たちは不思議に思っています—なぜ問題を解くことが不可能に感じることがあるのに、無意識に任せた後、突然創造的な解決策を思いつくことがあるのでしょうか？もし一日を通して創造性レベルを追跡し、それを高く保つ方法を見つけられたらと想像してみてください。
+
+mission:
+  title:
+    en: "Mission"
+    ja: "ミッション"
+  description:
+    en: "Our goal is to build a system that can:"
+    ja: "私たちの目標は、以下のことができるシステムを構築することです："
+  points:
+    - en: "Track your creativity levels in real-time using wireless EEG"
+      ja: "ワイヤレスEEGを使用してリアルタイムで創造性レベルを追跡する"
+    - en: "Decode creativity potential from brain signals"
+      ja: "脳信号から創造性ポテンシャルをデコードする"
+    - en: "Help you unlock your best ideas at work"
+      ja: "仕事で最高のアイデアを引き出す手助けをする"
+
+features:
+  - title:
+      en: "Wireless EEG Monitoring"
+      ja: "ワイヤレスEEGモニタリング"
+    description:
+      en: "Non-invasive brain signal recording during problem-solving tasks"
+      ja: "問題解決タスク中の非侵襲的な脳信号記録"
+  - title:
+      en: "Creativity Decoding"
+      ja: "創造性デコーディング"
+    description:
+      en: "Real-time analysis of brain states associated with creative insights"
+      ja: "創造的洞察に関連する脳状態のリアルタイム分析"
+  - title:
+      en: "Difficulty Recognition"
+      ja: "難易度認識"
+    description:
+      en: "Detecting when you're stuck and need a creativity boost"
+      ja: "行き詰まった時を検出し、創造性を高める必要がある時を認識"
+
+policies:
+  - title:
+      en: "Safety"
+      ja: "安全性"
+    description:
+      en: "The imaging method is safe, non-invasive, and poses no health risks. You can stop participating at any time."
+      ja: "画像撮影方法は安全で非侵襲的であり、健康上のリスクはありません。いつでも参加を中止できます。"
+  - title:
+      en: "Privacy"
+      ja: "プライバシー"
+    description:
+      en: "Your responses will be anonymized and kept confidential. Data will be used solely for research purposes."
+      ja: "あなたの回答は匿名化され、機密として扱われます。データは研究目的のみに使用されます。"
+  - title:
+      en: "Confidentiality"
+      ja: "機密性"
+    description:
+      en: "Your responses and EEG data will remain confidential. The findings will be summarized and no individual data will be disclosed."
+      ja: "あなたの回答とEEGデータは機密として扱われます。結果は要約され、個人データは開示されません。"
+  - title:
+      en: "Reward"
+      ja: "報酬"
+    description:
+      en: "¥3000 per visit (1.5-2 hours). Participation in creativity tasks and EEG recording."
+      ja: "1回の訪問につき3000円（1.5〜2時間）。創造性タスクとEEG記録への参加。"
 
 partners:
   - name:
