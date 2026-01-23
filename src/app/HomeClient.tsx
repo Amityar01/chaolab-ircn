@@ -3,9 +3,9 @@
 // ============================================
 // HOME CLIENT - BIOLUMINESCENT INTELLIGENCE
 // ============================================
-// Main homepage with predictive fireflies
+// Main homepage with predictive fireflies (simplified)
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroSection from '@/components/home/HeroSection';
@@ -13,9 +13,8 @@ import TeamPreview from '@/components/home/TeamPreview';
 import PublicationsPreview from '@/components/home/PublicationsPreview';
 import ResearchCard from '@/components/home/ResearchCard';
 import { DraggableToy } from '@/components/home/DraggableToy';
-import { Legend } from '@/components/home/Legend';
-import { PredictiveCanvas, useFireflyEngine, CONFIG, TOY_COLORS } from '@/components/predictive';
-import type { Obstacle, ToyShape, Vec2 } from '@/components/predictive/types';
+import { FireflySystem } from '@/components/predictive/FireflySystem';
+import { TOY_COLORS } from '@/components/predictive/config';
 import type {
   HomepageSettings,
   NewsItem,
@@ -35,13 +34,15 @@ interface HomeClientProps {
   publications: Publication[];
 }
 
-// Only 4 toys, strategically placed
-const TOY_CONFIGS: Array<{ shape: ToyShape; position: (w: number, h: number) => Vec2 }> = [
-  { shape: 'circle', position: (w, h) => ({ x: w * 0.08, y: h * 0.3 }) },
-  { shape: 'triangle', position: (w, h) => ({ x: w * 0.88, y: h * 0.25 }) },
-  { shape: 'diamond', position: (w, h) => ({ x: w * 0.05, y: h * 0.7 }) },
-  { shape: 'hexagon', position: (w, h) => ({ x: w * 0.92, y: h * 0.65 }) },
-];
+// Draggable toy shapes
+const TOY_SHAPES = ['circle', 'triangle', 'diamond', 'hexagon'] as const;
+
+interface ToyState {
+  id: string;
+  shape: typeof TOY_SHAPES[number];
+  x: number;
+  y: number;
+}
 
 export default function HomeClient({
   settings,
@@ -55,9 +56,10 @@ export default function HomeClient({
   const { t, language, setLanguage } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [showHint, setShowHint] = useState(true);
-  const [toyPositions, setToyPositions] = useState<Map<string, { position: Vec2; isDragging: boolean }>>(new Map());
   const [reducedMotion, setReducedMotion] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [showBeliefs, setShowBeliefs] = useState(false);
+  const [showPaths, setShowPaths] = useState(true);
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
@@ -65,16 +67,11 @@ export default function HomeClient({
   const pubsRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  // Canvas bounds = viewport size (fixed positioning)
-  const canvasBounds = useMemo(() => ({
-    x: 0,
-    y: 0,
-    width: viewportSize.width,
-    height: viewportSize.height,
-  }), [viewportSize]);
+  // Toy positions (draggable)
+  const [toys, setToys] = useState<ToyState[]>([]);
 
-  // Build obstacles from DOM elements (viewport-relative for fixed canvas)
-  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
+  // Obstacles for fireflies
+  const [obstacles, setObstacles] = useState<Array<{ id: string; x: number; y: number; width: number; height: number }>>([]);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -85,15 +82,25 @@ export default function HomeClient({
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Initialize and track viewport size
+  // Initialize viewport size and toys
   useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => setShowHint(false), 8000);
 
     const updateViewport = () => {
-      setViewportSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setViewportSize({ width: w, height: h });
+
+      // Initialize toys if not already done
+      setToys(prev => {
+        if (prev.length > 0) return prev;
+        return [
+          { id: 'toy_0', shape: 'circle', x: w * 0.06, y: h * 0.3 },
+          { id: 'toy_1', shape: 'triangle', x: w * 0.90, y: h * 0.25 },
+          { id: 'toy_2', shape: 'diamond', x: w * 0.04, y: h * 0.7 },
+          { id: 'toy_3', shape: 'hexagon', x: w * 0.92, y: h * 0.6 },
+        ];
       });
     };
 
@@ -106,28 +113,24 @@ export default function HomeClient({
     };
   }, []);
 
-  // Update obstacles from DOM elements (viewport-relative coordinates)
+  // Update obstacles from DOM elements
   useEffect(() => {
     if (!mounted || viewportSize.width === 0) return;
 
     const updateObstacles = () => {
-      const newObstacles: Obstacle[] = [];
+      const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
 
-      // Add research cards as fixed obstacles (viewport-relative)
+      // Add research cards
       cardRefs.current.forEach((element, id) => {
         if (!element) return;
         const rect = element.getBoundingClientRect();
-        // Only include if visible in viewport
         if (rect.bottom > 0 && rect.top < viewportSize.height) {
           newObstacles.push({
             id,
-            type: 'fixed',
-            bounds: {
-              x: rect.left,
-              y: rect.top,
-              width: rect.width,
-              height: rect.height,
-            },
+            x: rect.left,
+            y: rect.top,
+            width: rect.width,
+            height: rect.height,
           });
         }
       });
@@ -138,13 +141,10 @@ export default function HomeClient({
         if (rect.bottom > 0 && rect.top < viewportSize.height) {
           newObstacles.push({
             id: 'team-section',
-            type: 'fixed',
-            bounds: {
-              x: rect.left,
-              y: rect.top,
-              width: rect.width,
-              height: rect.height,
-            },
+            x: rect.left,
+            y: rect.top,
+            width: rect.width,
+            height: rect.height,
           });
         }
       }
@@ -155,28 +155,22 @@ export default function HomeClient({
         if (rect.bottom > 0 && rect.top < viewportSize.height) {
           newObstacles.push({
             id: 'pubs-section',
-            type: 'fixed',
-            bounds: {
-              x: rect.left,
-              y: rect.top,
-              width: rect.width,
-              height: rect.height,
-            },
+            x: rect.left,
+            y: rect.top,
+            width: rect.width,
+            height: rect.height,
           });
         }
       }
 
-      // Add toys as draggable obstacles
-      toyPositions.forEach((data, id) => {
+      // Add toys
+      toys.forEach(toy => {
         newObstacles.push({
-          id,
-          type: 'draggable',
-          bounds: {
-            x: data.position.x,
-            y: data.position.y,
-            width: 50,
-            height: 50,
-          },
+          id: toy.id,
+          x: toy.x,
+          y: toy.y,
+          width: 50,
+          height: 50,
         });
       });
 
@@ -185,23 +179,19 @@ export default function HomeClient({
 
     updateObstacles();
     window.addEventListener('scroll', updateObstacles);
-
-    // Update frequently for smooth tracking
-    const interval = setInterval(updateObstacles, 100);
+    const interval = setInterval(updateObstacles, 150);
 
     return () => {
       window.removeEventListener('scroll', updateObstacles);
       clearInterval(interval);
     };
-  }, [mounted, viewportSize, toyPositions]);
+  }, [mounted, viewportSize, toys]);
 
-  // Handle toy position changes
-  const handleToyPositionChange = useCallback((id: string, position: Vec2, isDragging: boolean) => {
-    setToyPositions(prev => {
-      const next = new Map(prev);
-      next.set(id, { position, isDragging });
-      return next;
-    });
+  // Handle toy drag
+  const handleToyDrag = useCallback((id: string, clientX: number, clientY: number) => {
+    setToys(prev => prev.map(toy =>
+      toy.id === id ? { ...toy, x: clientX - 25, y: clientY - 25 } : toy
+    ));
   }, []);
 
   // Set card ref
@@ -213,44 +203,45 @@ export default function HomeClient({
     }
   }, []);
 
-  // Initialize firefly engine with 4 fireflies
-  const { fireflies, time } = useFireflyEngine(
-    obstacles,
-    canvasBounds,
-    4, // Explicitly 4 fireflies
-    mounted && !reducedMotion && viewportSize.width > 0
-  );
-
   return (
     <div
       ref={containerRef}
       className="min-h-screen relative overflow-x-hidden"
       style={{ background: 'var(--deep-space)' }}
     >
-      {/* Firefly Canvas - fixed to viewport */}
+      {/* Firefly System - fixed to viewport */}
       {mounted && !reducedMotion && viewportSize.width > 0 && (
-        <PredictiveCanvas
-          fireflies={fireflies}
-          canvasBounds={canvasBounds}
-          time={time}
-          showParticles={true}
-          showFOV={true}
-          showEdges={true}
-          showMemory={true}
-        />
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            width: '100vw',
+            height: '100vh',
+            pointerEvents: 'none',
+            zIndex: 5,
+          }}
+        >
+          <FireflySystem
+            obstacles={obstacles}
+            width={viewportSize.width}
+            height={viewportSize.height}
+            showBeliefs={showBeliefs}
+            showPaths={showPaths}
+          />
+        </div>
       )}
 
-      {/* Draggable Toys - fixed to viewport, in margins */}
-      {mounted && !reducedMotion && viewportSize.width > 0 && TOY_CONFIGS.map((config, i) => (
+      {/* Draggable Toys */}
+      {mounted && !reducedMotion && toys.map((toy, i) => (
         <DraggableToy
-          key={`toy_${i}`}
-          id={`toy_${i}`}
-          shape={config.shape}
-          initialPosition={config.position(viewportSize.width, viewportSize.height)}
+          key={toy.id}
+          id={toy.id}
+          shape={toy.shape}
+          x={toy.x}
+          y={toy.y}
           size={50}
-          colorIndex={i}
-          onPositionChange={handleToyPositionChange}
-          containerRef={containerRef}
+          color={TOY_COLORS[i % TOY_COLORS.length]}
+          onDrag={handleToyDrag}
         />
       ))}
 
@@ -311,8 +302,8 @@ export default function HomeClient({
           >
             <span style={{ color: 'var(--firefly-glow)' }}>✦</span>
             {t({
-              en: 'Watch the fireflies think — drag the shapes to surprise them',
-              ja: 'ホタルの思考を観察 — 図形をドラッグして驚かせてみてください'
+              en: 'Watch the fireflies learn — drag the shapes to surprise them',
+              ja: 'ホタルの学習を観察 — 図形をドラッグして驚かせてみてください'
             })}
           </div>
         )}
@@ -333,8 +324,8 @@ export default function HomeClient({
 
             <p className="text-[var(--text-muted)] mb-12 max-w-2xl text-lg">
               {t({
-                en: 'Watch fireflies navigate using predictive coding — the same principles we study in the brain. Their glowing minds reveal attention, perception, and surprise.',
-                ja: '予測符号化を使ってナビゲートするホタルを観察してください。光る脳が注意、知覚、驚きを明らかにします。'
+                en: 'Watch fireflies navigate using predictive coding — the same principles we study in the brain. They build beliefs about obstacles, show surprise when wrong, and confusion when things disappear.',
+                ja: '予測符号化を使ってナビゲートするホタルを観察してください。障害物についての信念を形成し、予測が外れると驚き、物が消えると混乱します。'
               })}
             </p>
 
@@ -466,7 +457,54 @@ export default function HomeClient({
       </div>
 
       {/* Legend */}
-      {mounted && !reducedMotion && <Legend />}
+      {mounted && !reducedMotion && (
+        <div
+          className="fixed bottom-4 left-4 z-40 font-mono text-xs flex flex-col gap-1"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          <div className="flex items-center gap-2">
+            <span style={{ color: '#ff6b6b' }}>!</span>
+            <span>collision surprise</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span style={{ color: '#a388ee' }}>?</span>
+            <span>omission (it moved!)</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1 opacity-70">
+            <span style={{ color: 'var(--firefly-glow)' }}>○</span>
+            <span>tap firefly = see mind</span>
+          </div>
+        </div>
+      )}
+
+      {/* Toggle controls */}
+      {mounted && !reducedMotion && (
+        <div
+          className="fixed bottom-4 right-4 z-40 font-mono text-xs flex items-center gap-4"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showBeliefs}
+              onChange={(e) => setShowBeliefs(e.target.checked)}
+              className="w-3 h-3"
+              style={{ accentColor: '#ffb432' }}
+            />
+            beliefs
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showPaths}
+              onChange={(e) => setShowPaths(e.target.checked)}
+              className="w-3 h-3"
+              style={{ accentColor: 'var(--firefly-glow)' }}
+            />
+            paths
+          </label>
+        </div>
+      )}
     </div>
   );
 }
