@@ -1,5 +1,10 @@
 'use client';
 
+// ============================================
+// PUBLICATIONS PREVIEW COMPONENT
+// ============================================
+// Dark bioluminescent theme publications section
+
 import { forwardRef } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -21,25 +26,34 @@ const PublicationsPreview = forwardRef<HTMLDivElement, PublicationsPreviewProps>
     };
 
     return (
-      <section ref={ref} className="py-16 md:py-24 px-6 md:px-8 bg-[var(--bg-card)]">
+      <section
+        ref={ref}
+        className="py-16 md:py-24 px-6 md:px-8 relative z-10"
+        style={{ background: 'var(--card-glass)' }}
+      >
         <div className="max-w-5xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-3">
+          {/* Section label */}
+          <p
+            className="font-mono text-xs uppercase tracking-widest mb-3"
+            style={{ color: 'var(--accent-purple)' }}
+          >
             {t({ en: 'Recent Work', ja: '最新の研究' })}
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-[var(--text)] mb-10">
+          <h2 className="font-display text-3xl md:text-4xl text-[var(--text-primary)] mb-10">
             {t({ en: 'Latest publications', ja: '最新の論文' })}
           </h2>
 
-          <div className="space-y-6">
+          <div className="space-y-1">
             {publications.slice(0, 4).map((pub) => (
               <article
                 key={pub.id}
-                className="group border-b border-gray-100 pb-6 last:border-b-0"
+                className="group py-5 border-b transition-colors"
+                style={{ borderColor: 'var(--card-border)' }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="text-base md:text-lg font-medium text-[var(--text)] leading-snug mb-2 group-hover:text-[var(--ircn-blue)] transition-colors">
+                    <h3 className="text-base md:text-lg font-medium text-[var(--text-primary)] leading-snug mb-2 group-hover:text-[var(--firefly-glow)] transition-colors">
                       {pub.doi ? (
                         <a
                           href={`https://doi.org/${pub.doi}`}
@@ -54,18 +68,21 @@ const PublicationsPreview = forwardRef<HTMLDivElement, PublicationsPreviewProps>
                       )}
                     </h3>
 
-                    <p className="text-sm text-[var(--text-muted)] mb-1">
+                    <p className="text-sm text-[var(--text-secondary)] mb-1">
                       {formatAuthors(pub.authors)}
                     </p>
 
-                    <p className="text-sm text-[var(--text-muted)] opacity-75 italic">
+                    <p className="text-sm text-[var(--text-muted)] italic">
                       {pub.journal || pub.conference}
                       {pub.volume && ` ${pub.volume}`}
                       {pub.pages && `, ${pub.pages}`}
                     </p>
                   </div>
 
-                  <span className="text-sm font-medium text-[var(--ircn-purple)] flex-shrink-0">
+                  <span
+                    className="font-mono text-sm font-medium flex-shrink-0"
+                    style={{ color: 'var(--accent-purple)' }}
+                  >
                     {pub.year}
                   </span>
                 </div>
@@ -76,10 +93,21 @@ const PublicationsPreview = forwardRef<HTMLDivElement, PublicationsPreviewProps>
           <div className="mt-10">
             <Link
               href="/publications"
-              className="inline-flex items-center text-sm font-medium text-[var(--ircn-blue)] hover:text-[var(--ircn-purple)] transition-colors"
+              className="inline-flex items-center text-sm font-medium transition-colors group"
+              style={{ color: 'var(--accent-purple)' }}
             >
               {t({ en: 'View all publications', ja: 'すべての論文を見る' })}
-              <span className="ml-1">→</span>
+              <svg
+                className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 12l4-4-4-4" />
+              </svg>
             </Link>
           </div>
         </div>

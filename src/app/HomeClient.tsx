@@ -1,25 +1,29 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import dynamic from 'next/dynamic';
+// ============================================
+// HOME CLIENT - BIOLUMINESCENT INTELLIGENCE
+// ============================================
+// Main homepage with predictive fireflies
+
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroSection from '@/components/home/HeroSection';
 import TeamPreview from '@/components/home/TeamPreview';
 import PublicationsPreview from '@/components/home/PublicationsPreview';
-import type { HomepageSettings, NewsItem, ResearchTheme, Member, Publication, ContactInfo, BilingualText } from '@/types/content';
-
-const PredictiveCreature = dynamic(() => import('@/components/PredictiveCreature'), {
-  ssr: false
-});
-
-interface Obstacle {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import ResearchCard from '@/components/home/ResearchCard';
+import { DraggableToy } from '@/components/home/DraggableToy';
+import { Legend } from '@/components/home/Legend';
+import { PredictiveCanvas, useFireflyEngine, CONFIG, TOY_COLORS } from '@/components/predictive';
+import type { Obstacle, ToyShape, Vec2 } from '@/components/predictive/types';
+import type {
+  HomepageSettings,
+  NewsItem,
+  ResearchTheme,
+  Member,
+  Publication,
+  ContactInfo,
+} from '@/types/content';
 
 interface HomeClientProps {
   settings: HomepageSettings | null;
@@ -31,179 +35,8 @@ interface HomeClientProps {
   publications: Publication[];
 }
 
-// Draggable research card
-interface DraggableCardProps {
-  id: string;
-  initialX?: number;
-  initialY?: number;
-  sectionLabel: BilingualText;
-  question: BilingualText;
-  description: BilingualText;
-  linkHref: string;
-  accentColor: string;
-  onPositionChange: (id: string, x: number, y: number, width: number, height: number) => void;
-  gridPosition: { row: number; col: number };
-}
-
-function DraggableCard({
-  id,
-  sectionLabel,
-  question,
-  description,
-  linkHref,
-  accentColor,
-  onPositionChange,
-  gridPosition,
-}: DraggableCardProps) {
-  const { t } = useLanguage();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
-  const [hasBeenDragged, setHasBeenDragged] = useState(false);
-
-  // Report position to parent
-  useEffect(() => {
-    if (!cardRef.current) return;
-
-    const updatePosition = () => {
-      const rect = cardRef.current!.getBoundingClientRect();
-      onPositionChange(id, rect.left, rect.top + window.scrollY, rect.width, rect.height);
-    };
-
-    updatePosition();
-    window.addEventListener('scroll', updatePosition);
-    window.addEventListener('resize', updatePosition);
-
-    return () => {
-      window.removeEventListener('scroll', updatePosition);
-      window.removeEventListener('resize', updatePosition);
-    };
-  }, [id, onPositionChange, position]);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).tagName === 'A') return;
-
-    e.preventDefault();
-    const rect = cardRef.current!.getBoundingClientRect();
-
-    if (!hasBeenDragged) {
-      setPosition({ x: rect.left, y: rect.top + window.scrollY });
-      setHasBeenDragged(true);
-    }
-
-    setOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-    setIsDragging(true);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !position) return;
-
-    const newX = e.clientX - offset.x;
-    const newY = e.clientY - offset.y + window.scrollY;
-
-    setPosition({ x: newX, y: newY });
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    setIsDragging(false);
-    if ((e.target as HTMLElement).hasPointerCapture?.(e.pointerId)) {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-    }
-  };
-
-  const resetPosition = () => {
-    setPosition(null);
-    setHasBeenDragged(false);
-  };
-
-  const style: React.CSSProperties = position
-    ? {
-        position: 'fixed',
-        left: position.x,
-        top: position.y - window.scrollY,
-        zIndex: isDragging ? 100 : 50,
-        width: cardRef.current?.offsetWidth,
-        transition: isDragging ? 'none' : 'box-shadow 0.2s',
-        cursor: isDragging ? 'grabbing' : 'grab',
-      }
-    : {
-        cursor: 'grab',
-      };
-
-  return (
-    <div
-      ref={cardRef}
-      className={`
-        bg-white rounded-2xl p-6 md:p-8
-        border-2 border-gray-100
-        shadow-lg hover:shadow-xl
-        transition-all duration-300 ease-out
-        touch-none select-none
-        ${isDragging ? 'shadow-2xl scale-[1.02]' : ''}
-        ${!position ? 'hover:-translate-y-1' : ''}
-      `}
-      style={style}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-    >
-      {/* Drag indicator */}
-      <div className="absolute top-3 right-3 flex gap-1 opacity-30">
-        <div className="w-1 h-1 rounded-full bg-gray-400" />
-        <div className="w-1 h-1 rounded-full bg-gray-400" />
-      </div>
-
-      {hasBeenDragged && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            resetPosition();
-          }}
-          className="absolute top-3 left-3 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          reset
-        </button>
-      )}
-
-      <p
-        className="text-xs uppercase tracking-widest mb-3 font-medium"
-        style={{ color: accentColor }}
-      >
-        {t(sectionLabel)}
-      </p>
-
-      <div
-        className="w-16 h-1 rounded-full mb-5"
-        style={{ backgroundColor: accentColor }}
-      />
-
-      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 leading-tight">
-        {t(question)}
-      </h3>
-
-      <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3 text-sm md:text-base">
-        {t(description)}
-      </p>
-
-      <Link
-        href={linkHref}
-        className="inline-flex items-center text-sm font-semibold transition-all hover:gap-2"
-        style={{ color: accentColor }}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
-        {t({ en: 'Explore', ja: '詳しく' })}
-        <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
-      </Link>
-    </div>
-  );
-}
+// Toy configuration
+const TOY_SHAPES: ToyShape[] = ['circle', 'triangle', 'square', 'diamond', 'hexagon', 'circle'];
 
 export default function HomeClient({
   settings,
@@ -216,124 +49,256 @@ export default function HomeClient({
   const sortedThemes = [...themes].sort((a, b) => (a.order || 99) - (b.order || 99));
   const { t, language, setLanguage } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [showHint, setShowHint] = useState(true);
+  const [toyPositions, setToyPositions] = useState<Map<string, { position: Vec2; isDragging: boolean }>>(new Map());
+  const [reducedMotion, setReducedMotion] = useState(false);
 
+  // Refs for tracking elements
+  const containerRef = useRef<HTMLDivElement>(null);
   const teamRef = useRef<HTMLDivElement>(null);
   const pubsRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [canvasBounds, setCanvasBounds] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
+  // Build obstacles from DOM elements
+  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
+
+  // Initialize toys with positions
+  const initialToys = useMemo(() => {
+    if (typeof window === 'undefined') return [];
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    return TOY_SHAPES.map((shape, i) => ({
+      id: `toy_${i}`,
+      shape,
+      position: {
+        x: 100 + Math.random() * (width - 200),
+        y: 200 + Math.random() * (height - 400),
+      },
+      colorIndex: i,
+    }));
+  }, []);
+
+  // Check for reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  // Initialize
   useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => setShowHint(false), 8000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleCardPositionChange = useCallback((id: string, x: number, y: number, width: number, height: number) => {
-    setObstacles(prev => {
-      const existing = prev.findIndex(o => o.id === id);
-      const newObstacle = { id, x, y, width, height };
-
-      if (existing >= 0) {
-        const updated = [...prev];
-        updated[existing] = newObstacle;
-        return updated;
-      }
-      return [...prev, newObstacle];
-    });
-  }, []);
-
-  // Track team and publications sections as obstacles
+  // Update canvas bounds
   useEffect(() => {
-    if (!mounted) return;
+    if (!containerRef.current) return;
 
-    const updateSectionObstacles = () => {
+    const updateBounds = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setCanvasBounds({
+        x: 0,
+        y: 0,
+        width: rect.width,
+        height: rect.height,
+      });
+    };
+
+    updateBounds();
+    window.addEventListener('resize', updateBounds);
+    return () => window.removeEventListener('resize', updateBounds);
+  }, [mounted]);
+
+  // Update obstacles from DOM elements
+  useEffect(() => {
+    if (!mounted || !containerRef.current) return;
+
+    const updateObstacles = () => {
+      if (!containerRef.current) return;
+      const containerRect = containerRef.current.getBoundingClientRect();
       const newObstacles: Obstacle[] = [];
 
+      // Add research cards as fixed obstacles
+      cardRefs.current.forEach((element, id) => {
+        if (!element) return;
+        const rect = element.getBoundingClientRect();
+        newObstacles.push({
+          id,
+          type: 'fixed',
+          bounds: {
+            x: rect.left - containerRect.left,
+            y: rect.top - containerRect.top,
+            width: rect.width,
+            height: rect.height,
+          },
+        });
+      });
+
+      // Add team section
       if (teamRef.current) {
         const rect = teamRef.current.getBoundingClientRect();
         newObstacles.push({
           id: 'team-section',
-          x: rect.left,
-          y: rect.top + window.scrollY,
-          width: rect.width,
-          height: rect.height,
+          type: 'fixed',
+          bounds: {
+            x: rect.left - containerRect.left,
+            y: rect.top - containerRect.top,
+            width: rect.width,
+            height: rect.height,
+          },
         });
       }
 
+      // Add publications section
       if (pubsRef.current) {
         const rect = pubsRef.current.getBoundingClientRect();
         newObstacles.push({
           id: 'pubs-section',
-          x: rect.left,
-          y: rect.top + window.scrollY,
-          width: rect.width,
-          height: rect.height,
+          type: 'fixed',
+          bounds: {
+            x: rect.left - containerRect.left,
+            y: rect.top - containerRect.top,
+            width: rect.width,
+            height: rect.height,
+          },
         });
       }
 
-      setObstacles(prev => {
-        const cardObstacles = prev.filter(o => !o.id.includes('section'));
-        return [...cardObstacles, ...newObstacles];
+      // Add toys as draggable obstacles
+      toyPositions.forEach((data, id) => {
+        newObstacles.push({
+          id,
+          type: 'draggable',
+          bounds: {
+            x: data.position.x,
+            y: data.position.y,
+            width: 50,
+            height: 50,
+          },
+        });
       });
+
+      setObstacles(newObstacles);
     };
 
-    updateSectionObstacles();
-    window.addEventListener('scroll', updateSectionObstacles);
-    window.addEventListener('resize', updateSectionObstacles);
+    updateObstacles();
+    window.addEventListener('scroll', updateObstacles);
+    window.addEventListener('resize', updateObstacles);
+
+    // Update periodically for smoother tracking
+    const interval = setInterval(updateObstacles, 100);
 
     return () => {
-      window.removeEventListener('scroll', updateSectionObstacles);
-      window.removeEventListener('resize', updateSectionObstacles);
+      window.removeEventListener('scroll', updateObstacles);
+      window.removeEventListener('resize', updateObstacles);
+      clearInterval(interval);
     };
-  }, [mounted]);
+  }, [mounted, toyPositions]);
+
+  // Handle toy position changes
+  const handleToyPositionChange = useCallback((id: string, position: Vec2, isDragging: boolean) => {
+    setToyPositions(prev => {
+      const next = new Map(prev);
+      next.set(id, { position, isDragging });
+      return next;
+    });
+  }, []);
+
+  // Set card ref
+  const setCardRef = useCallback((id: string) => (el: HTMLDivElement | null) => {
+    if (el) {
+      cardRefs.current.set(id, el);
+    } else {
+      cardRefs.current.delete(id);
+    }
+  }, []);
+
+  // Initialize firefly engine
+  const { fireflies, time, isRunning } = useFireflyEngine(
+    obstacles,
+    canvasBounds,
+    CONFIG.FIREFLY_COUNT,
+    mounted && !reducedMotion
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 relative overflow-x-hidden">
-      {mounted && <PredictiveCreature obstacles={obstacles} creatureCount={4} showDebug={false} />}
+    <div
+      ref={containerRef}
+      className="min-h-screen relative overflow-x-hidden"
+      style={{ background: 'var(--deep-space)' }}
+    >
+      {/* Firefly Canvas */}
+      {mounted && !reducedMotion && (
+        <PredictiveCanvas
+          fireflies={fireflies}
+          canvasBounds={canvasBounds}
+          time={time}
+          showParticles={true}
+          showFOV={true}
+          showEdges={true}
+          showMemory={true}
+        />
+      )}
 
+      {/* Draggable Toys */}
+      {mounted && !reducedMotion && initialToys.map((toy, i) => (
+        <DraggableToy
+          key={toy.id}
+          id={toy.id}
+          shape={toy.shape}
+          initialPosition={toy.position}
+          size={45 + Math.random() * 15}
+          colorIndex={i}
+          onPositionChange={handleToyPositionChange}
+          containerRef={containerRef}
+        />
+      ))}
+
+      {/* Main Content */}
       <div className="relative z-10">
         {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-lg border-b border-gray-200/50">
-          <div className="max-w-6xl mx-auto px-6 md:px-8 py-4">
-            <div className="flex justify-between items-center">
-              <Link href="/" className="text-lg font-bold text-gray-900 tracking-tight">
-                {settings?.labName ? t(settings.labName) : 'Chao Lab'}
+        <header className="nav">
+          <div className="nav-container">
+            <Link href="/" className="nav-logo">
+              {settings?.labName ? t(settings.labName) : 'Chao Lab'}
+            </Link>
+
+            <nav className="nav-links">
+              <Link href="/research" className="nav-link">
+                {t({ en: 'Research', ja: '研究' })}
+              </Link>
+              <Link href="/publications" className="nav-link">
+                {t({ en: 'Publications', ja: '論文' })}
+              </Link>
+              <Link href="/members" className="nav-link">
+                {t({ en: 'Members', ja: 'メンバー' })}
+              </Link>
+              <Link href="/contact" className="nav-link">
+                {t({ en: 'Contact', ja: '連絡先' })}
               </Link>
 
-              <nav className="flex items-center gap-6 md:gap-8">
-                <Link
-                  href="/research"
-                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors hidden md:block font-medium"
-                >
-                  {t({ en: 'Research', ja: '研究' })}
-                </Link>
-                <Link
-                  href="/publications"
-                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors hidden md:block font-medium"
-                >
-                  {t({ en: 'Publications', ja: '論文' })}
-                </Link>
-                <Link
-                  href="/members"
-                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors hidden md:block font-medium"
-                >
-                  {t({ en: 'Members', ja: 'メンバー' })}
-                </Link>
-                <Link
-                  href="/contact"
-                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors hidden md:block font-medium"
-                >
-                  {t({ en: 'Contact', ja: '連絡先' })}
-                </Link>
-
+              <div className="lang-toggle">
                 <button
-                  onClick={() => setLanguage(language === 'en' ? 'ja' : 'en')}
-                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors px-3 py-1.5 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 font-medium"
+                  onClick={() => setLanguage('en')}
+                  className={`lang-btn ${language === 'en' ? 'active' : ''}`}
                 >
-                  {language === 'en' ? '日本語' : 'EN'}
+                  EN
                 </button>
-              </nav>
-            </div>
+                <button
+                  onClick={() => setLanguage('ja')}
+                  className={`lang-btn ${language === 'ja' ? 'active' : ''}`}
+                >
+                  日本語
+                </button>
+              </div>
+            </nav>
           </div>
         </header>
 
@@ -341,43 +306,56 @@ export default function HomeClient({
         <HeroSection />
 
         {/* Interactive hint */}
-        {showHint && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-gray-900/90 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 animate-pulse">
-            <span className="text-emerald-400">↕</span>
-            {t({ en: 'Try dragging the cards below', ja: 'カードをドラッグしてみてください' })}
+        {showHint && !reducedMotion && (
+          <div
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full text-sm flex items-center gap-3"
+            style={{
+              background: 'rgba(7, 11, 20, 0.9)',
+              border: '1px solid var(--card-border)',
+              backdropFilter: 'blur(12px)',
+              color: 'var(--text-muted)',
+              animation: 'pulse 2s ease-in-out infinite',
+            }}
+          >
+            <span style={{ color: 'var(--firefly-glow)' }}>✦</span>
+            {t({
+              en: 'Watch the fireflies think — drag the shapes to surprise them',
+              ja: 'ホタルの思考を観察 — 図形をドラッグして驚かせてみてください'
+            })}
           </div>
         )}
 
-        {/* Research Journey Cards */}
-        <section className="py-20 md:py-32 px-6 md:px-8">
+        {/* Research Journey Section */}
+        <section className="py-20 md:py-32 px-6 md:px-8 relative z-10">
           <div className="max-w-5xl mx-auto">
-            <p className="text-xs uppercase tracking-[0.2em] text-emerald-600 mb-4 font-semibold">
+            <p
+              className="font-mono text-xs uppercase tracking-widest mb-4"
+              style={{ color: 'var(--firefly-glow)' }}
+            >
               {t({ en: 'Our Research Journey', ja: '研究の旅' })}
             </p>
 
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+            <h2 className="font-display text-3xl md:text-5xl text-[var(--text-primary)] mb-4 tracking-tight">
               {t({ en: 'From prediction to creativity', ja: '予測から創造性へ' })}
             </h2>
 
-            <p className="text-gray-500 mb-12 max-w-2xl text-lg">
+            <p className="text-[var(--text-muted)] mb-12 max-w-2xl text-lg">
               {t({
-                en: 'Watch our creatures navigate using predictive coding — the same principles we study in the brain. Try moving the cards!',
-                ja: '予測符号化を使ってナビゲートする生き物を観察してください。カードを動かしてみてください！'
+                en: 'Watch fireflies navigate using predictive coding — the same principles we study in the brain. Their glowing minds reveal attention, perception, and surprise.',
+                ja: '予測符号化を使ってナビゲートするホタルを観察してください。光る脳が注意、知覚、驚きを明らかにします。'
               })}
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               {sortedThemes.map((theme, index) => (
-                <DraggableCard
+                <ResearchCard
                   key={theme.id}
-                  id={theme.id}
+                  ref={setCardRef(theme.id)}
                   sectionLabel={theme.sectionLabel || { en: '', ja: '' }}
                   question={theme.question || theme.title}
                   description={theme.description}
                   linkHref="/research"
-                  accentColor={theme.accentColor || 'var(--ircn-blue)'}
-                  onPositionChange={handleCardPositionChange}
-                  gridPosition={{ row: Math.floor(index / 2), col: index % 2 }}
+                  accentColor={theme.accentColor || TOY_COLORS[index % TOY_COLORS.length]}
                 />
               ))}
             </div>
@@ -398,14 +376,17 @@ export default function HomeClient({
         />
 
         {/* Footer */}
-        <footer className="py-16 px-6 md:px-8 border-t border-gray-200 bg-white">
-          <div className="max-w-5xl mx-auto">
+        <footer className="footer">
+          <div className="footer-container">
             <div className="grid md:grid-cols-3 gap-10 mb-12">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                <h3
+                  className="font-display text-xl mb-4"
+                  style={{ color: 'var(--text-primary)' }}
+                >
                   {settings?.labName ? t(settings.labName) : 'Chao Lab'}
                 </h3>
-                <p className="text-gray-500 leading-relaxed">
+                <p className="text-[var(--text-muted)] leading-relaxed">
                   {settings?.description
                     ? t(settings.description)
                     : t({
@@ -416,15 +397,18 @@ export default function HomeClient({
               </div>
 
               <div>
-                <h4 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wide">
+                <h4
+                  className="font-mono text-xs uppercase tracking-wide mb-4"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   {t({ en: 'Affiliations', ja: '所属' })}
                 </h4>
-                <div className="flex flex-col gap-3 text-gray-500">
+                <div className="flex flex-col gap-3 text-[var(--text-muted)]">
                   <a
                     href="https://ircn.jp"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-emerald-600 transition-colors"
+                    className="hover:text-[var(--firefly-glow)] transition-colors"
                   >
                     IRCN, University of Tokyo
                   </a>
@@ -432,7 +416,7 @@ export default function HomeClient({
                     href="https://www.u-tokyo.ac.jp"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-gray-900 transition-colors"
+                    className="hover:text-[var(--text-primary)] transition-colors"
                   >
                     The University of Tokyo
                   </a>
@@ -440,7 +424,7 @@ export default function HomeClient({
                     href="https://www.daikin.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-sky-500 transition-colors"
+                    className="hover:text-[var(--accent-cyan)] transition-colors"
                   >
                     Daikin Industries
                   </a>
@@ -448,33 +432,39 @@ export default function HomeClient({
               </div>
 
               <div>
-                <h4 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wide">
+                <h4
+                  className="font-mono text-xs uppercase tracking-wide mb-4"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
                   {t({ en: 'Contact', ja: '連絡先' })}
                 </h4>
                 <a
                   href={`mailto:${contact?.email || 'zenas.c.chao@ircn.jp'}`}
-                  className="text-gray-500 hover:text-emerald-600 transition-colors"
+                  className="text-[var(--text-muted)] hover:text-[var(--firefly-glow)] transition-colors"
                 >
                   {contact?.email || 'zenas.c.chao@ircn.jp'}
                 </a>
               </div>
             </div>
 
-            <div className="pt-8 border-t border-gray-200 flex flex-wrap justify-between items-center gap-4 text-sm text-gray-400">
+            <div
+              className="pt-8 flex flex-wrap justify-between items-center gap-4 text-sm"
+              style={{ borderTop: '1px solid var(--card-border)', color: 'var(--text-muted)' }}
+            >
               <span>
                 © {new Date().getFullYear()} {settings?.labName ? t(settings.labName) : 'Chao Lab'}, IRCN
               </span>
               <div className="flex gap-6">
-                <Link href="/research" className="hover:text-gray-900 transition-colors">
+                <Link href="/research" className="hover:text-[var(--text-primary)] transition-colors">
                   {t({ en: 'Research', ja: '研究' })}
                 </Link>
-                <Link href="/publications" className="hover:text-gray-900 transition-colors">
+                <Link href="/publications" className="hover:text-[var(--text-primary)] transition-colors">
                   {t({ en: 'Publications', ja: '論文' })}
                 </Link>
-                <Link href="/members" className="hover:text-gray-900 transition-colors">
+                <Link href="/members" className="hover:text-[var(--text-primary)] transition-colors">
                   {t({ en: 'Members', ja: 'メンバー' })}
                 </Link>
-                <Link href="/contact" className="hover:text-gray-900 transition-colors">
+                <Link href="/contact" className="hover:text-[var(--text-primary)] transition-colors">
                   {t({ en: 'Contact', ja: '連絡先' })}
                 </Link>
               </div>
@@ -482,6 +472,9 @@ export default function HomeClient({
           </div>
         </footer>
       </div>
+
+      {/* Legend */}
+      {mounted && !reducedMotion && <Legend />}
     </div>
   );
 }

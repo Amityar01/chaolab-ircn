@@ -1,5 +1,10 @@
 'use client';
 
+// ============================================
+// RESEARCH CARD COMPONENT
+// ============================================
+// Fixed content card for research themes (dark theme)
+
 import { forwardRef } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,40 +19,59 @@ interface ResearchCardProps {
 }
 
 const ResearchCard = forwardRef<HTMLDivElement, ResearchCardProps>(
-  ({ sectionLabel, question, description, linkHref, accentColor = 'var(--ircn-blue)' }, ref) => {
+  ({ sectionLabel, question, description, linkHref, accentColor = 'var(--firefly-glow)' }, ref) => {
     const { t } = useLanguage();
 
     return (
       <div
         ref={ref}
-        className="bg-[var(--bg-card)] rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100
-                   hover:shadow-lg hover:border-gray-200 hover:-translate-y-1
-                   transition-all duration-300 ease-out"
+        className="research-card relative group"
+        style={{
+          '--accent-color': accentColor,
+        } as React.CSSProperties}
       >
-        <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-3">
-          {t(sectionLabel)}
-        </p>
-
+        {/* Accent line at top */}
         <div
-          className="w-12 h-0.5 mb-5"
+          className="absolute top-0 left-0 right-0 h-[3px] opacity-70"
           style={{ backgroundColor: accentColor }}
         />
 
-        <h3 className="text-xl md:text-2xl font-semibold text-[var(--text)] mb-4 leading-snug">
+        {/* Section label */}
+        <p
+          className="font-mono text-xs uppercase tracking-widest mb-4"
+          style={{ color: accentColor }}
+        >
+          {t(sectionLabel)}
+        </p>
+
+        {/* Question/Title */}
+        <h3 className="font-display text-xl md:text-2xl text-[var(--text-primary)] mb-4 leading-snug">
           {t(question)}
         </h3>
 
+        {/* Description */}
         <p className="text-[var(--text-muted)] leading-relaxed mb-6 line-clamp-4">
           {t(description)}
         </p>
 
+        {/* Link */}
         <Link
           href={linkHref}
-          className="inline-flex items-center text-sm font-medium transition-colors"
+          className="inline-flex items-center text-sm font-medium transition-all hover:gap-3"
           style={{ color: accentColor }}
         >
           {t({ en: 'Learn more', ja: '詳しく見る' })}
-          <span className="ml-1">→</span>
+          <svg
+            className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M6 12l4-4-4-4" />
+          </svg>
         </Link>
       </div>
     );

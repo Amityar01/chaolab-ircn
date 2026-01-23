@@ -1,5 +1,10 @@
 'use client';
 
+// ============================================
+// TEAM PREVIEW COMPONENT
+// ============================================
+// Dark bioluminescent theme team section
+
 import { forwardRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,22 +21,27 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
     const { t, language } = useLanguage();
 
     return (
-      <section ref={ref} className="py-16 md:py-24 px-6 md:px-8">
+      <section ref={ref} className="py-16 md:py-24 px-6 md:px-8 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-3">
+          {/* Section label */}
+          <p
+            className="font-mono text-xs uppercase tracking-widest mb-3"
+            style={{ color: 'var(--accent-cyan)' }}
+          >
             {t({ en: 'The Team', ja: 'チーム' })}
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-[var(--text)] mb-10">
+          <h2 className="font-display text-3xl md:text-4xl text-[var(--text-primary)] mb-10">
             {t({ en: 'Meet the researchers', ja: '研究者紹介' })}
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+            {/* PI Card */}
             {pi && (
-              <div className="bg-[var(--bg-card)] rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
+              <div className="card">
                 <div className="flex items-start gap-5">
                   {pi.image && (
-                    <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+                    <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-[var(--card-border)]">
                       <Image
                         src={pi.image}
                         alt={language === 'ja' ? pi.name.ja : pi.name.en}
@@ -41,16 +51,19 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
                     </div>
                   )}
                   <div>
-                    <h3 className="text-xl font-semibold text-[var(--text)] mb-1">
+                    <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-1">
                       {language === 'ja' ? pi.name.ja : pi.name.en}
                     </h3>
-                    <p className="text-sm text-[var(--ircn-purple)] font-medium mb-3">
+                    <p
+                      className="text-sm font-medium mb-3"
+                      style={{ color: 'var(--accent-purple)' }}
+                    >
                       {t(pi.role)}
                     </p>
                     {pi.email && (
                       <a
                         href={`mailto:${pi.email}`}
-                        className="text-sm text-[var(--text-muted)] hover:text-[var(--ircn-blue)] transition-colors"
+                        className="text-sm text-[var(--text-muted)] hover:text-[var(--firefly-glow)] transition-colors"
                       >
                         {pi.email}
                       </a>
@@ -66,17 +79,32 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
 
                 <Link
                   href={`/members/${pi.slug}`}
-                  className="inline-flex items-center mt-4 text-sm font-medium text-[var(--ircn-blue)] hover:text-[var(--ircn-purple)] transition-colors"
+                  className="inline-flex items-center mt-4 text-sm font-medium transition-colors group"
+                  style={{ color: 'var(--accent-cyan)' }}
                 >
                   {t({ en: 'Full profile', ja: 'プロフィール詳細' })}
-                  <span className="ml-1">→</span>
+                  <svg
+                    className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 12l4-4-4-4" />
+                  </svg>
                 </Link>
               </div>
             )}
 
+            {/* Member count */}
             <div className="flex flex-col justify-center">
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-5xl md:text-6xl font-bold text-[var(--ircn-blue)]">
+              <div className="flex items-baseline gap-3 mb-4">
+                <span
+                  className="font-display text-5xl md:text-6xl font-bold"
+                  style={{ color: 'var(--firefly-glow)' }}
+                >
                   {memberCount}
                 </span>
                 <span className="text-xl text-[var(--text-muted)]">
@@ -93,10 +121,21 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
 
               <Link
                 href="/members"
-                className="inline-flex items-center text-sm font-medium text-[var(--ircn-blue)] hover:text-[var(--ircn-purple)] transition-colors"
+                className="inline-flex items-center text-sm font-medium transition-colors group"
+                style={{ color: 'var(--accent-cyan)' }}
               >
                 {t({ en: 'View all members', ja: 'メンバー一覧を見る' })}
-                <span className="ml-1">→</span>
+                <svg
+                  className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 12l4-4-4-4" />
+                </svg>
               </Link>
             </div>
           </div>
