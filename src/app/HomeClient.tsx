@@ -82,29 +82,36 @@ export default function HomeClient({
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Initialize viewport size and toys
+  // Initialize page size and toys
   useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => setShowHint(false), 8000);
 
     const updateSize = () => {
       const w = window.innerWidth;
-      const h = window.innerHeight;
+      // Use full document height
+      const h = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        window.innerHeight
+      );
       setViewportSize({ width: w, height: h });
 
-      // Initialize toys in viewport coordinates
+      // Initialize toys in document coordinates
       setToys(prev => {
         if (prev.length > 0) return prev;
+        const vh = window.innerHeight;
         return [
-          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: h * 0.25 },
-          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: h * 0.20 },
-          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: h * 0.65 },
-          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: h * 0.55 },
+          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: vh * 0.25 },
+          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: vh * 0.20 },
+          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: vh * 0.65 },
+          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: vh * 0.55 },
         ];
       });
     };
 
-    updateSize();
+    // Delay initial size calculation to ensure DOM is ready
+    setTimeout(updateSize, 50);
     window.addEventListener('resize', updateSize);
 
     return () => {
@@ -113,55 +120,40 @@ export default function HomeClient({
     };
   }, []);
 
-  // Update obstacles from DOM elements (viewport coordinates)
+  // Update obstacles from DOM elements (document coordinates - no scroll listener needed)
   useEffect(() => {
     if (!mounted || viewportSize.width === 0) return;
+
+    const getDocumentPosition = (el: HTMLElement) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        x: rect.left + window.scrollX,
+        y: rect.top + window.scrollY,
+        width: rect.width,
+        height: rect.height,
+      };
+    };
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
 
-      // Add research cards that are visible in viewport
+      // Add research cards
       cardRefs.current.forEach((element, id) => {
         if (!element) return;
-        const rect = element.getBoundingClientRect();
-        // Only include if visible in viewport
-        if (rect.bottom > 0 && rect.top < viewportSize.height) {
-          newObstacles.push({
-            id,
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
+        const pos = getDocumentPosition(element);
+        newObstacles.push({ id, ...pos });
       });
 
-      // Add team section if visible
+      // Add team section
       if (teamRef.current) {
-        const rect = teamRef.current.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < viewportSize.height) {
-          newObstacles.push({
-            id: 'team-section',
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
+        const pos = getDocumentPosition(teamRef.current);
+        newObstacles.push({ id: 'team-section', ...pos });
       }
 
-      // Add publications section if visible
+      // Add publications section
       if (pubsRef.current) {
-        const rect = pubsRef.current.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < viewportSize.height) {
-          newObstacles.push({
-            id: 'pubs-section',
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
+        const pos = getDocumentPosition(pubsRef.current);
+        newObstacles.push({ id: 'pubs-section', ...pos });
       }
 
       // Add toys
@@ -178,15 +170,9 @@ export default function HomeClient({
       setObstacles(newObstacles);
     };
 
-    updateObstacles();
-
-    // Update on scroll so fireflies see current obstacles
-    window.addEventListener('scroll', updateObstacles, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', updateObstacles);
-    };
-  }, [mounted, viewportSize, toys]);
+    // Update once after layout settles
+    setTimeout(updateObstacles, 100);
+  }, [mounted, viewportSize.width, toys]);
 
   // Handle toy drag - simple viewport coordinates
   const handleToyDrag = useCallback((id: string, x: number, y: number) => {
@@ -207,7 +193,7 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen"
+      className="min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
       {/* Firefly System - fixed to viewport */}

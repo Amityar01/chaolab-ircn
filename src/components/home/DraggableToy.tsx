@@ -42,14 +42,20 @@ export function DraggableToy({
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dragOffset.current = { x: e.clientX - x, y: e.clientY - y };
+    // Store offset using document coordinates
+    const docX = e.clientX + window.scrollX;
+    const docY = e.clientY + window.scrollY;
+    dragOffset.current = { x: docX - x, y: docY - y };
     setIsDragging(true);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   }, [x, y]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
-    onDrag(id, e.clientX - dragOffset.current.x, e.clientY - dragOffset.current.y);
+    // Convert to document coordinates
+    const docX = e.clientX + window.scrollX;
+    const docY = e.clientY + window.scrollY;
+    onDrag(id, docX - dragOffset.current.x, docY - dragOffset.current.y);
   }, [isDragging, id, onDrag]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
@@ -125,7 +131,7 @@ export function DraggableToy({
   return (
     <div
       style={{
-        position: 'fixed',
+        position: 'absolute',
         left: x,
         top: y,
         width: size,
