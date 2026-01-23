@@ -420,18 +420,15 @@ export function FireflySystem({
   }, []);
 
   const checkRealObstacle = useCallback((x: number, y: number, padding = 8) => {
+    // Only check actual obstacles, not screen edges
     for (const obs of obstaclesRef.current) {
       if (x > obs.x - padding && x < obs.x + obs.width + padding &&
           y > obs.y - padding && y < obs.y + obs.height + padding) {
         return true;
       }
     }
-    // Canvas bounds
-    if (x < padding || x > width - padding || y < padding || y > height - padding) {
-      return true;
-    }
     return false;
-  }, [width, height]);
+  }, []);
 
   const findBestDirection = useCallback((
     fireflyIndex: number,
@@ -687,9 +684,25 @@ export function FireflySystem({
           omissionSurprise = false;
         }
 
-        // Keep in bounds
-        nextX = Math.max(15, Math.min(width - 15, nextX));
-        nextY = Math.max(15, Math.min(height - 15, nextY));
+        // Bounce off screen edges
+        if (nextX < 15) {
+          nextX = 15;
+          vx = Math.abs(vx); // Reflect velocity
+          wanderAngle = Math.atan2(vy, vx);
+        } else if (nextX > width - 15) {
+          nextX = width - 15;
+          vx = -Math.abs(vx);
+          wanderAngle = Math.atan2(vy, vx);
+        }
+        if (nextY < 15) {
+          nextY = 15;
+          vy = Math.abs(vy);
+          wanderAngle = Math.atan2(vy, vx);
+        } else if (nextY > height - 15) {
+          nextY = height - 15;
+          vy = -Math.abs(vy);
+          wanderAngle = Math.atan2(vy, vx);
+        }
 
         // Update trail
         const newTrail = [{ x, y }, ...trail].slice(0, CONFIG.TRAIL_LENGTH);
