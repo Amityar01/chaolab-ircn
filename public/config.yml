@@ -8,6 +8,12 @@ backend:
 media_folder: public/uploads
 public_folder: /uploads
 
+# Media library settings
+media_library:
+  name: default
+  max_file_size: 5120000  # 5MB
+  folder_support: true
+
 # Bilingual text field template
 bilingual_text: &bilingual_text
   - { label: "English", name: "en", widget: "string" }
@@ -182,9 +188,11 @@ collections:
         fields: *bilingual_text_long
       - label: "Photo"
         name: "image"
-        widget: "string"
+        widget: "image"
         required: false
-        hint: "Upload to /uploads or paste external URL (e.g. https://example.com/photo.jpg)"
+        media_library:
+          allow_multiple: false
+        hint: "Upload or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
       - label: Links
         name: links
@@ -251,9 +259,11 @@ collections:
         fields: *bilingual_text_long
       - label: "Photo"
         name: "image"
-        widget: "string"
+        widget: "image"
         required: false
-        hint: "Upload to /uploads or paste external URL"
+        media_library:
+          allow_multiple: false
+        hint: "Upload or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
       - label: Links
         name: links
@@ -293,9 +303,11 @@ collections:
         fields: *bilingual_text_long
       - label: "Photo"
         name: "image"
-        widget: "string"
+        widget: "image"
         required: false
-        hint: "Upload to /uploads or paste external URL"
+        media_library:
+          allow_multiple: false
+        hint: "Upload or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
       - label: Links
         name: links
@@ -335,9 +347,11 @@ collections:
         fields: *bilingual_text_long
       - label: "Photo"
         name: "image"
-        widget: "string"
+        widget: "image"
         required: false
-        hint: "Upload to /uploads or paste external URL"
+        media_library:
+          allow_multiple: false
+        hint: "Upload or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
       - label: Research Interests
         name: research
@@ -365,9 +379,11 @@ collections:
         fields: *bilingual_text
       - label: "Photo"
         name: "image"
-        widget: "string"
+        widget: "image"
         required: false
-        hint: "Upload to /uploads or paste external URL"
+        media_library:
+          allow_multiple: false
+        hint: "Upload or paste external URL"
       - { label: "Current Position", name: "currentPosition", widget: "string", required: false }
 
   # Publications
@@ -494,7 +510,13 @@ collections:
           - { label: "IRCN Purple", value: "var(--ircn-purple)" }
           - { label: "Daikin Blue", value: "var(--daikin-blue)" }
           - { label: "Gray", value: "var(--ircn-gray)" }
-      - { label: "Image", name: "image", widget: "string", required: false, hint: "URL or path to image" }
+      - label: "Image"
+        name: "image"
+        widget: "image"
+        required: false
+        media_library:
+          allow_multiple: false
+        hint: "Upload or paste external URL"
       - label: Tags
         name: tags
         widget: list
