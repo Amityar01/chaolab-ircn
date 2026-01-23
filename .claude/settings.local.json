@@ -41,7 +41,9 @@
       "Bash(node -e:*)",
       "Bash(curl:*)",
       "WebFetch(domain:scholar.google.co.uk)",
-      "WebFetch(domain:huji.academia.edu)"
+      "WebFetch(domain:huji.academia.edu)",
+      "WebFetch(domain:orcid.org)",
+      "WebFetch(domain:jp.linkedin.com)"
     ]
   }
 }

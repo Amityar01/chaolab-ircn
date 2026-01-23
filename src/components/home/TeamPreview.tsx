@@ -22,7 +22,7 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
 
     return (
       <section ref={ref} className="py-16 md:py-24 px-6 md:px-8 relative z-10">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto pointer-events-auto">
           {/* Section label */}
           <p
             className="font-mono text-xs uppercase tracking-widest mb-3"

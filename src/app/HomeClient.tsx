@@ -281,7 +281,7 @@ export default function HomeClient({
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 pointer-events-none">
         {/* Hero Section */}
         <HeroSection settings={settings} />
 
@@ -314,7 +314,7 @@ export default function HomeClient({
 
         {/* Research Journey Section */}
         <section className="py-20 md:py-32 px-6 md:px-8 relative z-10">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-5xl mx-auto pointer-events-auto">
             <p
               className="font-mono text-xs uppercase tracking-widest mb-4"
               style={{ color: 'var(--firefly-glow)' }}
@@ -364,6 +364,8 @@ export default function HomeClient({
           />
         </div>
       </div>
+
+
 
       {/* Legend */}
       {mounted && !reducedMotion && (

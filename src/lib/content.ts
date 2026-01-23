@@ -196,10 +196,11 @@ export function getTranslations(): Translations | null {
 const defaultSiteConfig: SiteConfig = {
   memberCategories: [
     { id: 'faculty', label: { en: 'Faculty', ja: '教員' }, order: 1 },
-    { id: 'postdocs', label: { en: 'Postdoctoral Fellows', ja: '博士研究員' }, order: 2 },
-    { id: 'researchers', label: { en: 'Project Researchers', ja: 'プロジェクト研究員' }, order: 3 },
-    { id: 'students', label: { en: 'Students', ja: '学生' }, order: 4 },
-    { id: 'alumni', label: { en: 'Alumni', ja: '卒業生' }, order: 5 },
+    { id: 'assistant-professors', label: { en: 'Assistant Professors', ja: '助教' }, order: 2 },
+    { id: 'postdocs', label: { en: 'Postdoctoral Fellows', ja: '博士研究員' }, order: 3 },
+    { id: 'students', label: { en: 'PhD Students', ja: '博士課程学生' }, order: 4 },
+    { id: 'staff', label: { en: 'Staff', ja: 'スタッフ' }, order: 5 },
+    { id: 'alumni', label: { en: 'Alumni', ja: '卒業生' }, order: 6 },
   ],
   publicationTypes: [
     { id: 'journal', label: { en: 'Journal Article', ja: '学術論文' } },

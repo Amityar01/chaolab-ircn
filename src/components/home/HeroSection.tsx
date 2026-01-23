@@ -57,7 +57,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           hasHeroImage ? 'grid md:grid-cols-2 gap-12 lg:gap-16 items-center' : '',
         ].filter(Boolean).join(' ')}
       >
-        <div className="max-w-2xl">
+        <div className="max-w-2xl pointer-events-auto">
           {/* Tagline */}
           <p
             className="font-mono text-sm uppercase tracking-widest mb-6 animate-fade-in-up"
@@ -132,7 +132,10 @@ export default function HeroSection({ settings }: HeroSectionProps) {
         </div>
 
         {hasHeroImage && (
-          <div className="hidden md:block relative w-full max-w-md lg:max-w-lg justify-self-end aspect-[4/5] rounded-2xl overflow-hidden border border-[var(--card-border)]">
+          <div
+            className="hidden md:block relative w-full max-w-md lg:max-w-lg justify-self-end aspect-[4/5] rounded-2xl overflow-hidden border border-[var(--card-border)] pointer-events-auto p-4"
+            style={{ background: 'rgba(20, 25, 35, 0.8)' }}
+          >
             {/* Stack all images, control visibility with opacity */}
             {HERO_IMAGES.map((src, index) => (
               <Image
@@ -140,7 +143,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
                 src={src}
                 alt={`${labName} - Research ${index + 1}`}
                 fill
-                className="object-cover"
+                className="object-contain p-2"
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 priority={index === 0}
                 style={{
@@ -153,7 +156,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
             <div
               className="absolute inset-0 pointer-events-none z-10"
               style={{
-                background: 'linear-gradient(to top, rgba(7, 11, 20, 0.85), transparent 55%)',
+                background: 'linear-gradient(to top, rgba(7, 11, 20, 0.6), transparent 40%)',
               }}
             />
           </div>

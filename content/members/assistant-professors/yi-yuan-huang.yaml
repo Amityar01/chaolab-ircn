@@ -1,0 +1,56 @@
+id: yi-yuan-huang
+slug: yi-yuan-huang
+
+name:
+  en: Yi-Yuan Huang
+  ja: 黃翊媛
+
+role:
+  en: Assistant Professor
+  ja: 助教
+
+bio:
+  en: |
+    Yi-Yuan Huang investigates the neural mechanisms of predictive coding using EEG, fMRI, and computational modeling. Her research focuses on how the brain represents predictions and prediction errors across sensory modalities and hierarchical levels.
+
+    Her work has demonstrated crossmodal hierarchical predictive coding for audiovisual sequences, showing how the brain integrates predictions across different senses. She employs model-fitting approaches to extract prediction and prediction-error signals from neural responses.
+  ja: |
+    Yi-Yuan Huangは、EEG、fMRI、計算モデリングを用いて予測符号化の神経メカニズムを研究しています。彼女の研究は、脳が感覚モダリティと階層レベルにわたって予測と予測誤差をどのように表現するかに焦点を当てています。
+
+    彼女の研究は、視聴覚シーケンスのクロスモーダル階層的予測符号化を実証し、脳が異なる感覚にわたる予測をどのように統合するかを示しています。
+
+image: /uploads/yi-yuan-huang.jpg
+
+links:
+  - type: ORCID
+    url: https://orcid.org/0000-0002-8795-9358
+    label:
+      en: ORCID
+      ja: ORCID
+  - type: ResearchGate
+    url: https://www.researchgate.net/profile/Yiyuan-Huang-5
+    label:
+      en: ResearchGate
+      ja: ResearchGate
+
+research:
+  - Predictive coding and prediction error signaling
+  - Crossmodal audiovisual integration
+  - EEG and fMRI neuroimaging
+  - Computational neural modeling
+
+education:
+  - year: "2020-present"
+    event: Ph.D. candidate, University of Tokyo
+    details: Neural mechanism of predictive coding
+  - year: "2018-2020"
+    event: M.S., National Taiwan University, School of Occupational Therapy
+    details: "Thesis: The hierarchical representation of prediction and prediction errors in human brains"
+  - year: "2014-2018"
+    event: B.S., National Taiwan University, School of Occupational Therapy
+
+tags:
+  - predictive-coding
+  - EEG
+  - fMRI
+  - audiovisual

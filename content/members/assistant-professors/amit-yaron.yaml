@@ -1,0 +1,84 @@
+id: amit-yaron
+slug: amit-yaron
+
+name:
+  en: Amit Yaron
+  ja: アミット・ヤロン
+
+role:
+  en: Project Research Associate
+  ja: 特任研究員
+
+bio:
+  en: |
+    Amit Yaron investigates the neural mechanisms of predictive coding, focusing on how the brain anticipates sensory input and signals prediction errors. His research spans multiple scales—from dissociated neuronal cultures to behaving animals—using advanced electrophysiology techniques including Neuropixels recordings and CMOS microelectrode arrays.
+
+    His pioneering work identified "Probability Encoding Omission Neurons" (PEONs) in rat auditory cortex that encode negative prediction errors through omission responses, demonstrating asymmetric processing between top-down predictions and bottom-up sensory signals. He has also shown that even dissociated neuronal cultures exhibit fundamental computational abilities including predictive coding, adaptive learning, and deviance detection.
+
+    Before joining IRCN, Amit conducted postdoctoral research at the National Center of Neurology and Psychiatry (NCNP) in Tokyo studying sensorimotor neurophysiology and primate spinal modularity, and at Hebrew University's Safra Center for Brain Sciences investigating auditory neurophysiology with Prof. Israel Nelken.
+  ja: |
+    Amit Yaronは、脳が感覚入力をどのように予測し、予測誤差をどのように信号するかという予測符号化の神経メカニズムを研究しています。彼の研究は、解離神経培養から行動中の動物まで、複数のスケールにまたがり、Neuropixels記録やCMOSマイクロ電極アレイなどの高度な電気生理学技術を使用しています。
+
+    彼の先駆的な研究では、ラット聴覚皮質において省略応答を通じて負の予測誤差をコードする「確率符号化省略ニューロン」（PEONs）を同定し、トップダウン予測とボトムアップ感覚信号間の非対称処理を実証しました。また、解離神経培養でさえ、予測符号化、適応学習、逸脱検出などの基本的な計算能力を示すことを明らかにしました。
+
+    IRCN着任前は、国立精神・神経医療研究センター（NCNP）で感覚運動神経生理学と霊長類脊髄モジュール性の博士研究員として、またヘブライ大学サフラ脳科学センターでIsrael Nelken教授のもとで聴覚神経生理学の研究を行いました。
+
+email: yaron.amit0612@mail.u-tokyo.ac.jp
+
+image: /uploads/amit-yaron-casual.jpg
+secondaryImage: /uploads/amit-yaron.jpg
+
+links:
+  - type: ResearchMap
+    url: https://researchmap.jp/Amityar
+    label:
+      en: ResearchMap
+      ja: ResearchMap
+  - type: Google Scholar
+    url: https://scholar.google.com/citations?user=PVAdCEsAAAAJ
+    label:
+      en: Google Scholar
+      ja: Google Scholar
+  - type: ResearchGate
+    url: https://www.researchgate.net/profile/Amit-Yaron
+    label:
+      en: ResearchGate
+      ja: ResearchGate
+  - type: GitHub
+    url: https://github.com/Amityaron
+    label:
+      en: GitHub
+      ja: GitHub
+
+research:
+  - Predictive coding and prediction error signaling in cortical circuits
+  - Neural basis of cognitive flexibility and adaptive behavior
+  - Cross-scale neural computation from cultured networks to behaving animals
+  - Cortical organization and sensory processing
+  - Motor control and sensory gating
+
+education:
+  - year: "2015"
+    event: Ph.D., Hebrew University of Jerusalem, Israel
+    details: Auditory neurophysiology with Prof. Israel Nelken
+
+career:
+  - year: "2021-present"
+    position: Project Research Associate
+    institution: International Research Center for Neurointelligence (WPI-IRCN), The University of Tokyo
+    focus: Predictive coding in rodent auditory cortex, computation in dissociated cultures, multimodal integration (Supervisor: Prof. Zenas C. Chao)
+  - year: "2017-2021"
+    position: Postdoctoral Researcher / Research Fellow
+    institution: National Center of Neurology and Psychiatry (NCNP), Tokyo, Japan
+    focus: Sensorimotor neurophysiology, primate spinal modularity (Supervisor: Prof. Kazuhiko Seki)
+  - year: "2015-2017"
+    position: Postdoctoral Researcher
+    institution: Edmond and Lily Safra Center for Brain Sciences (ELSC), Hebrew University, Israel
+    focus: Auditory neurophysiology, stimulus-specific adaptation, regularity sensitivity (Supervisor: Prof. Israel Nelken)
+
+tags:
+  - predictive-coding
+  - electrophysiology
+  - auditory-cortex
+  - deviance-detection
+  - neural-cultures

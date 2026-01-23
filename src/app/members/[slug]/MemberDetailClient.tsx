@@ -72,9 +72,22 @@ export default function MemberDetailClient({ member }: MemberDetailClientProps) 
 
       {/* Bio Section */}
       {member.bio && (
-        <section className="content-section">
+        <section className="content-section bio-section">
           <h2>{t({ en: 'Biography', ja: '略歴' })}</h2>
-          <div className="bio-text">{t(member.bio)}</div>
+          <div className="bio-content">
+            <div className="bio-text">{t(member.bio)}</div>
+            {member.secondaryImage && (
+              <div className="secondary-photo">
+                <Image
+                  src={member.secondaryImage}
+                  alt={t(member.name)}
+                  width={280}
+                  height={350}
+                  style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
+                />
+              </div>
+            )}
+          </div>
         </section>
       )}
 
@@ -289,11 +302,38 @@ export default function MemberDetailClient({ member }: MemberDetailClientProps) 
           color: var(--firefly-glow);
         }
 
+        .bio-content {
+          display: flex;
+          gap: 2rem;
+          align-items: flex-start;
+        }
+
         .bio-text {
           font-size: 1rem;
           line-height: 1.8;
           color: var(--text-secondary);
           white-space: pre-line;
+          flex: 1;
+        }
+
+        .secondary-photo {
+          flex-shrink: 0;
+          width: 280px;
+          border-radius: 12px;
+          overflow: hidden;
+          border: 1px solid var(--card-border);
+        }
+
+        @media (max-width: 768px) {
+          .bio-content {
+            flex-direction: column;
+          }
+
+          .secondary-photo {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+          }
         }
 
         /* Research Tags */

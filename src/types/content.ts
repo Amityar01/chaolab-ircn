@@ -34,6 +34,7 @@ export interface Member {
   role: BilingualText;
   bio?: BilingualText;
   image?: string;
+  secondaryImage?: string;
   email?: string;
   links?: MemberLink[];
   research?: string[];
