@@ -1,22 +1,19 @@
-# Site Configuration
-# Edit categories, types, and tags here
-
 memberCategories:
   - id: faculty
     label:
       en: Faculty
       ja: 教員
     order: 1
+  - id: researchers
+    label:
+      en: Project Assistant Professors
+      ja: 特任助教
+    order: 3
   - id: postdocs
     label:
       en: Postdoctoral Fellows
       ja: 博士研究員
     order: 2
-  - id: researchers
-    label:
-      en: Project Researchers
-      ja: プロジェクト研究員
-    order: 3
   - id: students
     label:
       en: Students
@@ -27,7 +24,6 @@ memberCategories:
       en: Alumni
       ja: 卒業生
     order: 5
-
 publicationTypes:
   - id: journal
     label:
@@ -49,7 +45,6 @@ publicationTypes:
     label:
       en: Thesis
       ja: 学位論文
-
 newsCategories:
   - id: publication
     label:
@@ -71,7 +66,6 @@ newsCategories:
     label:
       en: Media
       ja: メディア
-
 commonTags:
   - prediction
   - neural-coding
