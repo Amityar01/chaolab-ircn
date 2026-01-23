@@ -138,30 +138,63 @@ export default function HomeClient({
       const container = containerRef.current;
       if (!container) return;
 
-      // Get container's position - SVG is at container's 0,0
       const containerRect = container.getBoundingClientRect();
 
       let idx = 0;
 
-      // Target specific content elements
-      const selectors = [
-        '.research-card',  // The card containers
-        'footer',
-      ];
+      // Get actual text bounds using Range API
+      const getTextBounds = (el: Element): DOMRect | null => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const rects = range.getClientRects();
+        if (rects.length === 0) return null;
 
-      selectors.forEach(selector => {
+        // Merge all line rects into one bounding box
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (let i = 0; i < rects.length; i++) {
+          const r = rects[i];
+          if (r.width < 5) continue; // Skip tiny rects
+          minX = Math.min(minX, r.left);
+          minY = Math.min(minY, r.top);
+          maxX = Math.max(maxX, r.right);
+          maxY = Math.max(maxY, r.bottom);
+        }
+        if (minX === Infinity) return null;
+        return new DOMRect(minX, minY, maxX - minX, maxY - minY);
+      };
+
+      // Text elements - use Range API for actual text bounds
+      const textSelectors = ['h1', 'h2', 'h3', 'p'];
+      textSelectors.forEach(selector => {
+        container.querySelectorAll(selector).forEach(el => {
+          const textRect = getTextBounds(el);
+          if (!textRect || textRect.width < 10 || textRect.height < 10) return;
+
+          const x = textRect.left - containerRect.left;
+          const y = textRect.top - containerRect.top;
+
+          newObstacles.push({
+            id: `text-${idx++}`,
+            x: x - 5,
+            y: y - 3,
+            width: textRect.width + 10,
+            height: textRect.height + 6,
+          });
+        });
+      });
+
+      // Block elements - use bounding rect
+      const blockSelectors = ['.research-card', 'footer'];
+      blockSelectors.forEach(selector => {
         container.querySelectorAll(selector).forEach(el => {
           const rect = el.getBoundingClientRect();
+          if (rect.width < 20 || rect.height < 20) return;
 
-          // Position relative to container (where SVG draws)
           const x = rect.left - containerRect.left;
           const y = rect.top - containerRect.top;
 
-          // Skip if off-screen or too small
-          if (rect.width < 20 || rect.height < 20) return;
-
           newObstacles.push({
-            id: `${selector}-${idx++}`,
+            id: `block-${idx++}`,
             x: x,
             y: y,
             width: rect.width,

@@ -36,7 +36,8 @@
       "Bash(npm install:*)",
       "Bash(timeout:*)",
       "Bash(gh api:*)",
-      "Bash(npx vercel --prod)"
+      "Bash(npx vercel --prod)",
+      "Bash(node scrape-point0.js:*)"
     ]
   }
 }
