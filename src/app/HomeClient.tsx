@@ -63,8 +63,11 @@ export default function HomeClient({
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const researchSectionRef = useRef<HTMLDivElement>(null);
   const teamRef = useRef<HTMLDivElement>(null);
   const pubsRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Toy positions (draggable)
@@ -120,40 +123,65 @@ export default function HomeClient({
     };
   }, []);
 
-  // Update obstacles from DOM elements (document coordinates - no scroll listener needed)
+  // Update obstacles from DOM elements (document coordinates)
   useEffect(() => {
     if (!mounted || viewportSize.width === 0) return;
 
-    const getDocumentPosition = (el: HTMLElement) => {
+    const getDocumentPosition = (el: HTMLElement, padding = 0) => {
       const rect = el.getBoundingClientRect();
       return {
-        x: rect.left + window.scrollX,
-        y: rect.top + window.scrollY,
-        width: rect.width,
-        height: rect.height,
+        x: rect.left + window.scrollX - padding,
+        y: rect.top + window.scrollY - padding,
+        width: rect.width + padding * 2,
+        height: rect.height + padding * 2,
       };
     };
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
 
+      // Add nav/header
+      const nav = containerRef.current?.querySelector('.nav');
+      if (nav) {
+        const pos = getDocumentPosition(nav as HTMLElement, 10);
+        newObstacles.push({ id: 'nav', ...pos });
+      }
+
+      // Add hero section
+      if (heroRef.current) {
+        const pos = getDocumentPosition(heroRef.current, 20);
+        newObstacles.push({ id: 'hero', ...pos });
+      }
+
+      // Add research section (the text/headers area)
+      if (researchSectionRef.current) {
+        const pos = getDocumentPosition(researchSectionRef.current, 15);
+        newObstacles.push({ id: 'research-section', ...pos });
+      }
+
       // Add research cards
       cardRefs.current.forEach((element, id) => {
         if (!element) return;
-        const pos = getDocumentPosition(element);
+        const pos = getDocumentPosition(element, 10);
         newObstacles.push({ id, ...pos });
       });
 
       // Add team section
       if (teamRef.current) {
-        const pos = getDocumentPosition(teamRef.current);
+        const pos = getDocumentPosition(teamRef.current, 15);
         newObstacles.push({ id: 'team-section', ...pos });
       }
 
       // Add publications section
       if (pubsRef.current) {
-        const pos = getDocumentPosition(pubsRef.current);
+        const pos = getDocumentPosition(pubsRef.current, 15);
         newObstacles.push({ id: 'pubs-section', ...pos });
+      }
+
+      // Add footer
+      if (footerRef.current) {
+        const pos = getDocumentPosition(footerRef.current, 10);
+        newObstacles.push({ id: 'footer', ...pos });
       }
 
       // Add toys
@@ -170,8 +198,16 @@ export default function HomeClient({
       setObstacles(newObstacles);
     };
 
-    // Update once after layout settles
-    setTimeout(updateObstacles, 100);
+    // Update after layout settles and on window load
+    const timer1 = setTimeout(updateObstacles, 200);
+    const timer2 = setTimeout(updateObstacles, 500);
+    window.addEventListener('load', updateObstacles);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      window.removeEventListener('load', updateObstacles);
+    };
   }, [mounted, viewportSize.width, toys]);
 
   // Handle toy drag - simple viewport coordinates
@@ -263,7 +299,9 @@ export default function HomeClient({
         </header>
 
         {/* Hero Section */}
-        <HeroSection />
+        <div ref={heroRef}>
+          <HeroSection />
+        </div>
 
         {/* Interactive hint */}
         {showHint && !reducedMotion && (
@@ -285,7 +323,7 @@ export default function HomeClient({
         )}
 
         {/* Research Journey Section */}
-        <section className="py-20 md:py-32 px-6 md:px-8 relative z-10">
+        <section ref={researchSectionRef} className="py-20 md:py-32 px-6 md:px-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <p
               className="font-mono text-xs uppercase tracking-widest mb-4"
@@ -335,7 +373,7 @@ export default function HomeClient({
         />
 
         {/* Footer */}
-        <footer className="footer">
+        <footer ref={footerRef} className="footer">
           <div className="footer-container">
             <div className="grid md:grid-cols-3 gap-10 mb-12">
               <div>

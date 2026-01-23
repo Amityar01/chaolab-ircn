@@ -315,36 +315,66 @@ export function FireflySystem({
     obstaclesRef.current = obstacles;
   }, [obstacles]);
 
-  // Initialize fireflies
+  // Check if position is inside any obstacle
+  const isInsideObstacle = useCallback((x: number, y: number, padding = 20) => {
+    for (const obs of obstaclesRef.current) {
+      if (x > obs.x - padding && x < obs.x + obs.width + padding &&
+          y > obs.y - padding && y < obs.y + obs.height + padding) {
+        return true;
+      }
+    }
+    return false;
+  }, []);
+
+  // Find a valid spawn position
+  const findValidPosition = useCallback((maxAttempts = 50) => {
+    for (let i = 0; i < maxAttempts; i++) {
+      const x = 50 + Math.random() * (width - 100);
+      const y = 50 + Math.random() * (height - 100);
+      if (!isInsideObstacle(x, y, 30)) {
+        return { x, y };
+      }
+    }
+    // Fallback: spawn at edge
+    return { x: 50, y: 50 + Math.random() * 200 };
+  }, [width, height, isInsideObstacle]);
+
+  // Initialize fireflies (wait for obstacles to be ready)
   useEffect(() => {
     if (width < 100 || height < 100) return;
+    // Wait a bit for obstacles to be calculated
+    if (obstacles.length === 0) return;
 
-    const initialFireflies: Firefly[] = Array.from({ length: CONFIG.NUM_FIREFLIES }, (_, i) => {
-      const angle = Math.random() * Math.PI * 2;
-      const x = 100 + Math.random() * (width - 200);
-      const y = 100 + Math.random() * (height - 200);
+    setFireflies(prev => {
+      // Don't reinitialize if we already have fireflies
+      if (prev.length > 0) return prev;
 
-      return {
-        id: i,
-        x,
-        y,
-        vx: Math.cos(angle) * CONFIG.BASE_SPEED,
-        vy: Math.sin(angle) * CONFIG.BASE_SPEED,
-        targetAngle: angle,
-        angularVel: 0,
-        wanderAngle: angle,
-        surprised: false,
-        omissionSurprise: false,
-        surpriseTime: 0,
-        phase: Math.random() * Math.PI * 2,
-        trail: [],
-        hue: 35 + Math.random() * 25, // Gold to amber
-      };
+      const initialFireflies: Firefly[] = Array.from({ length: CONFIG.NUM_FIREFLIES }, (_, i) => {
+        const pos = findValidPosition();
+        const angle = Math.random() * Math.PI * 2;
+
+        return {
+          id: i,
+          x: pos.x,
+          y: pos.y,
+          vx: Math.cos(angle) * CONFIG.BASE_SPEED,
+          vy: Math.sin(angle) * CONFIG.BASE_SPEED,
+          targetAngle: angle,
+          angularVel: 0,
+          wanderAngle: angle,
+          surprised: false,
+          omissionSurprise: false,
+          surpriseTime: 0,
+          phase: Math.random() * Math.PI * 2,
+          trail: [],
+          hue: 35 + Math.random() * 25,
+        };
+      });
+
+      beliefMaps.current = Array.from({ length: CONFIG.NUM_FIREFLIES }, () => ({}));
+      return initialFireflies;
     });
-
-    setFireflies(initialFireflies);
-    beliefMaps.current = Array.from({ length: CONFIG.NUM_FIREFLIES }, () => ({}));
-  }, [width > 100, height > 100]);
+  }, [width, height, obstacles.length > 0, findValidPosition]);
 
   // Helper functions
   const getCellKey = (x: number, y: number) =>

@@ -28,7 +28,8 @@
       "WebFetch(domain:link.springer.com)",
       "WebFetch(domain:www.sciencedirect.com)",
       "WebFetch(domain:www.daikin.com)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cat:*)"
     ]
   }
 }
