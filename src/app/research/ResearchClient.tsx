@@ -138,20 +138,17 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
 
         .research-header {
           margin-bottom: 3rem;
-          padding-bottom: 2rem;
-          border-bottom: 1px solid #f0f0f0;
         }
 
         .research-header h1 {
           font-size: 2.5rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: #1a1a1a;
+          font-weight: 500;
+          margin-bottom: 0.75rem;
         }
 
         .research-intro {
           font-size: 1.125rem;
-          color: #666;
+          color: var(--text-muted);
           line-height: 1.7;
           max-width: 700px;
         }
@@ -163,20 +160,20 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         }
 
         .research-theme {
-          background: #fafafa;
-          border: 1px solid #f0f0f0;
-          border-radius: 12px;
+          background: var(--card-glass);
+          border: 1px solid var(--card-border);
+          border-radius: 16px;
           overflow: hidden;
           transition: all 0.3s ease;
         }
 
         .research-theme:hover {
-          border-color: #e0e0e0;
+          border-color: rgba(255, 255, 255, 0.12);
         }
 
         .research-theme.expanded {
           border-left: 3px solid var(--accent);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .research-theme-header {
@@ -189,6 +186,7 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
           border: none;
           cursor: pointer;
           text-align: left;
+          color: inherit;
         }
 
         .research-theme-label {
@@ -197,27 +195,27 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
 
         .section-label {
           display: inline-block;
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           color: var(--accent);
           margin-bottom: 0.5rem;
-          padding: 0.25rem 0.5rem;
-          background: color-mix(in srgb, var(--accent) 10%, transparent);
+          padding: 0.25rem 0.6rem;
+          background: rgba(255, 255, 255, 0.05);
           border-radius: 4px;
         }
 
         .research-theme-header h2 {
           font-size: 1.5rem;
-          font-weight: 600;
-          color: #1a1a1a;
+          font-weight: 500;
+          color: var(--text-primary);
           margin: 0 0 0.5rem 0;
         }
 
         .research-question {
           font-size: 1rem;
-          color: #666;
+          color: var(--text-muted);
           margin: 0;
           font-style: italic;
         }
@@ -232,7 +230,7 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
           align-items: center;
           justify-content: center;
           border-radius: 50%;
-          background: color-mix(in srgb, var(--accent) 10%, transparent);
+          background: rgba(255, 255, 255, 0.05);
           flex-shrink: 0;
           margin-left: 1rem;
         }
@@ -264,12 +262,12 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         .research-image {
           border-radius: 8px;
           overflow: hidden;
-          background: #fff;
-          border: 1px solid #f0f0f0;
+          background: var(--twilight-blue);
+          border: 1px solid var(--card-border);
         }
 
         .research-description {
-          color: #444;
+          color: var(--text-secondary);
           line-height: 1.8;
         }
 
@@ -283,9 +281,9 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
           gap: 1.5rem;
           margin-bottom: 1.5rem;
           padding: 1.5rem;
-          background: #fff;
-          border-radius: 8px;
-          border: 1px solid #f0f0f0;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 12px;
+          border: 1px solid var(--card-border);
         }
 
         @media (min-width: 768px) {
@@ -295,17 +293,17 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         }
 
         .research-section h3 {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           font-weight: 600;
           text-transform: uppercase;
-          letter-spacing: 0.03em;
+          letter-spacing: 0.05em;
           color: var(--accent);
           margin-bottom: 0.75rem;
         }
 
         .research-list {
           font-size: 0.9rem;
-          color: #555;
+          color: var(--text-secondary);
           line-height: 1.8;
           white-space: pre-line;
         }
@@ -313,17 +311,17 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         .research-publications {
           margin-bottom: 1.5rem;
           padding: 1rem 1.5rem;
-          background: #fff;
-          border-radius: 8px;
-          border: 1px solid #f0f0f0;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 12px;
+          border: 1px solid var(--card-border);
         }
 
         .research-publications h3 {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           font-weight: 600;
           text-transform: uppercase;
-          letter-spacing: 0.03em;
-          color: #666;
+          letter-spacing: 0.05em;
+          color: var(--text-muted);
           margin-bottom: 0.75rem;
         }
 
@@ -335,7 +333,7 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
 
         .research-publications li {
           padding: 0.5rem 0;
-          border-bottom: 1px solid #f5f5f5;
+          border-bottom: 1px solid var(--card-border);
         }
 
         .research-publications li:last-child {
@@ -343,14 +341,14 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         }
 
         .research-publications a {
-          font-size: 0.875rem;
-          color: #6B46C1;
+          font-size: 0.8rem;
+          color: var(--accent-purple);
           text-decoration: none;
-          font-family: monospace;
+          font-family: 'JetBrains Mono', monospace;
         }
 
         .research-publications a:hover {
-          text-decoration: underline;
+          color: var(--firefly-glow);
         }
 
         .research-tags {
@@ -358,15 +356,21 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
           flex-wrap: wrap;
           gap: 0.5rem;
           padding-top: 1rem;
-          border-top: 1px solid #f0f0f0;
+          border-top: 1px solid var(--card-border);
         }
 
         .research-tag {
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           padding: 0.25rem 0.75rem;
-          background: #f0f0f0;
-          color: #666;
+          background: rgba(255, 255, 255, 0.05);
+          color: var(--text-muted);
           border-radius: 100px;
+        }
+
+        @media (max-width: 640px) {
+          .research-header h1 {
+            font-size: 1.75rem;
+          }
         }
       `}</style>
     </div>
