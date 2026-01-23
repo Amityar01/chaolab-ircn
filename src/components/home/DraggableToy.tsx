@@ -3,7 +3,7 @@
 // ============================================
 // DRAGGABLE TOY COMPONENT
 // ============================================
-// Simple glowing geometric shapes
+// Simple glowing geometric shapes - fixed to viewport
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
@@ -14,7 +14,7 @@ interface DraggableToyProps {
   y: number;
   size?: number;
   color: string;
-  onDrag: (id: string, newX: number, newY: number) => void;
+  onDrag: (id: string, x: number, y: number) => void;
 }
 
 export function DraggableToy({
@@ -28,8 +28,6 @@ export function DraggableToy({
 }: DraggableToyProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [glowIntensity, setGlowIntensity] = useState(0.6);
-
-  // Track offset from click point to toy position
   const dragOffset = useRef({ x: 0, y: 0 });
 
   // Pulse animation
@@ -44,27 +42,14 @@ export function DraggableToy({
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // Calculate offset from click point to toy's top-left corner
-    const scrollY = window.scrollY;
-    dragOffset.current = {
-      x: e.clientX - x,
-      y: e.clientY + scrollY - y,
-    };
-
+    dragOffset.current = { x: e.clientX - x, y: e.clientY - y };
     setIsDragging(true);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   }, [x, y]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
-
-    // Calculate new position maintaining the offset
-    const scrollY = window.scrollY;
-    const newX = e.clientX - dragOffset.current.x;
-    const newY = e.clientY + scrollY - dragOffset.current.y;
-
-    onDrag(id, newX, newY);
+    onDrag(id, e.clientX - dragOffset.current.x, e.clientY - dragOffset.current.y);
   }, [isDragging, id, onDrag]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
@@ -139,22 +124,20 @@ export function DraggableToy({
 
   return (
     <div
-      className={`draggable-toy ${isDragging ? 'dragging' : ''}`}
       style={{
-        position: 'absolute',
+        position: 'fixed',
         left: x,
         top: y,
         width: size,
         height: size,
         cursor: isDragging ? 'grabbing' : 'grab',
-        zIndex: isDragging ? 100 : 15,
-        touchAction: isDragging ? 'none' : 'auto', // Allow scroll when not dragging
-        color: color,
+        zIndex: isDragging ? 100 : 20,
+        touchAction: 'none',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        transition: isDragging ? 'none' : 'transform 0.1s',
         transform: isDragging ? 'scale(1.1)' : 'scale(1)',
+        transition: isDragging ? 'none' : 'transform 0.15s ease-out',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

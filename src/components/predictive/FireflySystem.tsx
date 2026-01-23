@@ -707,12 +707,11 @@ export function FireflySystem({
       width={width}
       height={height}
       style={{
-        position: 'absolute',
+        position: 'fixed',
         top: 0,
         left: 0,
-        pointerEvents: 'none', // Don't block clicks on content
-        overflow: 'hidden',
-        maxWidth: '100%',
+        pointerEvents: 'none',
+        zIndex: 10,
       }}
     >
       {/* Belief heatmap */}
