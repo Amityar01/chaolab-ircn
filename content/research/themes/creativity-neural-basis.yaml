@@ -15,9 +15,39 @@ question:
 
 description:
   en: |
-    We explore how predictive coding underlies the brain's capacity to generate novel and useful ideas, linking creativity directly to its neural circuit implementation. Our goal is to provide mechanistic insights into this complex process.
+    We explore how predictive coding underlies the brain's capacity to generate novel and useful ideas, linking creativity directly to its neural circuit implementation. Our goal is to provide mechanistic insights into this complex cognitive process.
+
+    Creativity may arise from the brain's ability to make controlled prediction errors—generating novel combinations while maintaining coherence. By understanding how prediction and surprise interact, we can identify the neural substrates of creative thought.
   ja: |
-    予測符号化が新しく有用なアイデアを生み出す脳の能力をどのように支えているかを探求し、創造性をその神経回路の実装に直接結びつけています。この複雑なプロセスにメカニズム的な洞察を提供することを目指しています。
+    予測符号化が新しく有用なアイデアを生み出す脳の能力をどのように支えているかを探求し、創造性をその神経回路の実装に直接結びつけています。この複雑な認知プロセスにメカニズム的な洞察を提供することを目指しています。
+
+    創造性は、制御された予測誤差を生成する脳の能力から生じる可能性があります—一貫性を維持しながら新しい組み合わせを生成します。予測と驚きがどのように相互作用するかを理解することで、創造的思考の神経基盤を特定できます。
+
+methods:
+  en: |
+    • fMRI studies during creative problem-solving tasks
+    • EEG measurement of neural dynamics during ideation
+    • Behavioral experiments measuring creative output
+    • Computational models of creative cognition
+    • Cross-cultural studies of creativity
+  ja: |
+    • 創造的問題解決課題中のfMRI研究
+    • アイデア創出中の神経ダイナミクスのEEG測定
+    • 創造的出力を測定する行動実験
+    • 創造的認知の計算モデル
+    • 創造性の異文化研究
+
+keyFindings:
+  en: |
+    • Identified neural correlates linking prediction error signals to creative insight
+    • Demonstrated that optimal creativity requires balanced prediction—neither too rigid nor too random
+    • Found that creative individuals show distinct patterns of prediction error processing
+    • Established connection between predictive coding framework and divergent thinking
+  ja: |
+    • 予測誤差信号と創造的洞察を結びつける神経相関を特定
+    • 最適な創造性には、硬直しすぎず、ランダムすぎないバランスの取れた予測が必要であることを実証
+    • 創造的な個人が予測誤差処理の独特なパターンを示すことを発見
+    • 予測符号化フレームワークと発散的思考の関連性を確立
 
 accentColor: "var(--ircn-purple)"
 
@@ -27,3 +57,4 @@ tags:
   - creativity
   - neural-mechanisms
   - cognition
+  - fMRI

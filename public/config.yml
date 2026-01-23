@@ -467,6 +467,24 @@ collections:
         name: description
         widget: object
         fields: *bilingual_text_long
+      - label: Methods & Approaches
+        name: methods
+        widget: object
+        required: false
+        hint: "List of experimental methods and techniques used"
+        fields: *bilingual_text_long
+      - label: Key Findings
+        name: keyFindings
+        widget: object
+        required: false
+        hint: "Major discoveries and results"
+        fields: *bilingual_text_long
+      - label: Related Publications
+        name: relatedPublications
+        widget: list
+        required: false
+        hint: "DOIs of related papers"
+        field: { label: "DOI", name: "doi", widget: "string" }
       - label: Accent Color
         name: accentColor
         widget: select
@@ -476,7 +494,7 @@ collections:
           - { label: "IRCN Purple", value: "var(--ircn-purple)" }
           - { label: "Daikin Blue", value: "var(--daikin-blue)" }
           - { label: "Gray", value: "var(--ircn-gray)" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "string", required: false, hint: "URL or path to image" }
       - label: Tags
         name: tags
         widget: list

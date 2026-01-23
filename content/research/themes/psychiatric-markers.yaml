@@ -15,9 +15,44 @@ question:
 
 description:
   en: |
-    We identify neural markers in psychiatric conditions characterized by prediction anomalies, such as autism spectrum disorder. Understanding these foundations could lead to better diagnoses and targeted interventions.
+    We identify neural markers in psychiatric conditions characterized by prediction anomalies, such as autism spectrum disorder and schizophrenia. Understanding these foundations could lead to better diagnoses and targeted interventions.
+
+    Many psychiatric conditions can be understood as disorders of predictive processing—where the brain's predictions are either too rigid (as in autism) or too unstable (as in schizophrenia). By characterizing these aberrant prediction patterns, we develop objective biomarkers for diagnosis and treatment monitoring.
   ja: |
-    自閉スペクトラム症などの予測異常を特徴とする精神疾患の神経マーカーを特定しています。これらの基盤を理解することで、より良い診断と標的介入につながる可能性があります。
+    自閉スペクトラム症や統合失調症などの予測異常を特徴とする精神疾患の神経マーカーを特定しています。これらの基盤を理解することで、より良い診断と標的介入につながる可能性があります。
+
+    多くの精神疾患は予測処理の障害として理解できます—自閉症のように予測が硬直しすぎる場合や、統合失調症のように不安定すぎる場合です。これらの異常な予測パターンを特徴づけることで、診断と治療モニタリングのための客観的バイオマーカーを開発しています。
+
+methods:
+  en: |
+    • ECoG recordings in primate models of ASD
+    • EEG/fMRI studies in human patient populations
+    • Machine learning classification of brain states
+    • Mismatch negativity as a probe for prediction errors
+    • Longitudinal studies tracking neural markers over time
+  ja: |
+    • ASD霊長類モデルにおけるECoG記録
+    • ヒト患者集団におけるEEG/fMRI研究
+    • 脳状態の機械学習分類
+    • 予測誤差のプローブとしてのミスマッチ陰性電位
+    • 神経マーカーを経時的に追跡する縦断研究
+
+keyFindings:
+  en: |
+    • Discovered diverse configurations of erroneous predictive coding in primate ASD model
+    • Identified neural rigidity as a potential causal mechanism in autism
+    • Found that cortical thickness patterns can distinguish ASD, schizophrenia, and typical individuals with 85% accuracy
+    • Demonstrated that prediction error signals are systematically altered in psychiatric conditions
+    • Revealed that ASD+ADHD comorbidity involves distinct neural mechanisms from pure ADHD
+  ja: |
+    • 霊長類ASDモデルにおける誤った予測符号化の多様な構成を発見
+    • 自閉症における潜在的な因果メカニズムとしての神経の硬直性を特定
+    • 皮質の厚さのパターンがASD、統合失調症、定型発達者を85%の精度で区別できることを発見
+    • 予測誤差信号が精神疾患において体系的に変化していることを実証
+    • ASD+ADHD併存症は純粋なADHDとは異なる神経メカニズムを含むことを明らかに
+
+relatedPublications:
+  - "10.1038/s42003-024-06545-3"
 
 accentColor: "var(--ircn-gray)"
 
@@ -28,3 +63,4 @@ tags:
   - psychiatric-disorders
   - autism
   - biomarkers
+  - machine-learning

@@ -66,6 +66,9 @@ export interface ResearchTheme {
   title: BilingualText;
   question?: BilingualText;
   description: BilingualText;
+  methods?: BilingualText;
+  keyFindings?: BilingualText;
+  relatedPublications?: string[]; // DOIs or publication IDs
   accentColor?: string;
   image?: string;
   tags?: string[];

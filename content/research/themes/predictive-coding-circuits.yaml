@@ -16,8 +16,44 @@ question:
 description:
   en: |
     We unravel the complex networks of microcircuits and macrocircuits essential to predictive coding across different hierarchical levels and sensory domains. Our research spans multiple species—from rodents and marmosets to humans—and combines experimental results with computational modeling.
+
+    The brain continuously generates predictions about incoming sensory information, comparing these predictions against actual input. When mismatches occur, prediction error signals propagate through the cortical hierarchy, driving learning and perception.
   ja: |
     さまざまな階層レベルと感覚領域にわたる予測符号化に不可欠な微小回路と巨視的回路の複雑なネットワークを解明しています。げっ歯類からマーモセット、ヒトまで複数の種を対象とし、実験結果と計算モデリングを組み合わせています。
+
+    脳は入力される感覚情報について継続的に予測を生成し、これらの予測を実際の入力と比較します。不一致が生じると、予測誤差信号が皮質階層を伝播し、学習と知覚を駆動します。
+
+methods:
+  en: |
+    • High-density ECoG recordings in primates (128+ channels)
+    • Human fMRI and EEG experiments
+    • Dissociated neuronal cultures with multi-electrode arrays
+    • Computational modeling of hierarchical predictive processing
+    • Oddball and mismatch negativity paradigms
+  ja: |
+    • 霊長類における高密度ECoG記録（128チャンネル以上）
+    • ヒトfMRIおよびEEG実験
+    • 多電極アレイを用いた解離神経培養
+    • 階層的予測処理の計算モデリング
+    • オドボールおよびミスマッチ陰性電位パラダイム
+
+keyFindings:
+  en: |
+    • Discovered frequency ordering of prediction signals: predictions encoded in alpha/beta bands, errors in gamma
+    • Identified large-scale cortical networks for hierarchical prediction in primates
+    • Demonstrated that even dissociated neuronal cultures exhibit prediction-like responses
+    • Revealed distinct neural signatures for different types of prediction errors
+  ja: |
+    • 予測信号の周波数順序を発見：予測はアルファ/ベータ帯域、誤差はガンマ帯域で符号化
+    • 霊長類における階層的予測のための大規模皮質ネットワークを特定
+    • 解離神経培養でも予測様応答が示されることを実証
+    • 異なるタイプの予測誤差に対する明確な神経シグネチャを明らかに
+
+relatedPublications:
+  - "10.1016/j.neuron.2018.10.004"
+  - "10.1038/s42003-022-04049-6"
+  - "10.3389/fncir.2025.1568652"
+  - "10.3389/fncir.2025.1584322"
 
 accentColor: "var(--ircn-blue)"
 
@@ -27,3 +63,4 @@ tags:
   - prediction
   - neural-circuits
   - computational-modeling
+  - electrophysiology

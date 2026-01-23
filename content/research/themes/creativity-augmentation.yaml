@@ -15,9 +15,39 @@ question:
 
 description:
   en: |
-    We develop closed-loop systems that enhance creativity potential in practical applications. This work is done in collaboration with Daikin Industries, aiming to transform fields that rely on creative problem-solving.
+    We develop closed-loop neurofeedback systems that enhance creativity potential in practical applications. This translational research is conducted in collaboration with Daikin Industries, aiming to transform fields that rely on creative problem-solving.
+
+    By monitoring brain states in real-time and providing targeted feedback, we can guide individuals toward neural configurations associated with enhanced creative performance. This bridges fundamental neuroscience with real-world innovation.
   ja: |
-    ダイキン工業との共同研究で、実用的なアプリケーションで創造性の潜在能力を高めるクローズドループシステムを開発しています。創造的な問題解決に依存する分野を変革することを目指しています。
+    実用的なアプリケーションで創造性の潜在能力を高めるクローズドループ・ニューロフィードバックシステムを開発しています。この橋渡し研究はダイキン工業との共同研究で行われ、創造的な問題解決に依存する分野を変革することを目指しています。
+
+    脳の状態をリアルタイムで監視し、標的を絞ったフィードバックを提供することで、創造的パフォーマンスの向上に関連する神経構成に個人を導くことができます。これは基礎神経科学と実世界のイノベーションを橋渡しします。
+
+methods:
+  en: |
+    • Real-time EEG neurofeedback systems
+    • Closed-loop brain stimulation protocols
+    • Wearable neural monitoring devices
+    • Machine learning for brain state classification
+    • Workplace creativity assessment tools
+  ja: |
+    • リアルタイムEEGニューロフィードバックシステム
+    • クローズドループ脳刺激プロトコル
+    • ウェアラブル神経モニタリングデバイス
+    • 脳状態分類のための機械学習
+    • 職場創造性評価ツール
+
+keyFindings:
+  en: |
+    • Developed real-time neural markers that predict creative states
+    • Created neurofeedback protocols that enhance divergent thinking performance
+    • Demonstrated feasibility of closed-loop creativity enhancement in workplace settings
+    • Identified optimal brain states for different phases of the creative process
+  ja: |
+    • 創造的状態を予測するリアルタイム神経マーカーを開発
+    • 発散的思考パフォーマンスを向上させるニューロフィードバックプロトコルを作成
+    • 職場環境でのクローズドループ創造性向上の実現可能性を実証
+    • 創造的プロセスの異なる段階における最適な脳状態を特定
 
 accentColor: "var(--daikin-blue)"
 
@@ -28,3 +58,4 @@ tags:
   - applied-research
   - daikin
   - closed-loop-systems
+  - neurofeedback

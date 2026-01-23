@@ -11,7 +11,7 @@ interface ResearchClientProps {
 
 export default function ResearchClient({ themes }: ResearchClientProps) {
   const { t } = useLanguage();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(themes[0]?.id || null);
 
   const sortedThemes = [...themes].sort((a, b) => (a.order || 99) - (b.order || 99));
 
@@ -60,6 +60,7 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
               </button>
 
               <div className={`research-theme-content ${isExpanded ? 'open' : ''}`}>
+                {/* Image and Description */}
                 <div className="research-theme-body">
                   {theme.image && (
                     <div className="research-image">
@@ -77,6 +78,45 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
                   </div>
                 </div>
 
+                {/* Methods and Findings */}
+                {(theme.methods || theme.keyFindings) && (
+                  <div className="research-details">
+                    {theme.methods && (
+                      <div className="research-section">
+                        <h3>{t({ en: 'Methods & Approaches', ja: '手法とアプローチ' })}</h3>
+                        <div className="research-list">{t(theme.methods)}</div>
+                      </div>
+                    )}
+                    {theme.keyFindings && (
+                      <div className="research-section">
+                        <h3>{t({ en: 'Key Findings', ja: '主な発見' })}</h3>
+                        <div className="research-list">{t(theme.keyFindings)}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Related Publications */}
+                {theme.relatedPublications && theme.relatedPublications.length > 0 && (
+                  <div className="research-publications">
+                    <h3>{t({ en: 'Related Publications', ja: '関連論文' })}</h3>
+                    <ul>
+                      {theme.relatedPublications.map((doi) => (
+                        <li key={doi}>
+                          <a
+                            href={`https://doi.org/${doi}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {doi}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Tags */}
                 {theme.tags && theme.tags.length > 0 && (
                   <div className="research-tags">
                     {theme.tags.map((tag) => (
@@ -135,7 +175,7 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         }
 
         .research-theme.expanded {
-          border-color: var(--accent);
+          border-left: 3px solid var(--accent);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
@@ -200,17 +240,18 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
         .research-theme-content {
           max-height: 0;
           overflow: hidden;
-          transition: max-height 0.4s ease, padding 0.4s ease;
+          transition: max-height 0.5s ease;
         }
 
         .research-theme-content.open {
-          max-height: 1000px;
+          max-height: 3000px;
           padding: 0 1.5rem 1.5rem;
         }
 
         .research-theme-body {
           display: grid;
           gap: 1.5rem;
+          margin-bottom: 2rem;
         }
 
         @media (min-width: 640px) {
@@ -237,11 +278,85 @@ export default function ResearchClient({ themes }: ResearchClientProps) {
           white-space: pre-line;
         }
 
+        .research-details {
+          display: grid;
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+          padding: 1.5rem;
+          background: #fff;
+          border-radius: 8px;
+          border: 1px solid #f0f0f0;
+        }
+
+        @media (min-width: 768px) {
+          .research-details {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        .research-section h3 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          color: var(--accent);
+          margin-bottom: 0.75rem;
+        }
+
+        .research-list {
+          font-size: 0.9rem;
+          color: #555;
+          line-height: 1.8;
+          white-space: pre-line;
+        }
+
+        .research-publications {
+          margin-bottom: 1.5rem;
+          padding: 1rem 1.5rem;
+          background: #fff;
+          border-radius: 8px;
+          border: 1px solid #f0f0f0;
+        }
+
+        .research-publications h3 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          color: #666;
+          margin-bottom: 0.75rem;
+        }
+
+        .research-publications ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .research-publications li {
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #f5f5f5;
+        }
+
+        .research-publications li:last-child {
+          border-bottom: none;
+        }
+
+        .research-publications a {
+          font-size: 0.875rem;
+          color: #6B46C1;
+          text-decoration: none;
+          font-family: monospace;
+        }
+
+        .research-publications a:hover {
+          text-decoration: underline;
+        }
+
         .research-tags {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
-          margin-top: 1.5rem;
           padding-top: 1rem;
           border-top: 1px solid #f0f0f0;
         }
