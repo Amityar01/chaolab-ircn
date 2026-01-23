@@ -16,19 +16,19 @@ export default function HeroSection() {
       <div className="max-w-4xl mx-auto w-full">
         {/* Tagline */}
         <p
-          className="font-mono text-sm uppercase tracking-widest mb-6"
+          className="font-mono text-sm uppercase tracking-widest mb-6 animate-fade-in-up"
           style={{ color: 'var(--firefly-glow)', opacity: 0.9 }}
         >
           {t({ en: 'The Predictive Brain', ja: '予測する脳' })}
         </p>
 
         {/* Lab Name */}
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-[var(--text-primary)] tracking-tight mb-8">
+        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-[var(--text-primary)] tracking-tight mb-8 animate-fade-in-up delay-100">
           Chao Lab
         </h1>
 
         {/* Main description */}
-        <p className="font-body text-xl md:text-2xl text-[var(--text-secondary)] leading-relaxed mb-6 max-w-2xl">
+        <p className="font-body text-xl md:text-2xl text-[var(--text-secondary)] leading-relaxed mb-6 max-w-2xl animate-fade-in-up delay-200">
           {t({
             en: 'We study how the brain predicts, and how prediction enables creativity.',
             ja: '脳がどのように予測し、予測がどのように創造性を可能にするかを研究しています。'
@@ -36,7 +36,7 @@ export default function HeroSection() {
         </p>
 
         {/* Affiliation */}
-        <p className="text-base text-[var(--text-muted)] leading-relaxed mb-12 max-w-2xl">
+        <p className="text-base text-[var(--text-muted)] leading-relaxed mb-12 max-w-2xl animate-fade-in-up delay-300">
           {t({
             en: 'International Research Center for Neurointelligence (IRCN), University of Tokyo',
             ja: '東京大学 国際高等研究所 ニューロインテリジェンス国際研究機構（IRCN）'
@@ -49,7 +49,7 @@ export default function HeroSection() {
         </p>
 
         {/* Links */}
-        <div className="flex flex-wrap gap-6 text-sm">
+        <div className="flex flex-wrap gap-6 text-sm animate-fade-in-up delay-400">
           <Link
             href="/research"
             className="inline-flex items-center font-medium transition-all group"
@@ -84,7 +84,7 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in delay-700">
         <div className="flex flex-col items-center gap-2">
           <span className="font-mono text-xs text-[var(--text-muted)] opacity-50">
             {t({ en: 'scroll', ja: 'スクロール' })}

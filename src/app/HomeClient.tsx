@@ -63,7 +63,6 @@ export default function HomeClient({
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   // Toy positions (draggable)
   const [toys, setToys] = useState<ToyState[]>([]);
@@ -118,49 +117,117 @@ export default function HomeClient({
     };
   }, []);
 
-  // Update obstacles from DOM elements (document coordinates)
+  // Detect real content elements as obstacles
   useEffect(() => {
-    if (!mounted || viewportSize.width === 0 || !contentRef.current) return;
-
-    const getDocumentPosition = (el: HTMLElement, padding = 0) => {
-      const rect = el.getBoundingClientRect();
-      return {
-        x: rect.left + window.scrollX - padding,
-        y: rect.top + window.scrollY - padding,
-        width: rect.width + padding * 2,
-        height: rect.height + padding * 2,
-      };
-    };
+    if (!mounted || viewportSize.width === 0) return;
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
+      const scrollY = window.scrollY;
 
-      // Find all content blocks automatically
-      const selectors = [
-        '.nav',
-        '.hero-section',
-        '.research-card',
-        '.team-preview',
-        '.publications-preview',
-        '.footer',
-        'h1', 'h2', 'h3',
-        'p',
-        '.card',
-        'section > div'
-      ];
+      // Helper to check if element has actual visible content
+      const hasVisibleContent = (el: Element): boolean => {
+        const style = window.getComputedStyle(el);
+        if (style.visibility === 'hidden' || style.opacity === '0') return false;
+        // Check if it has text or is an image/svg
+        if (el.textContent?.trim() || el.tagName === 'IMG' || el.tagName === 'SVG') return true;
+        // Check if it has background
+        if (style.backgroundImage !== 'none' || style.backgroundColor !== 'rgba(0, 0, 0, 0)') return true;
+        return false;
+      };
+
+      // Find content elements - be specific to avoid empty wrappers
+      const container = containerRef.current;
+      if (!container) return;
 
       let idx = 0;
-      selectors.forEach(selector => {
-        const elements = contentRef.current?.querySelectorAll(selector);
-        elements?.forEach((el) => {
-          const rect = el.getBoundingClientRect();
-          // Only add if it has reasonable size
-          if (rect.width > 50 && rect.height > 20) {
-            const pos = getDocumentPosition(el as HTMLElement, 15);
-            newObstacles.push({ id: `content-${idx++}`, ...pos });
-          }
+
+      // Navigation
+      const nav = container.querySelector('header.nav');
+      if (nav) {
+        const rect = nav.getBoundingClientRect();
+        newObstacles.push({
+          id: `nav-${idx++}`,
+          x: rect.left,
+          y: rect.top + scrollY,
+          width: rect.width,
+          height: rect.height,
         });
+      }
+
+      // Hero section content (not wrapper)
+      const heroContent = container.querySelectorAll('.hero-section h1, .hero-section h2, .hero-section p, .hero-section .hero-content');
+      heroContent.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 10 && rect.height > 10) {
+          newObstacles.push({
+            id: `hero-${idx++}`,
+            x: rect.left - 10,
+            y: rect.top + scrollY - 10,
+            width: rect.width + 20,
+            height: rect.height + 20,
+          });
+        }
       });
+
+      // Research cards (the actual card elements)
+      const cards = container.querySelectorAll('.research-card > *, .card');
+      cards.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 50 && rect.height > 50) {
+          newObstacles.push({
+            id: `card-${idx++}`,
+            x: rect.left - 5,
+            y: rect.top + scrollY - 5,
+            width: rect.width + 10,
+            height: rect.height + 10,
+          });
+        }
+      });
+
+      // Section headings and paragraphs (direct text content)
+      const textElements = container.querySelectorAll('section h2, section h3, section > div > p, section > div > h2');
+      textElements.forEach(el => {
+        if (!hasVisibleContent(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 20 && rect.height > 10 && rect.width < viewportSize.width * 0.9) {
+          newObstacles.push({
+            id: `text-${idx++}`,
+            x: rect.left - 10,
+            y: rect.top + scrollY - 5,
+            width: rect.width + 20,
+            height: rect.height + 10,
+          });
+        }
+      });
+
+      // Team and publications sections
+      const sections = container.querySelectorAll('.team-preview > *, .publications-preview > *');
+      sections.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 100 && rect.height > 50) {
+          newObstacles.push({
+            id: `section-${idx++}`,
+            x: rect.left - 10,
+            y: rect.top + scrollY - 10,
+            width: rect.width + 20,
+            height: rect.height + 20,
+          });
+        }
+      });
+
+      // Footer
+      const footer = container.querySelector('footer');
+      if (footer) {
+        const rect = footer.getBoundingClientRect();
+        newObstacles.push({
+          id: `footer-${idx++}`,
+          x: rect.left,
+          y: rect.top + scrollY,
+          width: rect.width,
+          height: rect.height,
+        });
+      }
 
       // Add toys
       toys.forEach(toy => {
@@ -176,17 +243,17 @@ export default function HomeClient({
       setObstacles(newObstacles);
     };
 
-    // Update after layout settles
-    const timer1 = setTimeout(updateObstacles, 300);
-    const timer2 = setTimeout(updateObstacles, 800);
+    // Update after DOM settles
+    const timer = setTimeout(updateObstacles, 500);
     window.addEventListener('load', updateObstacles);
+    window.addEventListener('resize', updateObstacles);
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      clearTimeout(timer);
       window.removeEventListener('load', updateObstacles);
+      window.removeEventListener('resize', updateObstacles);
     };
-  }, [mounted, viewportSize.width, toys]);
+  }, [mounted, viewportSize.width, viewportSize.height, toys]);
 
   // Handle toy drag - simple viewport coordinates
   const handleToyDrag = useCallback((id: string, x: number, y: number) => {
@@ -228,7 +295,7 @@ export default function HomeClient({
       ))}
 
       {/* Main Content */}
-      <div ref={contentRef} className="relative z-10">
+      <div className="relative z-10">
         {/* Header */}
         <header className="nav">
           <div className="nav-container">

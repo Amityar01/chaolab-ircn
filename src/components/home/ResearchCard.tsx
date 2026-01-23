@@ -25,7 +25,7 @@ const ResearchCard = forwardRef<HTMLDivElement, ResearchCardProps>(
     return (
       <div
         ref={ref}
-        className="research-card relative group"
+        className="research-card relative group animate-fade-in-up"
         style={{
           '--accent-color': accentColor,
         } as React.CSSProperties}

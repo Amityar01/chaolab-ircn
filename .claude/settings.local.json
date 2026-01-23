@@ -29,7 +29,11 @@
       "WebFetch(domain:www.sciencedirect.com)",
       "WebFetch(domain:www.daikin.com)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:web.archive.org)",
+      "Bash(npx playwright:*)",
+      "Bash(node scrape-zenas.js:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
