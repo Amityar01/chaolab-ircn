@@ -6,6 +6,7 @@
 // Simple glowing orbs, grid-based beliefs, natural movement
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 // ============================================
 // CONFIGURATION
@@ -741,9 +742,16 @@ export function FireflySystem({
   // Generate predicted paths
   const predictedPaths = fireflies.map((f, i) => generatePredictedPath(f, i));
 
-  if (width === 0 || height === 0) return null;
+  // Use portal to render directly to body, bypassing any parent CSS issues
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
-  return (
+  useEffect(() => {
+    setPortalContainer(document.body);
+  }, []);
+
+  if (width === 0 || height === 0 || !portalContainer) return null;
+
+  const content = (
     <svg
       width={width}
       height={height}
@@ -756,6 +764,7 @@ export function FireflySystem({
         height: '100vh',
         cursor: 'pointer',
         pointerEvents: 'auto',
+        zIndex: 10,
       }}
     >
       {/* Belief heatmap */}
@@ -790,6 +799,8 @@ export function FireflySystem({
       ))}
     </svg>
   );
+
+  return createPortal(content, portalContainer);
 }
 
 export default FireflySystem;
