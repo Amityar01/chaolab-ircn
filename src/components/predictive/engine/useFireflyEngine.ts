@@ -259,10 +259,11 @@ export function useFireflyEngine(
             };
           }
 
-          // Update navigation every frame
+          // Update navigation every frame (with hard collision against obstacles)
           const navigation = updateNavigation(
             { ...firefly, ...cognitiveUpdates },
-            prev.canvasBounds
+            prev.canvasBounds,
+            prev.obstacles
           );
 
           return {

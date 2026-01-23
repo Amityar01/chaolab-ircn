@@ -3,7 +3,7 @@
 // ============================================
 // Movement, obstacle avoidance, and path planning
 
-import type { Vec2, Bounds, MemorizedObject, Firefly } from '../types';
+import type { Vec2, Bounds, MemorizedObject, Firefly, Obstacle } from '../types';
 import { CONFIG } from '../config';
 
 /**
@@ -61,6 +61,46 @@ export function computeAvoidanceVector(
 
       // Weight by P(static) - more likely static objects are more important to avoid
       const weight = mem.pStatic * CONFIG.AVOIDANCE_STRENGTH;
+
+      avoidX += normDx * strength * weight;
+      avoidY += normDy * strength * weight;
+    }
+  }
+
+  return { x: avoidX, y: avoidY };
+}
+
+/**
+ * Compute avoidance vector directly from raw obstacles (fallback when memory is empty)
+ */
+export function computeDirectAvoidance(
+  fireflyPos: Vec2,
+  obstacles: Obstacle[],
+  avoidanceDistance: number = CONFIG.AVOIDANCE_DISTANCE
+): Vec2 {
+  let avoidX = 0;
+  let avoidY = 0;
+
+  for (const obstacle of obstacles) {
+    const bounds = obstacle.bounds;
+
+    // Find closest point on obstacle
+    const closestX = Math.max(bounds.x, Math.min(fireflyPos.x, bounds.x + bounds.width));
+    const closestY = Math.max(bounds.y, Math.min(fireflyPos.y, bounds.y + bounds.height));
+
+    const dx = fireflyPos.x - closestX;
+    const dy = fireflyPos.y - closestY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < avoidanceDistance && distance > 0) {
+      const strength = (avoidanceDistance - distance) / avoidanceDistance;
+      const normDx = dx / distance;
+      const normDy = dy / distance;
+
+      // Fixed obstacles get stronger avoidance
+      const weight = obstacle.type === 'fixed'
+        ? CONFIG.AVOIDANCE_STRENGTH * 1.5
+        : CONFIG.AVOIDANCE_STRENGTH;
 
       avoidX += normDx * strength * weight;
       avoidY += normDy * strength * weight;
@@ -171,17 +211,51 @@ export function updateVelocity(
 }
 
 /**
- * Update firefly position, keeping within bounds
+ * Update firefly position, keeping within bounds and preventing overlap with obstacles
  */
 export function updatePosition(
   position: Vec2,
   velocity: Vec2,
-  canvasBounds: Bounds
+  canvasBounds: Bounds,
+  obstacles: Obstacle[] = [],
+  collisionRadius: number = 12
 ): Vec2 {
   let newX = position.x + velocity.x;
   let newY = position.y + velocity.y;
 
-  // Soft boundary - bounce back
+  // Hard collision with obstacles - push out if overlapping
+  for (const obstacle of obstacles) {
+    const b = obstacle.bounds;
+
+    // Expand bounds by collision radius
+    const left = b.x - collisionRadius;
+    const right = b.x + b.width + collisionRadius;
+    const top = b.y - collisionRadius;
+    const bottom = b.y + b.height + collisionRadius;
+
+    // Check if inside expanded bounds
+    if (newX > left && newX < right && newY > top && newY < bottom) {
+      // Find which edge is closest and push out
+      const distLeft = newX - left;
+      const distRight = right - newX;
+      const distTop = newY - top;
+      const distBottom = bottom - newY;
+
+      const minDist = Math.min(distLeft, distRight, distTop, distBottom);
+
+      if (minDist === distLeft) {
+        newX = left;
+      } else if (minDist === distRight) {
+        newX = right;
+      } else if (minDist === distTop) {
+        newY = top;
+      } else {
+        newY = bottom;
+      }
+    }
+  }
+
+  // Soft boundary - bounce back from canvas edges
   const margin = 20;
 
   if (newX < margin) {
@@ -249,12 +323,13 @@ export function getContextualSpeed(
  */
 export function updateNavigation(
   firefly: Firefly,
-  canvasBounds: Bounds
+  canvasBounds: Bounds,
+  obstacles: Obstacle[] = []
 ): Partial<Firefly> {
   // Add some random wandering
   let targetHeading = addWander(firefly.targetHeading);
 
-  // Find safe direction considering obstacles
+  // Find safe direction considering obstacles in memory
   targetHeading = findSafeDirection(
     firefly.position,
     firefly.heading,
@@ -272,10 +347,10 @@ export function updateNavigation(
   // Update velocity
   const newVelocity = updateVelocity(firefly.velocity, newHeading, speed);
 
-  // Update position
-  const newPosition = updatePosition(firefly.position, newVelocity, canvasBounds);
+  // Update position with hard collision against real obstacles
+  const newPosition = updatePosition(firefly.position, newVelocity, canvasBounds, obstacles);
 
-  // Check if we're actively avoiding
+  // Check if we're actively avoiding (based on world model)
   const avoidance = computeAvoidanceVector(firefly.position, firefly.memory);
   const isAvoiding = magnitude(avoidance) > 0.2;
 

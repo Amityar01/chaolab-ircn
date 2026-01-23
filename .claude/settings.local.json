@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s /b \"C:\\\\Users\\\\amity\\\\labwebsite\")",
+      "Bash(findstr:*)",
+      "WebFetch(domain:www.zenaschao.com)",
+      "WebFetch(domain:ircn.jp)",
+      "WebFetch(domain:scholar.google.com)",
+      "WebSearch",
+      "WebFetch(domain:www.researchgate.net)",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:www.biorxiv.org)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd comprehensive lab content from web scraping\n\n- Add 29 publications \\(36 total\\): journal articles from 2007-2025 plus 9 bioRxiv preprints\n- Add 7 lab members: 5 postdocs and 2 project researchers from IRCN\n- Add postdocs and researchers member categories\n- Update Zenas Chao profile with career history\n- Update CMS config and types for new member categories\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nMake all content editable in CMS\n\n- Add translations.yaml to CMS settings\n- Add faculty education, career, tags fields\n- Add publication publisher, url, pdf fields\n- Add research theme order field\n- Add alumni currentPosition field\n- Add links/research to postdocs, researchers, students\n- Use string widget for images \\(supports URLs and uploads\\)\n- Fix useRef type error in FireflyBackground\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(vercel env:*)",
+      "Bash(vercel --prod)",
+      "Bash(printf:*)",
+      "WebFetch(domain:pubmed.ncbi.nlm.nih.gov)",
+      "WebFetch(domain:www.nature.com)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git rebase:*)",
+      "WebFetch(domain:chaolab-ircn.vercel.app)",
+      "Bash(grep:*)",
+      "WebFetch(domain:link.springer.com)",
+      "WebFetch(domain:www.sciencedirect.com)"
+    ]
+  }
+}

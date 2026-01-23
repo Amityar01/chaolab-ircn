@@ -47,12 +47,12 @@ export function PredictiveCanvas({
       className={`firefly-canvas ${className}`}
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
+        inset: 0,
+        width: '100vw',
+        height: '100vh',
         pointerEvents: 'none',
         zIndex: 5,
+        contain: 'layout style',
       }}
     >
       {/* Ambient particles */}
