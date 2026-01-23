@@ -140,9 +140,12 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
       <section className="content-section cta-section">
         {project.partners && project.partners.length > 0 && (
           <div className="partners">
+            <p className="partners-label">{t({ en: 'A collaboration between', ja: '共同研究' })}</p>
             <div className="partner-logos">
-              <Image src="/uploads/utokyo-logo.png" alt="University of Tokyo" width={200} height={52} />
-              <Image src="/uploads/ircn-logo.png" alt="IRCN" width={180} height={52} />
+              <Image src="/uploads/daikin-logo.png" alt="Daikin Industries" width={140} height={40} />
+              <span className="partner-divider">×</span>
+              <Image src="/uploads/utokyo-logo.png" alt="University of Tokyo" width={180} height={47} />
+              <Image src="/uploads/ircn-logo.png" alt="IRCN" width={160} height={47} />
             </div>
           </div>
         )}
@@ -173,8 +176,9 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: var(--firefly-glow);
-          background: rgba(255, 213, 79, 0.1);
+          color: var(--daikin-blue-light);
+          background: rgba(0, 120, 193, 0.15);
+          border: 1px solid rgba(0, 160, 233, 0.3);
           padding: 0.5rem 1.25rem;
           border-radius: 100px;
           margin-bottom: 1.5rem;
@@ -184,7 +188,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           font-size: 3.5rem;
           font-weight: 500;
           margin-bottom: 0.5rem;
-          background: linear-gradient(135deg, var(--text-primary) 0%, var(--firefly-glow) 100%);
+          background: linear-gradient(135deg, var(--text-primary) 0%, var(--daikin-blue-light) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -286,8 +290,8 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           justify-content: center;
           width: 28px;
           height: 28px;
-          background: var(--firefly-glow);
-          color: var(--deep-space);
+          background: var(--daikin-blue);
+          color: white;
           border-radius: 50%;
           font-size: 0.85rem;
           font-weight: 600;
@@ -314,18 +318,24 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
         }
 
         .feature-card {
-          background: var(--card-glass);
-          border: 1px solid var(--card-border);
+          background: linear-gradient(135deg, rgba(0, 120, 193, 0.05) 0%, var(--card-glass) 100%);
+          border: 1px solid rgba(0, 160, 233, 0.15);
           border-radius: 16px;
           padding: 2rem;
           text-align: center;
+          transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+          border-color: rgba(0, 160, 233, 0.3);
+          background: linear-gradient(135deg, rgba(0, 120, 193, 0.08) 0%, var(--card-glass) 100%);
         }
 
         .feature-icon {
           width: 48px;
           height: 48px;
           margin: 0 auto 1rem;
-          color: var(--firefly-glow);
+          color: var(--daikin-blue-light);
         }
 
         .feature-icon svg {
@@ -368,12 +378,13 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           border: 1px solid var(--card-border);
           border-radius: 12px;
           padding: 1.5rem;
+          border-top: 3px solid var(--daikin-blue);
         }
 
         .policy-card h3 {
           font-size: 0.9rem;
           font-weight: 600;
-          color: var(--firefly-glow);
+          color: var(--daikin-blue-light);
           margin-bottom: 0.75rem;
         }
 
@@ -390,20 +401,39 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           border-top: 1px solid var(--card-border);
         }
 
+        .partners-label {
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--text-muted);
+          margin-bottom: 1.5rem;
+        }
+
         .partner-logos {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 3rem;
+          gap: 2rem;
           margin-bottom: 2rem;
-          filter: brightness(0) invert(0.7);
+          flex-wrap: wrap;
+        }
+
+        .partner-logos img {
+          filter: brightness(0) invert(0.8);
+          opacity: 0.9;
+        }
+
+        .partner-divider {
+          font-size: 1.5rem;
+          color: var(--daikin-blue-light);
+          font-weight: 300;
         }
 
         .register-btn {
           display: inline-block;
           padding: 1rem 3rem;
-          background: var(--firefly-glow);
-          color: var(--deep-space);
+          background: linear-gradient(135deg, var(--daikin-blue) 0%, var(--daikin-blue-light) 100%);
+          color: white;
           font-weight: 600;
           font-size: 1.1rem;
           border-radius: 100px;
@@ -412,7 +442,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
 
         .register-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(255, 213, 79, 0.3);
+          box-shadow: 0 10px 30px rgba(0, 120, 193, 0.4);
         }
 
         @media (max-width: 640px) {

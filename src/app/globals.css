@@ -51,6 +51,12 @@
   --accent-purple: #a78bfa;
   --accent-cyan: #22d3ee;
 
+  /* Partner Colors */
+  --daikin-blue: #0078C1;
+  --daikin-blue-light: #00a0e9;
+  --daikin-blue-dark: #005a8c;
+  --ircn-blue: #1e3a5f;
+
   /* Legacy compatibility */
   --bg: var(--deep-space);
   --bg-card: var(--card-glass);
