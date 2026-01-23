@@ -1,0 +1,15 @@
+id: 2008-embodied-networks
+title: "Shaping embodied neural networks for adaptive goal-directed behavior"
+authors:
+  - Chao ZC
+  - Bakkum DJ
+  - Potter SM
+year: 2008
+journal: PLoS Computational Biology
+volume: "4(3)"
+pages: "e1000042"
+type: journal
+tags:
+  - neural-modeling
+  - robotics
+  - plasticity

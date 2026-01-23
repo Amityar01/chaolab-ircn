@@ -11,12 +11,13 @@ interface MembersClientProps {
 
 const categoryLabels: Record<MemberCategory, { en: string; ja: string }> = {
   faculty: { en: 'Faculty', ja: '教員' },
-  staff: { en: 'Staff', ja: 'スタッフ' },
+  postdocs: { en: 'Postdoctoral Fellows', ja: '博士研究員' },
+  researchers: { en: 'Project Researchers', ja: '特任研究員' },
   students: { en: 'Students', ja: '学生' },
   alumni: { en: 'Alumni', ja: '卒業生' },
 };
 
-const categoryOrder: MemberCategory[] = ['faculty', 'staff', 'students', 'alumni'];
+const categoryOrder: MemberCategory[] = ['faculty', 'postdocs', 'researchers', 'students', 'alumni'];
 
 export default function MembersClient({ members }: MembersClientProps) {
   const { t } = useLanguage();

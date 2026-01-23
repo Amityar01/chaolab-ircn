@@ -86,6 +86,56 @@ collections:
         required: false
         field: { label: "Interest", name: "interest", widget: "string" }
 
+  - name: postdocs
+    label: Postdoctoral Fellows
+    folder: content/members/postdocs
+    create: true
+    extension: yaml
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "URL Slug", name: "slug", widget: "string" }
+      - label: Name
+        name: name
+        widget: object
+        fields: *bilingual_text
+      - label: Role
+        name: role
+        widget: object
+        fields: *bilingual_text
+      - label: Bio
+        name: bio
+        widget: object
+        required: false
+        fields: *bilingual_text_long
+      - { label: "Photo", name: "image", widget: "image", required: false }
+      - { label: "Email", name: "email", widget: "string", required: false }
+
+  - name: researchers
+    label: Project Researchers
+    folder: content/members/researchers
+    create: true
+    extension: yaml
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "URL Slug", name: "slug", widget: "string" }
+      - label: Name
+        name: name
+        widget: object
+        fields: *bilingual_text
+      - label: Role
+        name: role
+        widget: object
+        fields: *bilingual_text
+      - label: Bio
+        name: bio
+        widget: object
+        required: false
+        fields: *bilingual_text_long
+      - { label: "Photo", name: "image", widget: "image", required: false }
+      - { label: "Email", name: "email", widget: "string", required: false }
+
   - name: students
     label: Students
     folder: content/members/students

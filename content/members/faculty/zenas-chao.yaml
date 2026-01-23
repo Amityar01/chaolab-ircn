@@ -53,9 +53,36 @@ research:
 
 education:
   - year: "2001-2007"
-    event: PhD, Biomedical Engineering, Georgia Institute of Technology
+    event: PhD, Biomedical Engineering, Georgia Institute of Technology (joint program with Emory University)
+    details: "Thesis: Toward the neurocomputer: goal-directed learning in embodied cultured networks. Advisor: Steve M. Potter"
   - year: "1994-1998"
-    event: Dual BS, Life Science / Chemistry, National Tsing Hua University, Taiwan
+    event: Dual BS, Life Science / Chemistry, National Tsing Hua University (NTHU), Taiwan
+
+career:
+  - year: "2019-present"
+    position: Associate Professor
+    institution: International Research Center for Neurointelligence (IRCN), The University of Tokyo
+    focus: Large-scale brain networks for predictive-coding signals; Predictive-coding signals in psychiatric conditions; Large-scale brain networks for creative problem solving
+  - year: "2016-2019"
+    position: Junior Associate Professor / Senior Lecturer
+    institution: Department of Neuroscience & Center for Medical Education, Kyoto University
+    focus: Large-scale brain networks for statistical learning; Cortical network dynamics in major depressive disorder
+  - year: "2015-2016"
+    position: Assistant Professor
+    institution: Department of Developmental Physiology, National Institute for Physiological Sciences (NIPS)
+    focus: Cortical network reorganization during functional recovery from spinal cord injuries
+  - year: "2010-2015"
+    position: Research Scientist
+    institution: Laboratory for Adaptive Intelligence, RIKEN Brain Science Institute
+    focus: Large-scale neurocognitive networks for perception, cognition, and consciousness in non-human primates
+  - year: "2008-2010"
+    position: Research Scientist
+    institution: Interactive Brain Communication Unit, RIKEN BSI-TOYOTA Collaboration Center
+    focus: ECoG-based brain-machine interfaces (BMIs) for non-human primates
+  - year: "2001-2007"
+    position: Graduate Research Assistant
+    institution: Laboratory for Neuroengineering, Georgia Institute of Technology
+    focus: Embodied cultured networks for robot controls; Biologically-realistic network modeling
 
 tags:
   - predictive-coding

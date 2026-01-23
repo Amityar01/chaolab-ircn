@@ -1,0 +1,15 @@
+id: 2012-sparse-decoding
+title: "On the decoding of intracranial data using sparse orthonormalized partial least squares"
+authors:
+  - van Gerven MAJ
+  - Chao ZC
+  - Heskes T
+year: 2012
+journal: Journal of Neural Engineering
+volume: "9"
+pages: "026017"
+type: journal
+tags:
+  - methods
+  - decoding
+  - brain-machine-interface

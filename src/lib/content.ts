@@ -48,7 +48,7 @@ function getFilesInDir(dir: string, ext: string): string[] {
 
 // ============ MEMBERS ============
 
-const memberCategories: MemberCategory[] = ['faculty', 'staff', 'students', 'alumni'];
+const memberCategories: MemberCategory[] = ['faculty', 'postdocs', 'researchers', 'students', 'alumni'];
 
 export function getAllMembers(): Member[] {
   const members: Member[] = [];

@@ -5,7 +5,7 @@ export interface BilingualText {
 }
 
 // Member types
-export type MemberCategory = 'faculty' | 'staff' | 'students' | 'alumni';
+export type MemberCategory = 'faculty' | 'postdocs' | 'researchers' | 'students' | 'alumni';
 
 export interface MemberLink {
   type: string;

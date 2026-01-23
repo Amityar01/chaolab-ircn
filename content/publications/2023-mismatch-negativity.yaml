@@ -1,0 +1,15 @@
+id: 2023-mismatch-negativity
+title: "Dissecting Mismatch Negativity: Early and Late Subcomponents for Detecting Deviants in Local and Global Sequence Regularities"
+authors:
+  - Huang YT
+  - Wu CT
+  - Koike S
+  - Chao ZC
+year: 2023
+journal: bioRxiv
+doi: "10.1101/2023.11.20.567982"
+type: preprint
+tags:
+  - prediction
+  - eeg
+  - mismatch-negativity

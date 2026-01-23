@@ -1,0 +1,20 @@
+id: 2013-hopls
+title: "Higher-Order Partial Least Squares (HOPLS): a generalized multi-linear regression method"
+authors:
+  - Zhao Q
+  - Caiafa CF
+  - Mandic DP
+  - Chao ZC
+  - Nagasaka Y
+  - Fujii N
+  - Zhang L
+  - Cichocki A
+year: 2013
+journal: IEEE Transactions on Pattern Analysis and Machine Intelligence
+volume: "35(7)"
+pages: "1660-1673"
+type: journal
+tags:
+  - methods
+  - machine-learning
+  - data-analysis

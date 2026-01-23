@@ -1,0 +1,15 @@
+id: 2010-arm-decoding
+title: "Long-term asynchronous decoding of arm motion using electrocorticographic signals in monkeys"
+authors:
+  - Chao ZC
+  - Nagasaka Y
+  - Fujii N
+year: 2010
+journal: Frontiers in Neuroengineering
+volume: "3"
+pages: "3"
+type: journal
+tags:
+  - brain-machine-interface
+  - primate
+  - decoding
