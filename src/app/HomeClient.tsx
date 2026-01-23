@@ -97,18 +97,23 @@ export default function HomeClient({
 
     const updateSize = () => {
       const w = window.innerWidth;
-      // Use viewport height only (fireflies exist in visible area)
-      const h = window.innerHeight;
+      // Use full document height - fireflies cover entire page
+      const h = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        window.innerHeight
+      );
       setViewportSize({ width: w, height: h });
 
-      // Initialize toys in viewport coordinates
+      // Initialize toys in document coordinates
       setToys(prev => {
         if (prev.length > 0) return prev;
+        const vh = window.innerHeight;
         return [
-          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: h * 0.25 },
-          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: h * 0.20 },
-          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: h * 0.65 },
-          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: h * 0.55 },
+          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: vh * 0.25 },
+          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: vh * 0.20 },
+          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: vh * 0.65 },
+          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: vh * 0.55 },
         ];
       });
     };
@@ -123,12 +128,13 @@ export default function HomeClient({
     };
   }, []);
 
-  // Detect real content elements as obstacles (viewport coordinates)
+  // Detect real content elements as obstacles (document coordinates)
   useEffect(() => {
     if (!mounted || viewportSize.width === 0) return;
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
+      const scrollY = window.scrollY;
 
       // Helper to check if element has actual visible content
       const hasVisibleContent = (el: Element): boolean => {
@@ -149,14 +155,14 @@ export default function HomeClient({
 
       let idx = 0;
 
-      // Navigation - use viewport coordinates directly
+      // Navigation - convert to document coordinates
       const nav = container.querySelector('header.nav');
       if (nav) {
         const rect = nav.getBoundingClientRect();
         newObstacles.push({
           id: `nav-${idx++}`,
           x: rect.left,
-          y: rect.top,
+          y: rect.top + scrollY,
           width: rect.width,
           height: rect.height,
         });
@@ -171,25 +177,23 @@ export default function HomeClient({
           newObstacles.push({
             id: `hero-${idx++}`,
             x: rect.left - 10,
-            y: rect.top - 10,
+            y: rect.top + scrollY - 10,
             width: rect.width + 20,
             height: rect.height + 20,
           });
         }
       });
 
-      // Research cards - target the actual card content, not wrappers
-      // Skip elements that are just empty containers
+      // Research cards - target the actual card, not children
       const cards = container.querySelectorAll('.research-card');
       cards.forEach(card => {
         if (!hasVisibleContent(card)) return;
         const rect = card.getBoundingClientRect();
-        // Skip tiny elements that are likely spacing or decoration
         if (rect.width < 50 || rect.height < 50) return;
         newObstacles.push({
           id: `card-${idx++}`,
           x: rect.left - 5,
-          y: rect.top - 5,
+          y: rect.top + scrollY - 5,
           width: rect.width + 10,
           height: rect.height + 10,
         });
@@ -200,13 +204,12 @@ export default function HomeClient({
       textElements.forEach(el => {
         if (!hasVisibleContent(el)) return;
         const rect = el.getBoundingClientRect();
-        // Skip elements that span too wide (likely wrappers) or are too small
         if (rect.width < 20 || rect.height < 10) return;
         if (rect.width > viewportSize.width * 0.9) return;
         newObstacles.push({
           id: `text-${idx++}`,
           x: rect.left - 10,
-          y: rect.top - 5,
+          y: rect.top + scrollY - 5,
           width: rect.width + 20,
           height: rect.height + 10,
         });
@@ -221,7 +224,7 @@ export default function HomeClient({
         newObstacles.push({
           id: `team-${idx++}`,
           x: rect.left - 10,
-          y: rect.top - 10,
+          y: rect.top + scrollY - 10,
           width: rect.width + 20,
           height: rect.height + 20,
         });
@@ -235,7 +238,7 @@ export default function HomeClient({
         newObstacles.push({
           id: `pub-${idx++}`,
           x: rect.left - 10,
-          y: rect.top - 10,
+          y: rect.top + scrollY - 10,
           width: rect.width + 20,
           height: rect.height + 20,
         });
@@ -248,13 +251,13 @@ export default function HomeClient({
         newObstacles.push({
           id: `footer-${idx++}`,
           x: rect.left,
-          y: rect.top,
+          y: rect.top + scrollY,
           width: rect.width,
           height: rect.height,
         });
       }
 
-      // Add toys (already in viewport coordinates)
+      // Add toys (already in document coordinates)
       toys.forEach(toy => {
         newObstacles.push({
           id: toy.id,
@@ -271,7 +274,7 @@ export default function HomeClient({
     // Update after DOM settles
     const timer = setTimeout(updateObstacles, 500);
 
-    // Update obstacles on scroll (content moves through viewport)
+    // Update obstacles on scroll so they stay in sync with document position
     window.addEventListener('scroll', updateObstacles, { passive: true });
     window.addEventListener('resize', updateObstacles);
     window.addEventListener('load', updateObstacles);
