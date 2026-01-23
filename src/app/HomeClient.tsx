@@ -134,130 +134,64 @@ export default function HomeClient({
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
-      const scrollY = window.scrollY;
 
-      // Helper to check if element has actual visible content
-      const hasVisibleContent = (el: Element): boolean => {
-        const style = window.getComputedStyle(el);
-        if (style.visibility === 'hidden' || style.opacity === '0') return false;
-        // Must have meaningful text or be an image
-        const text = el.textContent?.trim();
-        if (text && text.length > 0) return true;
-        if (el.tagName === 'IMG' || el.tagName === 'SVG') return true;
-        // Check for actual background content
-        if (style.backgroundImage !== 'none' && style.backgroundImage !== 'initial') return true;
-        return false;
-      };
-
-      // Find content elements - be specific to avoid empty wrappers
       const container = containerRef.current;
       if (!container) return;
 
+      // Get document coordinates using offsetTop/offsetLeft chain
+      const getDocumentCoords = (el: HTMLElement) => {
+        let top = 0;
+        let left = 0;
+        let current: HTMLElement | null = el;
+        while (current) {
+          top += current.offsetTop;
+          left += current.offsetLeft;
+          current = current.offsetParent as HTMLElement | null;
+        }
+        return { top, left, width: el.offsetWidth, height: el.offsetHeight };
+      };
+
       let idx = 0;
 
-      // Navigation - convert to document coordinates
-      const nav = container.querySelector('header.nav');
-      if (nav) {
-        const rect = nav.getBoundingClientRect();
-        newObstacles.push({
-          id: `nav-${idx++}`,
-          x: rect.left,
-          y: rect.top + scrollY,
-          width: rect.width,
-          height: rect.height,
-        });
-      }
+      // Skip nav - it's fixed/sticky and causes issues
+      // Fireflies can fly behind it, that's fine
 
-      // Hero section content (not wrapper)
-      const heroContent = container.querySelectorAll('.hero-section h1, .hero-section h2, .hero-section p, .hero-section .hero-content');
-      heroContent.forEach(el => {
-        if (!hasVisibleContent(el)) return;
-        const rect = el.getBoundingClientRect();
-        if (rect.width > 10 && rect.height > 10) {
+      // Only target LEAF text elements - actual headings and paragraphs
+      // Not containers that happen to have text children
+      const textSelectors = [
+        'h1', 'h2', 'h3', 'h4',
+        'p',
+        '.research-card',
+        'footer'
+      ];
+
+      textSelectors.forEach(selector => {
+        container.querySelectorAll(selector).forEach(el => {
+          const htmlEl = el as HTMLElement;
+
+          // Skip if hidden
+          const style = window.getComputedStyle(el);
+          if (style.display === 'none' || style.visibility === 'hidden') return;
+
+          // Skip if too small
+          if (htmlEl.offsetWidth < 20 || htmlEl.offsetHeight < 10) return;
+
+          const coords = getDocumentCoords(htmlEl);
+
+          // Add small padding
+          const padding = selector === '.research-card' || selector === 'footer' ? 5 : 8;
+
           newObstacles.push({
-            id: `hero-${idx++}`,
-            x: rect.left - 10,
-            y: rect.top + scrollY - 10,
-            width: rect.width + 20,
-            height: rect.height + 20,
+            id: `${selector}-${idx++}`,
+            x: coords.left - padding,
+            y: coords.top - padding,
+            width: coords.width + padding * 2,
+            height: coords.height + padding * 2,
           });
-        }
-      });
-
-      // Research cards - target the actual card, not children
-      const cards = container.querySelectorAll('.research-card');
-      cards.forEach(card => {
-        if (!hasVisibleContent(card)) return;
-        const rect = card.getBoundingClientRect();
-        if (rect.width < 50 || rect.height < 50) return;
-        newObstacles.push({
-          id: `card-${idx++}`,
-          x: rect.left - 5,
-          y: rect.top + scrollY - 5,
-          width: rect.width + 10,
-          height: rect.height + 10,
         });
       });
 
-      // Section headings and paragraphs (direct text content)
-      const textElements = container.querySelectorAll('section h2, section h3, section > div > p, section > div > h2');
-      textElements.forEach(el => {
-        if (!hasVisibleContent(el)) return;
-        const rect = el.getBoundingClientRect();
-        if (rect.width < 20 || rect.height < 10) return;
-        if (rect.width > viewportSize.width * 0.9) return;
-        newObstacles.push({
-          id: `text-${idx++}`,
-          x: rect.left - 10,
-          y: rect.top + scrollY - 5,
-          width: rect.width + 20,
-          height: rect.height + 10,
-        });
-      });
-
-      // Team and publications sections - be more selective
-      const teamContent = container.querySelectorAll('.team-preview h2, .team-preview h3, .team-preview p, .team-preview img, .team-preview .member-card');
-      teamContent.forEach(el => {
-        if (!hasVisibleContent(el)) return;
-        const rect = el.getBoundingClientRect();
-        if (rect.width < 50 || rect.height < 30) return;
-        newObstacles.push({
-          id: `team-${idx++}`,
-          x: rect.left - 10,
-          y: rect.top + scrollY - 10,
-          width: rect.width + 20,
-          height: rect.height + 20,
-        });
-      });
-
-      const pubContent = container.querySelectorAll('.publications-preview h2, .publications-preview h3, .publications-preview p, .publications-preview .publication-item');
-      pubContent.forEach(el => {
-        if (!hasVisibleContent(el)) return;
-        const rect = el.getBoundingClientRect();
-        if (rect.width < 50 || rect.height < 30) return;
-        newObstacles.push({
-          id: `pub-${idx++}`,
-          x: rect.left - 10,
-          y: rect.top + scrollY - 10,
-          width: rect.width + 20,
-          height: rect.height + 20,
-        });
-      });
-
-      // Footer
-      const footer = container.querySelector('footer');
-      if (footer) {
-        const rect = footer.getBoundingClientRect();
-        newObstacles.push({
-          id: `footer-${idx++}`,
-          x: rect.left,
-          y: rect.top + scrollY,
-          width: rect.width,
-          height: rect.height,
-        });
-      }
-
-      // Add toys (already in document coordinates)
+      // Add toys
       toys.forEach(toy => {
         newObstacles.push({
           id: toy.id,
@@ -271,19 +205,13 @@ export default function HomeClient({
       setObstacles(newObstacles);
     };
 
-    // Update after DOM settles
-    const timer = setTimeout(updateObstacles, 500);
-
-    // Update obstacles on scroll so they stay in sync with document position
-    window.addEventListener('scroll', updateObstacles, { passive: true });
+    // Calculate once after DOM is ready, and on resize
+    const timer = setTimeout(updateObstacles, 300);
     window.addEventListener('resize', updateObstacles);
-    window.addEventListener('load', updateObstacles);
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('scroll', updateObstacles);
       window.removeEventListener('resize', updateObstacles);
-      window.removeEventListener('load', updateObstacles);
     };
   }, [mounted, viewportSize.width, viewportSize.height, toys]);
 

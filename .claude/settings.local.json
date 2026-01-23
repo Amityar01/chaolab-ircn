@@ -33,7 +33,10 @@
       "WebFetch(domain:web.archive.org)",
       "Bash(npx playwright:*)",
       "Bash(node scrape-zenas.js:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(timeout:*)",
+      "Bash(gh api:*)",
+      "Bash(npx vercel --prod)"
     ]
   }
 }
