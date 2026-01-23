@@ -18,7 +18,7 @@ bilingual_text_long: &bilingual_text_long
   - { label: "Japanese", name: "ja", widget: "text" }
 
 collections:
-  # Homepage Settings
+  # Site Settings
   - name: settings
     label: Settings
     files:
@@ -46,9 +46,78 @@ collections:
             fields: *bilingual_text_long
           - { label: "Email", name: "email", widget: "string" }
           - { label: "Phone", name: "phone", widget: "string", required: false }
-          - { label: "Google Maps URL", name: "mapUrl", widget: "string", required: false }
+          - { label: "Google Maps Embed URL", name: "mapUrl", widget: "string", required: false }
 
-  # Members
+      - name: translations
+        label: UI Translations
+        file: content/translations.yaml
+        fields:
+          - label: Navigation
+            name: nav
+            widget: object
+            fields:
+              - label: Home
+                name: home
+                widget: object
+                fields: *bilingual_text
+              - label: Research
+                name: research
+                widget: object
+                fields: *bilingual_text
+              - label: Members
+                name: members
+                widget: object
+                fields: *bilingual_text
+              - label: Publications
+                name: publications
+                widget: object
+                fields: *bilingual_text
+              - label: News
+                name: news
+                widget: object
+                fields: *bilingual_text
+              - label: Contact
+                name: contact
+                widget: object
+                fields: *bilingual_text
+          - label: Common
+            name: common
+            widget: object
+            fields:
+              - label: Footer Description
+                name: footerDescription
+                widget: object
+                fields: *bilingual_text
+              - label: Read More
+                name: readMore
+                widget: object
+                fields: *bilingual_text
+              - label: Back to Top
+                name: backToTop
+                widget: object
+                fields: *bilingual_text
+          - label: Categories
+            name: categories
+            widget: object
+            fields:
+              - label: Publication
+                name: publication
+                widget: object
+                fields: *bilingual_text
+              - label: Award
+                name: award
+                widget: object
+                fields: *bilingual_text
+              - label: Event
+                name: event
+                widget: object
+                fields: *bilingual_text
+              - label: Announcement
+                name: announcement
+                widget: object
+                fields: *bilingual_text
+
+  # Faculty Members
   - name: faculty
     label: Faculty
     folder: content/members/faculty
@@ -71,21 +140,53 @@ collections:
         widget: object
         required: false
         fields: *bilingual_text_long
-      - { label: "Photo", name: "image", widget: "image", required: false }
+      - label: "Photo"
+        name: "image"
+        widget: "string"
+        required: false
+        hint: "Upload to /uploads or paste external URL (e.g. https://example.com/photo.jpg)"
       - { label: "Email", name: "email", widget: "string", required: false }
       - label: Links
         name: links
         widget: list
         required: false
         fields:
-          - { label: "Type", name: "type", widget: "string" }
+          - { label: "Type", name: "type", widget: "string", hint: "e.g. Website, Google Scholar, ORCID" }
           - { label: "URL", name: "url", widget: "string" }
+          - label: Label
+            name: label
+            widget: object
+            required: false
+            fields: *bilingual_text
       - label: Research Interests
         name: research
         widget: list
         required: false
         field: { label: "Interest", name: "interest", widget: "string" }
+      - label: Education
+        name: education
+        widget: list
+        required: false
+        fields:
+          - { label: "Year", name: "year", widget: "string", hint: "e.g. 2001-2007" }
+          - { label: "Degree/Event", name: "event", widget: "string" }
+          - { label: "Details", name: "details", widget: "string", required: false, hint: "Thesis title, advisor, etc." }
+      - label: Career History
+        name: career
+        widget: list
+        required: false
+        fields:
+          - { label: "Year", name: "year", widget: "string", hint: "e.g. 2019-present" }
+          - { label: "Position", name: "position", widget: "string" }
+          - { label: "Institution", name: "institution", widget: "string" }
+          - { label: "Research Focus", name: "focus", widget: "text", required: false }
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }
 
+  # Postdoctoral Fellows
   - name: postdocs
     label: Postdoctoral Fellows
     folder: content/members/postdocs
@@ -108,9 +209,26 @@ collections:
         widget: object
         required: false
         fields: *bilingual_text_long
-      - { label: "Photo", name: "image", widget: "image", required: false }
+      - label: "Photo"
+        name: "image"
+        widget: "string"
+        required: false
+        hint: "Upload to /uploads or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
+      - label: Links
+        name: links
+        widget: list
+        required: false
+        fields:
+          - { label: "Type", name: "type", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: Research Interests
+        name: research
+        widget: list
+        required: false
+        field: { label: "Interest", name: "interest", widget: "string" }
 
+  # Project Researchers
   - name: researchers
     label: Project Researchers
     folder: content/members/researchers
@@ -133,9 +251,26 @@ collections:
         widget: object
         required: false
         fields: *bilingual_text_long
-      - { label: "Photo", name: "image", widget: "image", required: false }
+      - label: "Photo"
+        name: "image"
+        widget: "string"
+        required: false
+        hint: "Upload to /uploads or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
+      - label: Links
+        name: links
+        widget: list
+        required: false
+        fields:
+          - { label: "Type", name: "type", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: Research Interests
+        name: research
+        widget: list
+        required: false
+        field: { label: "Interest", name: "interest", widget: "string" }
 
+  # Students
   - name: students
     label: Students
     folder: content/members/students
@@ -158,9 +293,19 @@ collections:
         widget: object
         required: false
         fields: *bilingual_text_long
-      - { label: "Photo", name: "image", widget: "image", required: false }
+      - label: "Photo"
+        name: "image"
+        widget: "string"
+        required: false
+        hint: "Upload to /uploads or paste external URL"
       - { label: "Email", name: "email", widget: "string", required: false }
+      - label: Research Interests
+        name: research
+        widget: list
+        required: false
+        field: { label: "Interest", name: "interest", widget: "string" }
 
+  # Alumni
   - name: alumni
     label: Alumni
     folder: content/members/alumni
@@ -178,7 +323,12 @@ collections:
         name: role
         widget: object
         fields: *bilingual_text
-      - { label: "Photo", name: "image", widget: "image", required: false }
+      - label: "Photo"
+        name: "image"
+        widget: "string"
+        required: false
+        hint: "Upload to /uploads or paste external URL"
+      - { label: "Current Position", name: "currentPosition", widget: "string", required: false }
 
   # Publications
   - name: publications
@@ -197,13 +347,21 @@ collections:
       - { label: "Year", name: "year", widget: "number", value_type: "int" }
       - { label: "Journal", name: "journal", widget: "string", required: false }
       - { label: "Conference", name: "conference", widget: "string", required: false }
+      - { label: "Publisher", name: "publisher", widget: "string", required: false, hint: "For books/chapters" }
       - { label: "Volume", name: "volume", widget: "string", required: false }
       - { label: "Pages", name: "pages", widget: "string", required: false }
       - { label: "DOI", name: "doi", widget: "string", required: false }
+      - { label: "URL", name: "url", widget: "string", required: false, hint: "Link to paper or preprint" }
+      - { label: "PDF", name: "pdf", widget: "file", required: false, hint: "Upload PDF to /uploads" }
       - label: Type
         name: type
         widget: select
-        options: ["journal", "conference", "book", "preprint", "thesis"]
+        options:
+          - { label: "Journal Article", value: "journal" }
+          - { label: "Conference Paper", value: "conference" }
+          - { label: "Book/Chapter", value: "book-chapter" }
+          - { label: "Preprint", value: "preprint" }
+          - { label: "Thesis", value: "thesis" }
       - label: Tags
         name: tags
         widget: list
@@ -227,12 +385,17 @@ collections:
       - label: Category
         name: category
         widget: select
-        options: ["publication", "award", "event", "announcement"]
+        options:
+          - { label: "Publication", value: "publication" }
+          - { label: "Award", value: "award" }
+          - { label: "Event", value: "event" }
+          - { label: "Announcement", value: "announcement" }
       - label: Excerpt
         name: excerpt
         widget: object
         required: false
         fields: *bilingual_text
+      - { label: "Featured Image", name: "image", widget: "image", required: false }
       - { label: "Link", name: "link", widget: "string", required: false }
       - { label: "Body", name: "body", widget: "markdown", required: false }
 
@@ -245,6 +408,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "ID", name: "id", widget: "string" }
+      - { label: "Order", name: "order", widget: "number", required: false, hint: "Display order (lower = first)" }
       - label: Title
         name: title
         widget: object
