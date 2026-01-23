@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import LanguageToggle from './LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -16,6 +16,16 @@ export default function Navigation({ translations }: NavigationProps) {
   const pathname = usePathname();
   const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     { href: '/', label: translations?.nav?.home || { en: 'Home', ja: 'ホーム' } },
@@ -29,7 +39,7 @@ export default function Navigation({ translations }: NavigationProps) {
   ];
 
   return (
-    <nav className="nav">
+    <nav className={`nav ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
         <Link href="/" className="nav-logo">
           Chao Lab

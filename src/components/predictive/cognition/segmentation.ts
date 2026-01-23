@@ -198,7 +198,7 @@ export function mergeCloseObjects(
   for (let i = 0; i < objects.length; i++) {
     if (used.has(i)) continue;
 
-    let current = objects[i];
+    const current = objects[i];
     const toMerge: ObjectFeatures[] = [current];
 
     // Find all objects to merge with this one

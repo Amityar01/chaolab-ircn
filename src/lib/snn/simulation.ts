@@ -21,8 +21,8 @@ import {
 } from './types';
 
 // Simple prediction state (bypasses complex readout)
-let smoothPredX = 0.5;
-let smoothPredY = 0.5;
+const smoothPredX = 0.5;
+const smoothPredY = 0.5;
 import { stepNeuron, updateFiringRate, computeInputCurrent } from './izhikevich';
 import { computeSynapticInputs, updateSynapses } from './synapse';
 import { createReservoir, resetNeuronStates, resetSynapseWeights } from './reservoir';

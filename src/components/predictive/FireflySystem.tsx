@@ -289,18 +289,12 @@ interface FireflySystemProps {
   obstacles: Obstacle[];
   width: number;
   height: number;
-  showBeliefs?: boolean;
-  showPaths?: boolean;
-  showDebug?: boolean;
 }
 
 export function FireflySystem({
   obstacles,
   width,
   height,
-  showBeliefs = false,
-  showPaths = true,
-  showDebug = false,
 }: FireflySystemProps) {
   const [fireflies, setFireflies] = useState<Firefly[]>([]);
   const [selectedFirefly, setSelectedFirefly] = useState<number | null>(null);
@@ -515,45 +509,24 @@ export function FireflySystem({
 
   // Update heatmap display
   const updateBeliefDisplay = useCallback(() => {
-    if (!showBeliefs) {
-      setBeliefCells([]);
+    if (selectedFirefly === null) {
+      setBeliefCells(prev => (prev.length === 0 ? prev : []));
       return;
     }
 
     const cells: typeof beliefCells = [];
-    const isSelected = selectedFirefly !== null;
-
-    if (isSelected && selectedFirefly !== null) {
-      const map = beliefMaps.current[selectedFirefly];
-      if (map) {
-        Object.entries(map).forEach(([key, cell]) => {
-          if (cell.belief > 0.2) {
-            const { x, y } = getCellCoords(key);
-            cells.push({ key, x, y, belief: cell.belief, visits: cell.visits, isSelected: true });
-          }
-        });
-      }
-    } else {
-      // Aggregate
-      const aggregated: Record<string, BeliefCell> = {};
-      beliefMaps.current.forEach(map => {
-        Object.entries(map).forEach(([key, cell]) => {
-          if (cell.belief > 0.2) {
-            if (!aggregated[key] || cell.visits > aggregated[key].visits) {
-              aggregated[key] = cell;
-            }
-          }
-        });
-      });
-
-      Object.entries(aggregated).forEach(([key, cell]) => {
-        const { x, y } = getCellCoords(key);
-        cells.push({ key, x, y, belief: cell.belief, visits: cell.visits, isSelected: false });
+    const map = beliefMaps.current[selectedFirefly];
+    if (map) {
+      Object.entries(map).forEach(([key, cell]) => {
+        if (cell.belief > 0.2) {
+          const { x, y } = getCellCoords(key);
+          cells.push({ key, x, y, belief: cell.belief, visits: cell.visits, isSelected: true });
+        }
       });
     }
 
     setBeliefCells(cells);
-  }, [showBeliefs, selectedFirefly]);
+  }, [selectedFirefly]);
 
   // Animation loop
   useEffect(() => {
@@ -574,7 +547,8 @@ export function FireflySystem({
       }
 
       setFireflies(prev => prev.map((firefly, idx) => {
-        let { x, y, vx, vy, targetAngle, angularVel, wanderAngle, surprised, omissionSurprise, surpriseTime, phase, trail, hue } = firefly;
+        const { x, y, phase, trail } = firefly;
+        let { vx, vy, targetAngle, angularVel, wanderAngle, surprised, omissionSurprise, surpriseTime } = firefly;
 
         const currentAngle = Math.atan2(vy, vx);
         const speed = Math.sqrt(vx * vx + vy * vy);
@@ -759,21 +733,6 @@ export function FireflySystem({
         zIndex: 10,
       }}
     >
-      {/* Debug: show obstacle rectangles */}
-      {showDebug && obstacles.map(obs => (
-        <rect
-          key={`debug-${obs.id}`}
-          x={obs.x}
-          y={obs.y}
-          width={obs.width}
-          height={obs.height}
-          fill="none"
-          stroke="rgba(255, 100, 100, 0.6)"
-          strokeWidth={1}
-          strokeDasharray="4,2"
-        />
-      ))}
-
       {/* Belief heatmap */}
       {beliefCells.map(cell => (
         <BeliefCell
@@ -797,8 +756,8 @@ export function FireflySystem({
           key={firefly.id}
           firefly={firefly}
           selected={selectedFirefly === firefly.id}
-          showPrediction={showPaths}
-          predictedPath={predictedPaths[i]}
+          showPrediction={selectedFirefly === firefly.id}
+          predictedPath={selectedFirefly === firefly.id ? predictedPaths[i] : []}
           onClick={() => handleFireflyClick(firefly.id)}
         />
       ))}

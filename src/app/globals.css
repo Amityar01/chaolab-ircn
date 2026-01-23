@@ -141,6 +141,17 @@ a:hover {
 }
 
 /* ============================================
+   FULL-BLEED (HOME OVERLAY SAFE)
+   ============================================ */
+.home-fullbleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: -6rem; /* cancels .main-content top padding */
+  overflow-x: clip;
+}
+
+/* ============================================
    NAVIGATION
    ============================================ */
 .nav {

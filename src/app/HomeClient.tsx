@@ -6,7 +6,6 @@
 // Main homepage with predictive fireflies (simplified)
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroSection from '@/components/home/HeroSection';
 import TeamPreview from '@/components/home/TeamPreview';
@@ -46,22 +45,17 @@ interface ToyState {
 
 export default function HomeClient({
   settings,
-  contact,
   themes,
   pi,
   memberCount,
   publications,
 }: HomeClientProps) {
   const sortedThemes = [...themes].sort((a, b) => (a.order || 99) - (b.order || 99));
-  const { t, language, setLanguage } = useLanguage();
+  const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [showHint, setShowHint] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
-  const [showBeliefs, setShowBeliefs] = useState(false);
-  const [showPaths, setShowPaths] = useState(true);
-  const [showDebug, setShowDebug] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,15 +73,6 @@ export default function HomeClient({
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
-
-  // Handle scroll for nav styling
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Initialize page size and toys
@@ -238,7 +223,7 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen relative"
+      className="home-fullbleed min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
       {/* Firefly System - fixed to viewport */}
@@ -247,9 +232,6 @@ export default function HomeClient({
           obstacles={obstacles}
           width={viewportSize.width}
           height={viewportSize.height}
-          showBeliefs={showBeliefs}
-          showPaths={showPaths}
-          showDebug={showDebug}
         />
       )}
 
@@ -269,47 +251,8 @@ export default function HomeClient({
 
       {/* Main Content */}
       <div className="relative z-10">
-        {/* Header */}
-        <header className={`nav ${isScrolled ? 'scrolled' : ''}`}>
-          <div className="nav-container">
-            <Link href="/" className="nav-logo">
-              {settings?.labName ? t(settings.labName) : 'Chao Lab'}
-            </Link>
-
-            <nav className="nav-links">
-              <Link href="/research" className="nav-link">
-                {t({ en: 'Research', ja: '研究' })}
-              </Link>
-              <Link href="/publications" className="nav-link">
-                {t({ en: 'Publications', ja: '論文' })}
-              </Link>
-              <Link href="/members" className="nav-link">
-                {t({ en: 'Members', ja: 'メンバー' })}
-              </Link>
-              <Link href="/contact" className="nav-link">
-                {t({ en: 'Contact', ja: '連絡先' })}
-              </Link>
-
-              <div className="lang-toggle">
-                <button
-                  onClick={() => setLanguage('en')}
-                  className={`lang-btn ${language === 'en' ? 'active' : ''}`}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => setLanguage('ja')}
-                  className={`lang-btn ${language === 'ja' ? 'active' : ''}`}
-                >
-                  日本語
-                </button>
-              </div>
-            </nav>
-          </div>
-        </header>
-
         {/* Hero Section */}
-        <HeroSection />
+        <HeroSection settings={settings} />
 
         {/* Interactive hint */}
         {showHint && !reducedMotion && (
@@ -381,103 +324,6 @@ export default function HomeClient({
             publications={publications}
           />
         </div>
-
-        {/* Footer */}
-        <footer className="footer">
-          <div className="footer-container">
-            <div className="grid md:grid-cols-3 gap-10 mb-12">
-              <div>
-                <h3
-                  className="font-display text-xl mb-4"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  {settings?.labName ? t(settings.labName) : 'Chao Lab'}
-                </h3>
-                <p className="text-[var(--text-muted)] leading-relaxed">
-                  {settings?.description
-                    ? t(settings.description)
-                    : t({
-                      en: 'Understanding predictive coding and creativity in the brain.',
-                      ja: '脳における予測符号化と創造性を理解する。'
-                    })}
-                </p>
-              </div>
-
-              <div>
-                <h4
-                  className="font-mono text-xs uppercase tracking-wide mb-4"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {t({ en: 'Affiliations', ja: '所属' })}
-                </h4>
-                <div className="flex flex-col gap-3 text-[var(--text-muted)]">
-                  <a
-                    href="https://ircn.jp"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[var(--firefly-glow)] transition-colors"
-                  >
-                    IRCN, University of Tokyo
-                  </a>
-                  <a
-                    href="https://www.u-tokyo.ac.jp"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[var(--text-primary)] transition-colors"
-                  >
-                    The University of Tokyo
-                  </a>
-                  <a
-                    href="https://www.daikin.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[var(--accent-cyan)] transition-colors"
-                  >
-                    Daikin Industries
-                  </a>
-                </div>
-              </div>
-
-              <div>
-                <h4
-                  className="font-mono text-xs uppercase tracking-wide mb-4"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {t({ en: 'Contact', ja: '連絡先' })}
-                </h4>
-                <a
-                  href={`mailto:${contact?.email || 'zenas.c.chao@ircn.jp'}`}
-                  className="text-[var(--text-muted)] hover:text-[var(--firefly-glow)] transition-colors"
-                >
-                  {contact?.email || 'zenas.c.chao@ircn.jp'}
-                </a>
-              </div>
-            </div>
-
-            <div
-              className="pt-8 flex flex-wrap justify-between items-center gap-4 text-sm"
-              style={{ borderTop: '1px solid var(--card-border)', color: 'var(--text-muted)' }}
-            >
-              <span>
-                © {new Date().getFullYear()} {settings?.labName ? t(settings.labName) : 'Chao Lab'}, IRCN
-              </span>
-              <div className="flex gap-6">
-                <Link href="/research" className="hover:text-[var(--text-primary)] transition-colors">
-                  {t({ en: 'Research', ja: '研究' })}
-                </Link>
-                <Link href="/publications" className="hover:text-[var(--text-primary)] transition-colors">
-                  {t({ en: 'Publications', ja: '論文' })}
-                </Link>
-                <Link href="/members" className="hover:text-[var(--text-primary)] transition-colors">
-                  {t({ en: 'Members', ja: 'メンバー' })}
-                </Link>
-                <Link href="/contact" className="hover:text-[var(--text-primary)] transition-colors">
-                  {t({ en: 'Contact', ja: '連絡先' })}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
       </div>
 
       {/* Legend */}
@@ -501,44 +347,6 @@ export default function HomeClient({
         </div>
       )}
 
-      {/* Toggle controls */}
-      {mounted && !reducedMotion && (
-        <div
-          className="fixed bottom-4 right-4 z-40 font-mono text-xs flex items-center gap-4"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showBeliefs}
-              onChange={(e) => setShowBeliefs(e.target.checked)}
-              className="w-3 h-3"
-              style={{ accentColor: '#ffb432' }}
-            />
-            beliefs
-          </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showPaths}
-              onChange={(e) => setShowPaths(e.target.checked)}
-              className="w-3 h-3"
-              style={{ accentColor: 'var(--firefly-glow)' }}
-            />
-            paths
-          </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showDebug}
-              onChange={(e) => setShowDebug(e.target.checked)}
-              className="w-3 h-3"
-              style={{ accentColor: '#ff6b6b' }}
-            />
-            debug
-          </label>
-        </div>
-      )}
     </div>
   );
 }
