@@ -291,6 +291,7 @@ interface FireflySystemProps {
   height: number;
   showBeliefs?: boolean;
   showPaths?: boolean;
+  showDebug?: boolean;
 }
 
 export function FireflySystem({
@@ -299,6 +300,7 @@ export function FireflySystem({
   height,
   showBeliefs = false,
   showPaths = true,
+  showDebug = false,
 }: FireflySystemProps) {
   const [fireflies, setFireflies] = useState<Firefly[]>([]);
   const [selectedFirefly, setSelectedFirefly] = useState<number | null>(null);
@@ -737,13 +739,28 @@ export function FireflySystem({
       width={width}
       height={height}
       style={{
-        position: 'absolute',
+        position: 'fixed',
         top: 0,
         left: 0,
         pointerEvents: 'none',
         zIndex: 10,
       }}
     >
+      {/* Debug: show obstacle rectangles */}
+      {showDebug && obstacles.map(obs => (
+        <rect
+          key={`debug-${obs.id}`}
+          x={obs.x}
+          y={obs.y}
+          width={obs.width}
+          height={obs.height}
+          fill="none"
+          stroke="rgba(255, 100, 100, 0.6)"
+          strokeWidth={1}
+          strokeDasharray="4,2"
+        />
+      ))}
+
       {/* Belief heatmap */}
       {beliefCells.map(cell => (
         <BeliefCell

@@ -60,6 +60,7 @@ export default function HomeClient({
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [showBeliefs, setShowBeliefs] = useState(false);
   const [showPaths, setShowPaths] = useState(true);
+  const [showDebug, setShowDebug] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Refs for tracking elements
@@ -96,23 +97,18 @@ export default function HomeClient({
 
     const updateSize = () => {
       const w = window.innerWidth;
-      // Use full document height
-      const h = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        window.innerHeight
-      );
+      // Use viewport height only (fireflies exist in visible area)
+      const h = window.innerHeight;
       setViewportSize({ width: w, height: h });
 
-      // Initialize toys in document coordinates
+      // Initialize toys in viewport coordinates
       setToys(prev => {
         if (prev.length > 0) return prev;
-        const vh = window.innerHeight;
         return [
-          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: vh * 0.25 },
-          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: vh * 0.20 },
-          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: vh * 0.65 },
-          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: vh * 0.55 },
+          { id: 'toy_0', shape: 'circle', x: w * 0.05, y: h * 0.25 },
+          { id: 'toy_1', shape: 'triangle', x: w * 0.92, y: h * 0.20 },
+          { id: 'toy_2', shape: 'diamond', x: w * 0.03, y: h * 0.65 },
+          { id: 'toy_3', shape: 'hexagon', x: w * 0.94, y: h * 0.55 },
         ];
       });
     };
@@ -127,22 +123,23 @@ export default function HomeClient({
     };
   }, []);
 
-  // Detect real content elements as obstacles
+  // Detect real content elements as obstacles (viewport coordinates)
   useEffect(() => {
     if (!mounted || viewportSize.width === 0) return;
 
     const updateObstacles = () => {
       const newObstacles: Array<{ id: string; x: number; y: number; width: number; height: number }> = [];
-      const scrollY = window.scrollY;
 
       // Helper to check if element has actual visible content
       const hasVisibleContent = (el: Element): boolean => {
         const style = window.getComputedStyle(el);
         if (style.visibility === 'hidden' || style.opacity === '0') return false;
-        // Check if it has text or is an image/svg
-        if (el.textContent?.trim() || el.tagName === 'IMG' || el.tagName === 'SVG') return true;
-        // Check if it has background
-        if (style.backgroundImage !== 'none' || style.backgroundColor !== 'rgba(0, 0, 0, 0)') return true;
+        // Must have meaningful text or be an image
+        const text = el.textContent?.trim();
+        if (text && text.length > 0) return true;
+        if (el.tagName === 'IMG' || el.tagName === 'SVG') return true;
+        // Check for actual background content
+        if (style.backgroundImage !== 'none' && style.backgroundImage !== 'initial') return true;
         return false;
       };
 
@@ -152,14 +149,14 @@ export default function HomeClient({
 
       let idx = 0;
 
-      // Navigation
+      // Navigation - use viewport coordinates directly
       const nav = container.querySelector('header.nav');
       if (nav) {
         const rect = nav.getBoundingClientRect();
         newObstacles.push({
           id: `nav-${idx++}`,
           x: rect.left,
-          y: rect.top + scrollY,
+          y: rect.top,
           width: rect.width,
           height: rect.height,
         });
@@ -168,31 +165,34 @@ export default function HomeClient({
       // Hero section content (not wrapper)
       const heroContent = container.querySelectorAll('.hero-section h1, .hero-section h2, .hero-section p, .hero-section .hero-content');
       heroContent.forEach(el => {
+        if (!hasVisibleContent(el)) return;
         const rect = el.getBoundingClientRect();
         if (rect.width > 10 && rect.height > 10) {
           newObstacles.push({
             id: `hero-${idx++}`,
             x: rect.left - 10,
-            y: rect.top + scrollY - 10,
+            y: rect.top - 10,
             width: rect.width + 20,
             height: rect.height + 20,
           });
         }
       });
 
-      // Research cards (the actual card elements)
-      const cards = container.querySelectorAll('.research-card > *, .card');
-      cards.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.width > 50 && rect.height > 50) {
-          newObstacles.push({
-            id: `card-${idx++}`,
-            x: rect.left - 5,
-            y: rect.top + scrollY - 5,
-            width: rect.width + 10,
-            height: rect.height + 10,
-          });
-        }
+      // Research cards - target the actual card content, not wrappers
+      // Skip elements that are just empty containers
+      const cards = container.querySelectorAll('.research-card');
+      cards.forEach(card => {
+        if (!hasVisibleContent(card)) return;
+        const rect = card.getBoundingClientRect();
+        // Skip tiny elements that are likely spacing or decoration
+        if (rect.width < 50 || rect.height < 50) return;
+        newObstacles.push({
+          id: `card-${idx++}`,
+          x: rect.left - 5,
+          y: rect.top - 5,
+          width: rect.width + 10,
+          height: rect.height + 10,
+        });
       });
 
       // Section headings and paragraphs (direct text content)
@@ -200,30 +200,45 @@ export default function HomeClient({
       textElements.forEach(el => {
         if (!hasVisibleContent(el)) return;
         const rect = el.getBoundingClientRect();
-        if (rect.width > 20 && rect.height > 10 && rect.width < viewportSize.width * 0.9) {
-          newObstacles.push({
-            id: `text-${idx++}`,
-            x: rect.left - 10,
-            y: rect.top + scrollY - 5,
-            width: rect.width + 20,
-            height: rect.height + 10,
-          });
-        }
+        // Skip elements that span too wide (likely wrappers) or are too small
+        if (rect.width < 20 || rect.height < 10) return;
+        if (rect.width > viewportSize.width * 0.9) return;
+        newObstacles.push({
+          id: `text-${idx++}`,
+          x: rect.left - 10,
+          y: rect.top - 5,
+          width: rect.width + 20,
+          height: rect.height + 10,
+        });
       });
 
-      // Team and publications sections
-      const sections = container.querySelectorAll('.team-preview > *, .publications-preview > *');
-      sections.forEach(el => {
+      // Team and publications sections - be more selective
+      const teamContent = container.querySelectorAll('.team-preview h2, .team-preview h3, .team-preview p, .team-preview img, .team-preview .member-card');
+      teamContent.forEach(el => {
+        if (!hasVisibleContent(el)) return;
         const rect = el.getBoundingClientRect();
-        if (rect.width > 100 && rect.height > 50) {
-          newObstacles.push({
-            id: `section-${idx++}`,
-            x: rect.left - 10,
-            y: rect.top + scrollY - 10,
-            width: rect.width + 20,
-            height: rect.height + 20,
-          });
-        }
+        if (rect.width < 50 || rect.height < 30) return;
+        newObstacles.push({
+          id: `team-${idx++}`,
+          x: rect.left - 10,
+          y: rect.top - 10,
+          width: rect.width + 20,
+          height: rect.height + 20,
+        });
+      });
+
+      const pubContent = container.querySelectorAll('.publications-preview h2, .publications-preview h3, .publications-preview p, .publications-preview .publication-item');
+      pubContent.forEach(el => {
+        if (!hasVisibleContent(el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.width < 50 || rect.height < 30) return;
+        newObstacles.push({
+          id: `pub-${idx++}`,
+          x: rect.left - 10,
+          y: rect.top - 10,
+          width: rect.width + 20,
+          height: rect.height + 20,
+        });
       });
 
       // Footer
@@ -233,13 +248,13 @@ export default function HomeClient({
         newObstacles.push({
           id: `footer-${idx++}`,
           x: rect.left,
-          y: rect.top + scrollY,
+          y: rect.top,
           width: rect.width,
           height: rect.height,
         });
       }
 
-      // Add toys
+      // Add toys (already in viewport coordinates)
       toys.forEach(toy => {
         newObstacles.push({
           id: toy.id,
@@ -255,13 +270,17 @@ export default function HomeClient({
 
     // Update after DOM settles
     const timer = setTimeout(updateObstacles, 500);
-    window.addEventListener('load', updateObstacles);
+
+    // Update obstacles on scroll (content moves through viewport)
+    window.addEventListener('scroll', updateObstacles, { passive: true });
     window.addEventListener('resize', updateObstacles);
+    window.addEventListener('load', updateObstacles);
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('load', updateObstacles);
+      window.removeEventListener('scroll', updateObstacles);
       window.removeEventListener('resize', updateObstacles);
+      window.removeEventListener('load', updateObstacles);
     };
   }, [mounted, viewportSize.width, viewportSize.height, toys]);
 
@@ -287,6 +306,7 @@ export default function HomeClient({
           height={viewportSize.height}
           showBeliefs={showBeliefs}
           showPaths={showPaths}
+          showDebug={showDebug}
         />
       )}
 
@@ -563,6 +583,16 @@ export default function HomeClient({
               style={{ accentColor: 'var(--firefly-glow)' }}
             />
             paths
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showDebug}
+              onChange={(e) => setShowDebug(e.target.checked)}
+              className="w-3 h-3"
+              style={{ accentColor: '#ff6b6b' }}
+            />
+            debug
           </label>
         </div>
       )}
