@@ -35,8 +35,13 @@ interface HomeClientProps {
   publications: Publication[];
 }
 
-// Toy configuration - fewer toys, intentionally placed
-const TOY_SHAPES: ToyShape[] = ['circle', 'triangle', 'square', 'diamond'];
+// Only 4 toys, strategically placed
+const TOY_CONFIGS: Array<{ shape: ToyShape; position: (w: number, h: number) => Vec2 }> = [
+  { shape: 'circle', position: (w, h) => ({ x: w * 0.08, y: h * 0.3 }) },
+  { shape: 'triangle', position: (w, h) => ({ x: w * 0.88, y: h * 0.25 }) },
+  { shape: 'diamond', position: (w, h) => ({ x: w * 0.05, y: h * 0.7 }) },
+  { shape: 'hexagon', position: (w, h) => ({ x: w * 0.92, y: h * 0.65 }) },
+];
 
 export default function HomeClient({
   settings,
@@ -52,38 +57,24 @@ export default function HomeClient({
   const [showHint, setShowHint] = useState(true);
   const [toyPositions, setToyPositions] = useState<Map<string, { position: Vec2; isDragging: boolean }>>(new Map());
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
   const teamRef = useRef<HTMLDivElement>(null);
   const pubsRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  const [canvasBounds, setCanvasBounds] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
-  // Build obstacles from DOM elements
+  // Canvas bounds = viewport size (fixed positioning)
+  const canvasBounds = useMemo(() => ({
+    x: 0,
+    y: 0,
+    width: viewportSize.width,
+    height: viewportSize.height,
+  }), [viewportSize]);
+
+  // Build obstacles from DOM elements (viewport-relative for fixed canvas)
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
-
-  // Initialize toys with intentional positions along margins
-  const initialToys = useMemo(() => {
-    if (typeof window === 'undefined') return [];
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    // Place toys deliberately - in margins, not random dump
-    const positions: Vec2[] = [
-      { x: width * 0.08, y: height * 0.25 },   // Left side, upper
-      { x: width * 0.88, y: height * 0.35 },   // Right side
-      { x: width * 0.12, y: height * 0.65 },   // Left side, lower
-      { x: width * 0.85, y: height * 0.75 },   // Right side, lower
-    ];
-
-    return TOY_SHAPES.map((shape, i) => ({
-      id: `toy_${i}`,
-      shape,
-      position: positions[i] || { x: 100, y: 300 + i * 150 },
-      colorIndex: i,
-    }));
-  }, []);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -94,86 +85,85 @@ export default function HomeClient({
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Initialize
+  // Initialize and track viewport size
   useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => setShowHint(false), 8000);
-    return () => clearTimeout(timer);
-  }, []);
 
-  // Update canvas bounds
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateBounds = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      setCanvasBounds({
-        x: 0,
-        y: 0,
-        width: rect.width,
-        height: rect.height,
+    const updateViewport = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
       });
     };
 
-    updateBounds();
-    window.addEventListener('resize', updateBounds);
-    return () => window.removeEventListener('resize', updateBounds);
-  }, [mounted]);
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
 
-  // Update obstacles from DOM elements
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateViewport);
+    };
+  }, []);
+
+  // Update obstacles from DOM elements (viewport-relative coordinates)
   useEffect(() => {
-    if (!mounted || !containerRef.current) return;
+    if (!mounted || viewportSize.width === 0) return;
 
     const updateObstacles = () => {
-      if (!containerRef.current) return;
-      const containerRect = containerRef.current.getBoundingClientRect();
       const newObstacles: Obstacle[] = [];
 
-      // Add research cards as fixed obstacles
+      // Add research cards as fixed obstacles (viewport-relative)
       cardRefs.current.forEach((element, id) => {
         if (!element) return;
         const rect = element.getBoundingClientRect();
-        newObstacles.push({
-          id,
-          type: 'fixed',
-          bounds: {
-            x: rect.left - containerRect.left,
-            y: rect.top - containerRect.top,
-            width: rect.width,
-            height: rect.height,
-          },
-        });
+        // Only include if visible in viewport
+        if (rect.bottom > 0 && rect.top < viewportSize.height) {
+          newObstacles.push({
+            id,
+            type: 'fixed',
+            bounds: {
+              x: rect.left,
+              y: rect.top,
+              width: rect.width,
+              height: rect.height,
+            },
+          });
+        }
       });
 
       // Add team section
       if (teamRef.current) {
         const rect = teamRef.current.getBoundingClientRect();
-        newObstacles.push({
-          id: 'team-section',
-          type: 'fixed',
-          bounds: {
-            x: rect.left - containerRect.left,
-            y: rect.top - containerRect.top,
-            width: rect.width,
-            height: rect.height,
-          },
-        });
+        if (rect.bottom > 0 && rect.top < viewportSize.height) {
+          newObstacles.push({
+            id: 'team-section',
+            type: 'fixed',
+            bounds: {
+              x: rect.left,
+              y: rect.top,
+              width: rect.width,
+              height: rect.height,
+            },
+          });
+        }
       }
 
       // Add publications section
       if (pubsRef.current) {
         const rect = pubsRef.current.getBoundingClientRect();
-        newObstacles.push({
-          id: 'pubs-section',
-          type: 'fixed',
-          bounds: {
-            x: rect.left - containerRect.left,
-            y: rect.top - containerRect.top,
-            width: rect.width,
-            height: rect.height,
-          },
-        });
+        if (rect.bottom > 0 && rect.top < viewportSize.height) {
+          newObstacles.push({
+            id: 'pubs-section',
+            type: 'fixed',
+            bounds: {
+              x: rect.left,
+              y: rect.top,
+              width: rect.width,
+              height: rect.height,
+            },
+          });
+        }
       }
 
       // Add toys as draggable obstacles
@@ -195,17 +185,15 @@ export default function HomeClient({
 
     updateObstacles();
     window.addEventListener('scroll', updateObstacles);
-    window.addEventListener('resize', updateObstacles);
 
-    // Update periodically for smoother tracking
+    // Update frequently for smooth tracking
     const interval = setInterval(updateObstacles, 100);
 
     return () => {
       window.removeEventListener('scroll', updateObstacles);
-      window.removeEventListener('resize', updateObstacles);
       clearInterval(interval);
     };
-  }, [mounted, toyPositions]);
+  }, [mounted, viewportSize, toyPositions]);
 
   // Handle toy position changes
   const handleToyPositionChange = useCallback((id: string, position: Vec2, isDragging: boolean) => {
@@ -225,12 +213,12 @@ export default function HomeClient({
     }
   }, []);
 
-  // Initialize firefly engine
-  const { fireflies, time, isRunning } = useFireflyEngine(
+  // Initialize firefly engine with 4 fireflies
+  const { fireflies, time } = useFireflyEngine(
     obstacles,
     canvasBounds,
-    CONFIG.FIREFLY_COUNT,
-    mounted && !reducedMotion
+    4, // Explicitly 4 fireflies
+    mounted && !reducedMotion && viewportSize.width > 0
   );
 
   return (
@@ -239,8 +227,8 @@ export default function HomeClient({
       className="min-h-screen relative overflow-x-hidden"
       style={{ background: 'var(--deep-space)' }}
     >
-      {/* Firefly Canvas */}
-      {mounted && !reducedMotion && (
+      {/* Firefly Canvas - fixed to viewport */}
+      {mounted && !reducedMotion && viewportSize.width > 0 && (
         <PredictiveCanvas
           fireflies={fireflies}
           canvasBounds={canvasBounds}
@@ -252,14 +240,14 @@ export default function HomeClient({
         />
       )}
 
-      {/* Draggable Toys */}
-      {mounted && !reducedMotion && initialToys.map((toy, i) => (
+      {/* Draggable Toys - fixed to viewport, in margins */}
+      {mounted && !reducedMotion && viewportSize.width > 0 && TOY_CONFIGS.map((config, i) => (
         <DraggableToy
-          key={toy.id}
-          id={toy.id}
-          shape={toy.shape}
-          initialPosition={toy.position}
-          size={45 + Math.random() * 15}
+          key={`toy_${i}`}
+          id={`toy_${i}`}
+          shape={config.shape}
+          initialPosition={config.position(viewportSize.width, viewportSize.height)}
+          size={50}
           colorIndex={i}
           onPositionChange={handleToyPositionChange}
           containerRef={containerRef}
@@ -319,7 +307,6 @@ export default function HomeClient({
               border: '1px solid var(--card-border)',
               backdropFilter: 'blur(12px)',
               color: 'var(--text-muted)',
-              animation: 'pulse 2s ease-in-out infinite',
             }}
           >
             <span style={{ color: 'var(--firefly-glow)' }}>✦</span>
