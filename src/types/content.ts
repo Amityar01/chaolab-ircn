@@ -13,6 +13,19 @@ export interface MemberLink {
   label?: BilingualText;
 }
 
+export interface EducationEntry {
+  year: string;
+  event: string;
+  details?: string;
+}
+
+export interface CareerEntry {
+  year: string;
+  position: string;
+  institution: string;
+  focus?: string;
+}
+
 export interface Member {
   id: string;
   slug: string;
@@ -24,7 +37,9 @@ export interface Member {
   email?: string;
   links?: MemberLink[];
   research?: string[];
-  education?: Array<{ year: string; event: string }>;
+  education?: EducationEntry[];
+  career?: CareerEntry[];
+  tags?: string[];
 }
 
 // Publication types - now dynamic from site config
