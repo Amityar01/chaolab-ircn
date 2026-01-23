@@ -60,6 +60,7 @@ export default function HomeClient({
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [showBeliefs, setShowBeliefs] = useState(false);
   const [showPaths, setShowPaths] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Refs for tracking elements
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,6 +78,15 @@ export default function HomeClient({
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  // Handle scroll for nav styling
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Initialize page size and toys
@@ -297,7 +307,7 @@ export default function HomeClient({
       {/* Main Content */}
       <div className="relative z-10">
         {/* Header */}
-        <header className="nav">
+        <header className={`nav ${isScrolled ? 'scrolled' : ''}`}>
           <div className="nav-container">
             <Link href="/" className="nav-logo">
               {settings?.labName ? t(settings.labName) : 'Chao Lab'}
@@ -424,9 +434,9 @@ export default function HomeClient({
                   {settings?.description
                     ? t(settings.description)
                     : t({
-                        en: 'Understanding predictive coding and creativity in the brain.',
-                        ja: '脳における予測符号化と創造性を理解する。'
-                      })}
+                      en: 'Understanding predictive coding and creativity in the brain.',
+                      ja: '脳における予測符号化と創造性を理解する。'
+                    })}
                 </p>
               </div>
 
