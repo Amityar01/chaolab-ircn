@@ -211,24 +211,13 @@ export default function HomeClient({
     >
       {/* Firefly System - fixed to viewport */}
       {mounted && !reducedMotion && viewportSize.width > 0 && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            width: '100vw',
-            height: '100vh',
-            pointerEvents: 'none',
-            zIndex: 5,
-          }}
-        >
-          <FireflySystem
-            obstacles={obstacles}
-            width={viewportSize.width}
-            height={viewportSize.height}
-            showBeliefs={showBeliefs}
-            showPaths={showPaths}
-          />
-        </div>
+        <FireflySystem
+          obstacles={obstacles}
+          width={viewportSize.width}
+          height={viewportSize.height}
+          showBeliefs={showBeliefs}
+          showPaths={showPaths}
+        />
       )}
 
       {/* Draggable Toys */}

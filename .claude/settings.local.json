@@ -26,7 +26,8 @@
       "WebFetch(domain:chaolab-ircn.vercel.app)",
       "Bash(grep:*)",
       "WebFetch(domain:link.springer.com)",
-      "WebFetch(domain:www.sciencedirect.com)"
+      "WebFetch(domain:www.sciencedirect.com)",
+      "WebFetch(domain:www.daikin.com)"
     ]
   }
 }
