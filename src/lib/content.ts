@@ -11,6 +11,7 @@ import type {
   ContactInfo,
   HomepageSettings,
   Translations,
+  SiteConfig,
 } from '@/types/content';
 
 const contentDir = path.join(process.cwd(), 'content');
@@ -48,12 +49,11 @@ function getFilesInDir(dir: string, ext: string): string[] {
 
 // ============ MEMBERS ============
 
-const memberCategories: MemberCategory[] = ['faculty', 'postdocs', 'researchers', 'students', 'alumni'];
-
 export function getAllMembers(): Member[] {
   const members: Member[] = [];
+  const categories = getMemberCategories();
 
-  for (const category of memberCategories) {
+  for (const category of categories) {
     const categoryDir = path.join(contentDir, 'members', category);
     const files = getFilesInDir(categoryDir, '.yaml');
 
@@ -153,4 +153,42 @@ export function getHomepageSettings(): HomepageSettings | null {
 
 export function getTranslations(): Translations | null {
   return readYaml<Translations>(path.join(contentDir, 'translations.yaml'));
+}
+
+// ============ SITE CONFIG ============
+
+const defaultSiteConfig: SiteConfig = {
+  memberCategories: [
+    { id: 'faculty', label: { en: 'Faculty', ja: '教員' }, order: 1 },
+    { id: 'postdocs', label: { en: 'Postdoctoral Fellows', ja: '博士研究員' }, order: 2 },
+    { id: 'researchers', label: { en: 'Project Researchers', ja: 'プロジェクト研究員' }, order: 3 },
+    { id: 'students', label: { en: 'Students', ja: '学生' }, order: 4 },
+    { id: 'alumni', label: { en: 'Alumni', ja: '卒業生' }, order: 5 },
+  ],
+  publicationTypes: [
+    { id: 'journal', label: { en: 'Journal Article', ja: '学術論文' } },
+    { id: 'conference', label: { en: 'Conference Paper', ja: '学会発表' } },
+    { id: 'book-chapter', label: { en: 'Book/Chapter', ja: '書籍・章' } },
+    { id: 'preprint', label: { en: 'Preprint', ja: 'プレプリント' } },
+    { id: 'thesis', label: { en: 'Thesis', ja: '学位論文' } },
+  ],
+  newsCategories: [
+    { id: 'publication', label: { en: 'Publication', ja: '論文' } },
+    { id: 'award', label: { en: 'Award', ja: '受賞' } },
+    { id: 'event', label: { en: 'Event', ja: 'イベント' } },
+    { id: 'announcement', label: { en: 'Announcement', ja: 'お知らせ' } },
+  ],
+  commonTags: [],
+};
+
+export function getSiteConfig(): SiteConfig {
+  const config = readYaml<SiteConfig>(path.join(contentDir, 'settings', 'site-config.yaml'));
+  return config || defaultSiteConfig;
+}
+
+export function getMemberCategories(): MemberCategory[] {
+  const config = getSiteConfig();
+  return config.memberCategories
+    .sort((a, b) => (a.order || 99) - (b.order || 99))
+    .map(c => c.id);
 }

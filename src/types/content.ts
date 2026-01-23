@@ -4,8 +4,8 @@ export interface BilingualText {
   ja: string;
 }
 
-// Member types
-export type MemberCategory = 'faculty' | 'postdocs' | 'researchers' | 'students' | 'alumni';
+// Member types - now dynamic from site config
+export type MemberCategory = string;
 
 export interface MemberLink {
   type: string;
@@ -27,8 +27,8 @@ export interface Member {
   education?: Array<{ year: string; event: string }>;
 }
 
-// Publication types
-export type PublicationType = 'journal' | 'conference' | 'book' | 'preprint' | 'thesis';
+// Publication types - now dynamic from site config
+export type PublicationType = string;
 
 export interface Publication {
   id: string;
@@ -44,8 +44,8 @@ export interface Publication {
   tags?: string[];
 }
 
-// News types
-export type NewsCategory = 'publication' | 'award' | 'event' | 'announcement';
+// News types - now dynamic from site config
+export type NewsCategory = string;
 
 export interface NewsItem {
   id: string;
@@ -88,4 +88,18 @@ export interface Translations {
   nav: Record<string, BilingualText>;
   common: Record<string, BilingualText>;
   categories: Record<string, BilingualText>;
+}
+
+// Site configuration
+export interface CategoryConfig {
+  id: string;
+  label: BilingualText;
+  order?: number;
+}
+
+export interface SiteConfig {
+  memberCategories: CategoryConfig[];
+  publicationTypes: CategoryConfig[];
+  newsCategories: CategoryConfig[];
+  commonTags: string[];
 }

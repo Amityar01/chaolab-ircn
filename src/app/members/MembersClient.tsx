@@ -3,41 +3,35 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
-import type { Member, MemberCategory } from '@/types/content';
+import type { Member, CategoryConfig } from '@/types/content';
 
 interface MembersClientProps {
   members: Member[];
+  categories: CategoryConfig[];
 }
 
-const categoryLabels: Record<MemberCategory, { en: string; ja: string }> = {
-  faculty: { en: 'Faculty', ja: '教員' },
-  postdocs: { en: 'Postdoctoral Fellows', ja: '博士研究員' },
-  researchers: { en: 'Project Researchers', ja: '特任研究員' },
-  students: { en: 'Students', ja: '学生' },
-  alumni: { en: 'Alumni', ja: '卒業生' },
-};
-
-const categoryOrder: MemberCategory[] = ['faculty', 'postdocs', 'researchers', 'students', 'alumni'];
-
-export default function MembersClient({ members }: MembersClientProps) {
+export default function MembersClient({ members, categories }: MembersClientProps) {
   const { t } = useLanguage();
 
-  const membersByCategory = categoryOrder.reduce((acc, category) => {
-    acc[category] = members.filter((m) => m.category === category);
+  // Sort categories by order
+  const sortedCategories = [...categories].sort((a, b) => (a.order || 99) - (b.order || 99));
+
+  const membersByCategory = sortedCategories.reduce((acc, cat) => {
+    acc[cat.id] = members.filter((m) => m.category === cat.id);
     return acc;
-  }, {} as Record<MemberCategory, Member[]>);
+  }, {} as Record<string, Member[]>);
 
   return (
     <div>
       <h1 className="section-title">{t({ en: 'Members', ja: 'メンバー' })}</h1>
 
-      {categoryOrder.map((category) => {
-        const categoryMembers = membersByCategory[category];
-        if (categoryMembers.length === 0) return null;
+      {sortedCategories.map((category) => {
+        const categoryMembers = membersByCategory[category.id];
+        if (!categoryMembers || categoryMembers.length === 0) return null;
 
         return (
-          <section key={category} className="section">
-            <h2>{t(categoryLabels[category])}</h2>
+          <section key={category.id} className="section">
+            <h2>{t(category.label)}</h2>
             <div className="grid grid-2">
               {categoryMembers.map((member) => (
                 <Link key={member.id} href={`/members/${member.slug}`} className="card member-card">

@@ -1,7 +1,8 @@
-import { getAllMembers } from '@/lib/content';
+import { getAllMembers, getSiteConfig } from '@/lib/content';
 import MembersClient from './MembersClient';
 
 export default function MembersPage() {
   const members = getAllMembers();
-  return <MembersClient members={members} />;
+  const siteConfig = getSiteConfig();
+  return <MembersClient members={members} categories={siteConfig.memberCategories} />;
 }

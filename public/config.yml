@@ -48,6 +48,46 @@ collections:
           - { label: "Phone", name: "phone", widget: "string", required: false }
           - { label: "Google Maps Embed URL", name: "mapUrl", widget: "string", required: false }
 
+      - name: site-config
+        label: Categories & Types
+        file: content/settings/site-config.yaml
+        fields:
+          - label: Member Categories
+            name: memberCategories
+            widget: list
+            summary: "{{fields.label.en}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string", hint: "Folder name (e.g. faculty, postdocs)" }
+              - label: Label
+                name: label
+                widget: object
+                fields: *bilingual_text
+              - { label: "Order", name: "order", widget: "number", hint: "Display order (1 = first)" }
+          - label: Publication Types
+            name: publicationTypes
+            widget: list
+            summary: "{{fields.label.en}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string", hint: "e.g. journal, conference, preprint" }
+              - label: Label
+                name: label
+                widget: object
+                fields: *bilingual_text
+          - label: News Categories
+            name: newsCategories
+            widget: list
+            summary: "{{fields.label.en}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string", hint: "e.g. publication, award, event" }
+              - label: Label
+                name: label
+                widget: object
+                fields: *bilingual_text
+          - label: Common Tags
+            name: commonTags
+            widget: list
+            field: { label: "Tag", name: "tag", widget: "string" }
+
       - name: translations
         label: UI Translations
         file: content/translations.yaml
