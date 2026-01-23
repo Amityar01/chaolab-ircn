@@ -20,8 +20,10 @@ export default function Navigation({ translations }: NavigationProps) {
   const navItems = [
     { href: '/', label: translations?.nav?.home || { en: 'Home', ja: 'ホーム' } },
     { href: '/research', label: translations?.nav?.research || { en: 'Research', ja: '研究' } },
+    { href: '/projects', label: translations?.nav?.projects || { en: 'Projects', ja: 'プロジェクト' } },
     { href: '/members', label: translations?.nav?.members || { en: 'Members', ja: 'メンバー' } },
     { href: '/publications', label: translations?.nav?.publications || { en: 'Publications', ja: '業績' } },
+    { href: '/teaching', label: translations?.nav?.teaching || { en: 'Teaching', ja: '講義' } },
     { href: '/news', label: translations?.nav?.news || { en: 'News', ja: 'ニュース' } },
     { href: '/contact', label: translations?.nav?.contact || { en: 'Contact', ja: 'アクセス' } },
   ];

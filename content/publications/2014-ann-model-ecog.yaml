@@ -1,0 +1,20 @@
+id: 2014-ann-model-ecog
+title: "An artificial network model for estimating the network structure underlying partially observed neuronal signals"
+authors:
+  - Misako Komatsu
+  - Jun Namikawa
+  - Zenas C. Chao
+  - Yasuo Nagasaka
+  - Naotaka Fujii
+  - Katsuki Nakamura
+  - Jun Tani
+year: 2014
+journal: Neuroscience Research
+volume: "81-82"
+pages: "69-77"
+type: journal
+doi: ""
+tags:
+  - artificial-networks
+  - neural-signals
+  - modeling

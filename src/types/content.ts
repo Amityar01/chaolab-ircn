@@ -89,6 +89,38 @@ export interface ResearchTheme {
   tags?: string[];
 }
 
+// Teaching
+export interface TeachingCourse {
+  id: string;
+  order?: number;
+  title: BilingualText;
+  institution: BilingualText;
+  courseCode?: string;
+  description: BilingualText;
+  objectives?: BilingualText[];
+  tags?: string[];
+}
+
+// Projects
+export interface ProjectPartner {
+  name: BilingualText;
+  url?: string;
+}
+
+export interface Project {
+  id: string;
+  slug: string;
+  order?: number;
+  title: BilingualText;
+  subtitle?: BilingualText;
+  collaboration?: BilingualText;
+  description: BilingualText;
+  goals?: BilingualText[];
+  partners?: ProjectPartner[];
+  registerUrl?: string;
+  accentColor?: string;
+}
+
 // Contact info
 export interface ContactInfo {
   address: BilingualText;

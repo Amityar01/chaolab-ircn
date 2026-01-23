@@ -1,0 +1,31 @@
+id: human-physiology
+order: 4
+
+title:
+  en: "Introduction to Human Physiology"
+  ja: "人体生理学入門"
+
+institution:
+  en: "Kyoto University"
+  ja: "京都大学"
+
+courseCode: "ILAS N918001"
+
+description:
+  en: |
+    This course covers the basic background required to understand how the major organ systems of the human body perform their normal functions and how they work together to maintain our health. You will connect the knowledge learned in the class to your everyday life. This class aims primarily at students who have minimal to no biology background.
+  ja: |
+    このコースでは、人体の主要な器官系がどのように正常に機能し、どのように協力して健康を維持しているかを理解するために必要な基礎的な背景を学びます。授業で学んだ知識を日常生活に結びつけます。このクラスは主に生物学の知識がほとんどない学生を対象としています。
+
+objectives:
+  - en: "To understand the function of the major organs and organ systems of the human body."
+    ja: "人体の主要な器官と器官系の機能を理解する。"
+  - en: "To develop a vocabulary to effectively communicate information related to anatomy and physiology."
+    ja: "解剖学と生理学に関連する情報を効果的に伝えるための語彙を身につける。"
+  - en: "To review and share physiology topics through presentation and discussion."
+    ja: "プレゼンテーションとディスカッションを通じて生理学のトピックを復習・共有する。"
+
+tags:
+  - physiology
+  - human-body
+  - undergraduate

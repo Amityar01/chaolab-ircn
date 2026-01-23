@@ -1,0 +1,17 @@
+id: 2012-decoding-3d-trajectories
+title: "Decoding continuous three-dimensional hand trajectories from epidural electrocorticographic signals in Japanese macaques"
+authors:
+  - Kentaro Shimoda
+  - Yasuo Nagasaka
+  - Zenas C. Chao
+  - Naotaka Fujii
+year: 2012
+journal: Journal of Neural Engineering
+volume: "9"
+pages: "036015"
+type: journal
+doi: "10.1088/1741-2560/9/3/036015"
+tags:
+  - decoding
+  - brain-machine-interface
+  - electrocorticography

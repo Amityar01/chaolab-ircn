@@ -8,6 +8,8 @@ import type {
   Publication,
   NewsItem,
   ResearchTheme,
+  TeachingCourse,
+  Project,
   ContactInfo,
   HomepageSettings,
   Translations,
@@ -135,6 +137,40 @@ export function getAllResearchThemes(): ResearchTheme[] {
   }
 
   return themes;
+}
+
+// ============ TEACHING ============
+
+export function getAllTeachingCourses(): TeachingCourse[] {
+  const teachingDir = path.join(contentDir, 'teaching');
+  const files = getFilesInDir(teachingDir, '.yaml');
+  const courses: TeachingCourse[] = [];
+
+  for (const file of files) {
+    const data = readYaml<TeachingCourse>(path.join(teachingDir, file));
+    if (data) {
+      courses.push(data);
+    }
+  }
+
+  return courses.sort((a, b) => (a.order || 99) - (b.order || 99));
+}
+
+// ============ PROJECTS ============
+
+export function getAllProjects(): Project[] {
+  const projectsDir = path.join(contentDir, 'projects');
+  const files = getFilesInDir(projectsDir, '.yaml');
+  const projects: Project[] = [];
+
+  for (const file of files) {
+    const data = readYaml<Project>(path.join(projectsDir, file));
+    if (data) {
+      projects.push(data);
+    }
+  }
+
+  return projects.sort((a, b) => (a.order || 99) - (b.order || 99));
 }
 
 // ============ CONTACT ============

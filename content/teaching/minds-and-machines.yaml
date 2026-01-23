@@ -1,0 +1,34 @@
+id: minds-and-machines
+order: 1
+
+title:
+  en: "Minds and Machines - Can a Machine Think?"
+  ja: "心と機械 - 機械は思考できるか？"
+
+institution:
+  en: "Kyoto University"
+  ja: "京都大学"
+
+courseCode: "ILAS Z002043"
+
+description:
+  en: |
+    This course examines the nature of mind and the prospect of artificial intelligence. You will have class discussions and debates about issues such as "What is the mind?" and "Can a machine think?" During the course, you will learn to make philosophical and scientific arguments, and to express them in writing and presentation. Final project is to build a LEGO robot for a sumo challenge (no programming experience required).
+  ja: |
+    このコースでは、心の本質と人工知能の可能性について考察します。「心とは何か？」「機械は思考できるか？」といったテーマについてディスカッションやディベートを行います。哲学的・科学的な議論の仕方を学び、文章やプレゼンテーションで表現する力を身につけます。最終プロジェクトは相撲チャレンジ用のLEGOロボットを作ることです（プログラミング経験不要）。
+
+objectives:
+  - en: "To investigate fundamental issues relating to minds and machines philosophically and scientifically."
+    ja: "心と機械に関する根本的な問題を哲学的・科学的に探究する。"
+  - en: "To express investigation results in discussion, writing, and presentation."
+    ja: "調査結果をディスカッション、文章、プレゼンテーションで表現する。"
+  - en: "To design an autonomous LEGO robot."
+    ja: "自律型LEGOロボットを設計する。"
+  - en: "To work with others as both a team member and leader."
+    ja: "チームメンバーおよびリーダーとして他者と協力する。"
+
+tags:
+  - philosophy
+  - artificial-intelligence
+  - robotics
+  - undergraduate

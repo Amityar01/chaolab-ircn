@@ -1,0 +1,43 @@
+id: neurocreativity
+slug: neurocreativity
+order: 1
+
+title:
+  en: "*Point0 NeuroCreativity"
+  ja: "*Point0 ニューロクリエイティビティ"
+
+subtitle:
+  en: "The Neuroscience of Creativity"
+  ja: "創造性の神経科学"
+
+collaboration:
+  en: "Daikin-UTokyo Industry-Academia Collaboration"
+  ja: "ダイキン東大産学協創案件"
+
+description:
+  en: |
+    This exciting project is a collaboration between the International Research Center for Neurointelligence (IRCN) at the University of Tokyo and Daikin. We're looking for creative minds to take on the challenge—come join us and have some fun while boosting your brainpower!
+  ja: |
+    このワクワクするプロジェクトは、東京大学の国際高等研究所ニューロインテリジェンス国際研究機構（IRCN）とダイキンのコラボレーションです！あなたのクリエイティビティに挑戦してみませんか？楽しみながら脳の力を引き出しましょう！
+
+goals:
+  - en: "Understanding the neural mechanisms underlying creative problem-solving"
+    ja: "創造的問題解決の神経メカニズムの解明"
+  - en: "Developing methods to enhance creativity potential"
+    ja: "創造性ポテンシャルを高める方法の開発"
+  - en: "Creating closed-loop systems for real-world creativity augmentation"
+    ja: "実世界の創造性増強のためのクローズドループシステムの構築"
+
+partners:
+  - name:
+      en: "IRCN, The University of Tokyo"
+      ja: "東京大学IRCN"
+    url: "https://ircn.jp"
+  - name:
+      en: "Daikin Industries"
+      ja: "ダイキン工業"
+    url: "https://www.daikin.com"
+
+registerUrl: ""
+
+accentColor: "var(--daikin-blue)"

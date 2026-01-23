@@ -1,0 +1,19 @@
+id: 2012-ijcnn-ecog
+title: "Estimation of functional brain connectivity from electrocorticograms using an artificial network model"
+authors:
+  - Misako Komatsu
+  - Jun Namikawa
+  - Jun Tani
+  - Zenas C. Chao
+  - Yasuo Nagasaka
+  - Naotaka Fujii
+  - Katsuki Nakamura
+year: 2012
+journal: IEEE International Joint Conference on Neural Networks (IJCNN)
+pages: "1-8"
+type: conference
+doi: ""
+tags:
+  - brain-connectivity
+  - artificial-networks
+  - electrocorticography

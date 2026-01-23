@@ -1,0 +1,31 @@
+id: fundamentals-neuroscience
+order: 3
+
+title:
+  en: "Fundamentals of Neuroscience"
+  ja: "神経科学の基礎"
+
+institution:
+  en: "Kyoto University"
+  ja: "京都大学"
+
+courseCode: "ILAS N917001"
+
+description:
+  en: |
+    This course covers the basic background required to understand how networks of neurons could generate complex functions of the brain. You will learn topics ranging from the electrical properties of an individual neuron to higher brain functions, such as memory and consciousness. In this class, I will put more emphasis on big picture concepts, which I believe are more meaningful than memorizing a lot of facts and details that you can easily look up.
+  ja: |
+    このコースでは、神経細胞のネットワークがどのようにして脳の複雑な機能を生み出すかを理解するために必要な基礎的な背景を学びます。個々の神経細胞の電気的特性から、記憶や意識などの高次脳機能まで幅広いトピックを学習します。このクラスでは、簡単に調べられる多くの事実や詳細を暗記するよりも、全体像の概念を重視します。
+
+objectives:
+  - en: "To understand the basic components of the nervous system."
+    ja: "神経系の基本的な構成要素を理解する。"
+  - en: "To appreciate the complexity of brain functions and to understand their biological basis."
+    ja: "脳機能の複雑さを認識し、その生物学的基盤を理解する。"
+  - en: "To review and share neuroscience topics through presentation and discussion."
+    ja: "プレゼンテーションとディスカッションを通じて神経科学のトピックを復習・共有する。"
+
+tags:
+  - neuroscience
+  - brain
+  - undergraduate

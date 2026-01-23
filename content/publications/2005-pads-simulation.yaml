@@ -1,0 +1,16 @@
+id: 2005-pads-simulation
+title: "Parallel event-driven neural network simulations using the Hodgkin-Huxley neuron model"
+authors:
+  - Corey Lobb
+  - Zenas C. Chao
+  - Ryusei Fujimoto
+  - Steve M. Potter
+year: 2005
+journal: 19th Workshop on Principles of Advanced and Distributed Simulation (PADS)
+pages: "16-25"
+type: conference
+doi: ""
+tags:
+  - simulation
+  - hodgkin-huxley
+  - parallel-computing
