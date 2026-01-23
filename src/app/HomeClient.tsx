@@ -128,7 +128,7 @@ export default function HomeClient({
     };
   }, []);
 
-  // Detect real content elements as obstacles (document coordinates)
+  // Detect real content elements as obstacles
   useEffect(() => {
     if (!mounted || viewportSize.width === 0) return;
 
@@ -138,55 +138,34 @@ export default function HomeClient({
       const container = containerRef.current;
       if (!container) return;
 
-      // Get document coordinates using offsetTop/offsetLeft chain
-      const getDocumentCoords = (el: HTMLElement) => {
-        let top = 0;
-        let left = 0;
-        let current: HTMLElement | null = el;
-        while (current) {
-          top += current.offsetTop;
-          left += current.offsetLeft;
-          current = current.offsetParent as HTMLElement | null;
-        }
-        return { top, left, width: el.offsetWidth, height: el.offsetHeight };
-      };
+      // Get container's position - SVG is at container's 0,0
+      const containerRect = container.getBoundingClientRect();
 
       let idx = 0;
 
-      // Skip nav - it's fixed/sticky and causes issues
-      // Fireflies can fly behind it, that's fine
-
-      // Only target LEAF text elements - actual headings and paragraphs
-      // Not containers that happen to have text children
-      const textSelectors = [
-        'h1', 'h2', 'h3', 'h4',
-        'p',
-        '.research-card',
-        'footer'
+      // Target specific content elements
+      const selectors = [
+        '.research-card',  // The card containers
+        'footer',
       ];
 
-      textSelectors.forEach(selector => {
+      selectors.forEach(selector => {
         container.querySelectorAll(selector).forEach(el => {
-          const htmlEl = el as HTMLElement;
+          const rect = el.getBoundingClientRect();
 
-          // Skip if hidden
-          const style = window.getComputedStyle(el);
-          if (style.display === 'none' || style.visibility === 'hidden') return;
+          // Position relative to container (where SVG draws)
+          const x = rect.left - containerRect.left;
+          const y = rect.top - containerRect.top;
 
-          // Skip if too small
-          if (htmlEl.offsetWidth < 20 || htmlEl.offsetHeight < 10) return;
-
-          const coords = getDocumentCoords(htmlEl);
-
-          // Add small padding
-          const padding = selector === '.research-card' || selector === 'footer' ? 5 : 8;
+          // Skip if off-screen or too small
+          if (rect.width < 20 || rect.height < 20) return;
 
           newObstacles.push({
             id: `${selector}-${idx++}`,
-            x: coords.left - padding,
-            y: coords.top - padding,
-            width: coords.width + padding * 2,
-            height: coords.height + padding * 2,
+            x: x,
+            y: y,
+            width: rect.width,
+            height: rect.height,
           });
         });
       });
@@ -205,8 +184,8 @@ export default function HomeClient({
       setObstacles(newObstacles);
     };
 
-    // Calculate once after DOM is ready, and on resize
-    const timer = setTimeout(updateObstacles, 300);
+    // Calculate after DOM is ready
+    const timer = setTimeout(updateObstacles, 500);
     window.addEventListener('resize', updateObstacles);
 
     return () => {
