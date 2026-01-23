@@ -204,11 +204,10 @@ export default function HomeClient({
     };
   }, [mounted, canvasSize.width, toys]);
 
-  // Handle toy drag - convert to document-relative coordinates
-  const handleToyDrag = useCallback((id: string, clientX: number, clientY: number) => {
-    const scrollY = window.scrollY;
+  // Handle toy drag - receives document-relative coordinates from DraggableToy
+  const handleToyDrag = useCallback((id: string, newX: number, newY: number) => {
     setToys(prev => prev.map(toy =>
-      toy.id === id ? { ...toy, x: clientX - 25, y: clientY + scrollY - 25 } : toy
+      toy.id === id ? { ...toy, x: newX, y: newY } : toy
     ));
   }, []);
 
@@ -224,8 +223,13 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen overflow-x-hidden"
-      style={{ background: 'var(--deep-space)', position: 'relative' }}
+      className="min-h-screen"
+      style={{
+        background: 'var(--deep-space)',
+        position: 'relative',
+        overflowX: 'hidden',
+        overflowY: 'auto',
+      }}
     >
       {/* Firefly System - covers full page, scrolls with content */}
       {mounted && !reducedMotion && canvasSize.width > 0 && canvasSize.height > 0 && (

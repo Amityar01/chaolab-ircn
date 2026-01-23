@@ -5,7 +5,7 @@
 // ============================================
 // Simple glowing geometric shapes
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 interface DraggableToyProps {
   id: string;
@@ -14,7 +14,7 @@ interface DraggableToyProps {
   y: number;
   size?: number;
   color: string;
-  onDrag: (id: string, clientX: number, clientY: number) => void;
+  onDrag: (id: string, newX: number, newY: number) => void;
 }
 
 export function DraggableToy({
@@ -29,6 +29,9 @@ export function DraggableToy({
   const [isDragging, setIsDragging] = useState(false);
   const [glowIntensity, setGlowIntensity] = useState(0.6);
 
+  // Track offset from click point to toy position
+  const dragOffset = useRef({ x: 0, y: 0 });
+
   // Pulse animation
   useEffect(() => {
     const interval = setInterval(() => {
@@ -41,13 +44,27 @@ export function DraggableToy({
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Calculate offset from click point to toy's top-left corner
+    const scrollY = window.scrollY;
+    dragOffset.current = {
+      x: e.clientX - x,
+      y: e.clientY + scrollY - y,
+    };
+
     setIsDragging(true);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  }, []);
+  }, [x, y]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
-    onDrag(id, e.clientX, e.clientY);
+
+    // Calculate new position maintaining the offset
+    const scrollY = window.scrollY;
+    const newX = e.clientX - dragOffset.current.x;
+    const newY = e.clientY + scrollY - dragOffset.current.y;
+
+    onDrag(id, newX, newY);
   }, [isDragging, id, onDrag]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
@@ -131,7 +148,7 @@ export function DraggableToy({
         height: size,
         cursor: isDragging ? 'grabbing' : 'grab',
         zIndex: isDragging ? 100 : 15,
-        touchAction: 'none',
+        touchAction: isDragging ? 'none' : 'auto', // Allow scroll when not dragging
         color: color,
         display: 'flex',
         alignItems: 'center',

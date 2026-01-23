@@ -711,6 +711,8 @@ export function FireflySystem({
         top: 0,
         left: 0,
         pointerEvents: 'none', // Don't block clicks on content
+        overflow: 'hidden',
+        maxWidth: '100%',
       }}
     >
       {/* Belief heatmap */}
