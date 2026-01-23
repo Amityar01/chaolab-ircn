@@ -8,7 +8,7 @@ import HeroSection from '@/components/home/HeroSection';
 import ResearchCard from '@/components/home/ResearchCard';
 import TeamPreview from '@/components/home/TeamPreview';
 import PublicationsPreview from '@/components/home/PublicationsPreview';
-import type { HomepageSettings, NewsItem, ResearchTheme, Member, Publication } from '@/types/content';
+import type { HomepageSettings, NewsItem, ResearchTheme, Member, Publication, ContactInfo } from '@/types/content';
 
 const FireflyBackground = dynamic(() => import('@/components/FireflyBackground'), {
   ssr: false
@@ -23,6 +23,7 @@ interface Obstacle {
 
 interface HomeClientProps {
   settings: HomepageSettings | null;
+  contact: ContactInfo | null;
   news: NewsItem[];
   themes: ResearchTheme[];
   pi: Member | null;
@@ -30,58 +31,16 @@ interface HomeClientProps {
   publications: Publication[];
 }
 
-const RESEARCH_CARDS = [
-  {
-    id: 'predictive-coding-circuits',
-    sectionLabel: { en: 'The Question', ja: '問い' },
-    question: { en: 'How does the brain predict?', ja: '脳はどのように予測するのか？' },
-    description: {
-      en: 'We unravel the complex networks of microcircuits and macrocircuits essential to predictive coding across different hierarchical levels and sensory domains.',
-      ja: 'さまざまな階層レベルと感覚領域にわたる予測符号化に不可欠な微小回路と巨視的回路の複雑なネットワークを解明しています。'
-    },
-    linkHref: '/research',
-    accentColor: 'var(--ircn-blue)'
-  },
-  {
-    id: 'creativity-neural-basis',
-    sectionLabel: { en: 'The Discovery', ja: '発見' },
-    question: { en: 'Prediction enables creativity', ja: '予測が創造性を可能にする' },
-    description: {
-      en: "We explore how predictive coding underlies the brain's capacity to generate novel and useful ideas, linking creativity directly to its neural circuit implementation.",
-      ja: '予測符号化が新しく有用なアイデアを生み出す脳の能力をどのように支えているかを探求し、創造性をその神経回路の実装に直接結びつけています。'
-    },
-    linkHref: '/research',
-    accentColor: 'var(--ircn-purple)'
-  },
-  {
-    id: 'creativity-augmentation',
-    sectionLabel: { en: 'The Application', ja: '応用' },
-    question: { en: 'Augmenting human creativity', ja: '人間の創造性を増強する' },
-    description: {
-      en: 'We develop closed-loop systems that enhance creativity potential in practical applications, in collaboration with Daikin Industries.',
-      ja: 'ダイキン工業との共同研究で、実用的なアプリケーションで創造性の潜在能力を高めるクローズドループシステムを開発しています。'
-    },
-    linkHref: '/research',
-    accentColor: 'var(--daikin-blue)'
-  },
-  {
-    id: 'psychiatric-markers',
-    sectionLabel: { en: 'The Frontier', ja: 'フロンティア' },
-    question: { en: 'When prediction goes wrong', ja: '予測が狂うとき' },
-    description: {
-      en: 'We identify neural markers in psychiatric conditions characterized by prediction anomalies, such as autism, leading to better diagnosis and interventions.',
-      ja: '自閉症などの予測異常を特徴とする精神疾患の神経マーカーを特定し、より良い診断と介入につなげています。'
-    },
-    linkHref: '/research',
-    accentColor: 'var(--ircn-gray)'
-  }
-];
-
 export default function HomeClient({
+  settings,
+  contact,
+  themes,
   pi,
   memberCount,
   publications,
 }: HomeClientProps) {
+  // Sort themes by order
+  const sortedThemes = [...themes].sort((a, b) => (a.order || 99) - (b.order || 99));
   const { t, language, setLanguage } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
@@ -159,7 +118,7 @@ export default function HomeClient({
           <div className="max-w-6xl mx-auto px-6 md:px-8 py-4">
             <div className="flex justify-between items-center">
               <Link href="/" className="text-lg font-semibold text-[var(--text)] tracking-tight">
-                Chao Lab
+                {settings?.labName ? t(settings.labName) : 'Chao Lab'}
               </Link>
 
               <nav className="flex items-center gap-6 md:gap-8">
@@ -214,15 +173,15 @@ export default function HomeClient({
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6">
-              {RESEARCH_CARDS.map((card, index) => (
+              {sortedThemes.map((theme, index) => (
                 <ResearchCard
-                  key={card.id}
+                  key={theme.id}
                   ref={(el) => { cardRefs.current[index] = el; }}
-                  sectionLabel={card.sectionLabel}
-                  question={card.question}
-                  description={card.description}
-                  linkHref={card.linkHref}
-                  accentColor={card.accentColor}
+                  sectionLabel={theme.sectionLabel || { en: '', ja: '' }}
+                  question={theme.question || theme.title}
+                  description={theme.description}
+                  linkHref="/research"
+                  accentColor={theme.accentColor || 'var(--ircn-blue)'}
                 />
               ))}
             </div>
@@ -247,12 +206,16 @@ export default function HomeClient({
           <div className="max-w-5xl mx-auto">
             <div className="grid md:grid-cols-3 gap-8 mb-10">
               <div>
-                <h3 className="text-lg font-semibold text-[var(--text)] mb-4">Chao Lab</h3>
+                <h3 className="text-lg font-semibold text-[var(--text)] mb-4">
+                  {settings?.labName ? t(settings.labName) : 'Chao Lab'}
+                </h3>
                 <p className="text-sm text-[var(--text-muted)] leading-relaxed">
-                  {t({
-                    en: 'Understanding predictive coding and creativity in the brain.',
-                    ja: '脳における予測符号化と創造性を理解する。'
-                  })}
+                  {settings?.description
+                    ? t(settings.description)
+                    : t({
+                        en: 'Understanding predictive coding and creativity in the brain.',
+                        ja: '脳における予測符号化と創造性を理解する。'
+                      })}
                 </p>
               </div>
 
@@ -293,17 +256,17 @@ export default function HomeClient({
                   {t({ en: 'Contact', ja: '連絡先' })}
                 </h4>
                 <a
-                  href="mailto:zenas.c.chao@ircn.jp"
+                  href={`mailto:${contact?.email || 'zenas.c.chao@ircn.jp'}`}
                   className="text-sm text-[var(--text-muted)] hover:text-[var(--ircn-blue)] transition-colors"
                 >
-                  zenas.c.chao@ircn.jp
+                  {contact?.email || 'zenas.c.chao@ircn.jp'}
                 </a>
               </div>
             </div>
 
             <div className="pt-8 border-t border-gray-100 flex flex-wrap justify-between items-center gap-4 text-xs text-[var(--text-muted)]">
               <span>
-                © {new Date().getFullYear()} Chao Lab, IRCN, University of Tokyo
+                © {new Date().getFullYear()} {settings?.labName ? t(settings.labName) : 'Chao Lab'}, IRCN, University of Tokyo
               </span>
               <div className="flex gap-4">
                 <Link href="/research" className="hover:text-[var(--text)] transition-colors">

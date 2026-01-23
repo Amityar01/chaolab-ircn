@@ -1,14 +1,25 @@
 id: predictive-coding-circuits
+order: 1
+
+sectionLabel:
+  en: The Question
+  ja: 問い
 
 title:
   en: Predictive Coding Circuits
   ja: 予測符号化回路
 
+question:
+  en: How does the brain predict?
+  ja: 脳はどのように予測するのか？
+
 description:
   en: |
-    Our goal is to unravel the complex networks of microcircuits and macrocircuits essential to predictive coding across different hierarchical levels and sensory domains. Our research spans multiple species—from rodents and marmosets to humans—and combines experimental results from these varied subjects with computational modeling to develop comprehensive insights.
+    We unravel the complex networks of microcircuits and macrocircuits essential to predictive coding across different hierarchical levels and sensory domains. Our research spans multiple species—from rodents and marmosets to humans—and combines experimental results with computational modeling.
   ja: |
-    さまざまな階層レベルと感覚領域にわたる予測符号化に不可欠な微小回路と巨視的回路の複雑なネットワークを解明することを目標としています。げっ歯類からマーモセット、ヒトまで複数の種を対象とし、実験結果と計算モデリングを組み合わせて包括的な知見を得ています。
+    さまざまな階層レベルと感覚領域にわたる予測符号化に不可欠な微小回路と巨視的回路の複雑なネットワークを解明しています。げっ歯類からマーモセット、ヒトまで複数の種を対象とし、実験結果と計算モデリングを組み合わせています。
+
+accentColor: "var(--ircn-blue)"
 
 image: https://ircn.jp/wp-content/uploads/2024/07/UTokyo-Medical-School-website-figure-777x1024.png
 
@@ -16,5 +27,3 @@ tags:
   - prediction
   - neural-circuits
   - computational-modeling
-
-theme: prediction

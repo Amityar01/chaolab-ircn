@@ -1,18 +1,27 @@
 id: creativity-neural-basis
+order: 2
+
+sectionLabel:
+  en: The Discovery
+  ja: 発見
 
 title:
   en: Predictive Coding in Creativity
   ja: 創造性における予測符号化
 
+question:
+  en: Prediction enables creativity
+  ja: 予測が創造性を可能にする
+
 description:
   en: |
-    We explore the role of predictive coding in creativity potential, which we define as the brain's capacity to generate novel and useful ideas for upcoming tasks. Our goal is to provide mechanistic insights into this complex process, linking creativity directly to its neural circuit implementation.
+    We explore how predictive coding underlies the brain's capacity to generate novel and useful ideas, linking creativity directly to its neural circuit implementation. Our goal is to provide mechanistic insights into this complex process.
   ja: |
-    創造性の潜在能力における予測符号化の役割を探求しています。創造性の潜在能力とは、今後のタスクのために新しく有用なアイデアを生み出す脳の能力と定義しています。この複雑なプロセスにメカニズム的な洞察を提供し、創造性をその神経回路の実装に直接結びつけることを目指しています。
+    予測符号化が新しく有用なアイデアを生み出す脳の能力をどのように支えているかを探求し、創造性をその神経回路の実装に直接結びつけています。この複雑なプロセスにメカニズム的な洞察を提供することを目指しています。
+
+accentColor: "var(--ircn-purple)"
 
 tags:
   - creativity
   - neural-mechanisms
   - cognition
-
-theme: creativity

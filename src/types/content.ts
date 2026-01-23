@@ -61,8 +61,12 @@ export interface NewsItem {
 // Research theme
 export interface ResearchTheme {
   id: string;
+  order?: number;
+  sectionLabel?: BilingualText;
   title: BilingualText;
+  question?: BilingualText;
   description: BilingualText;
+  accentColor?: string;
   image?: string;
   tags?: string[];
 }
@@ -79,6 +83,7 @@ export interface ContactInfo {
 export interface HomepageSettings {
   labName: BilingualText;
   tagline: BilingualText;
+  description?: BilingualText;
   heroImage?: string;
   featuredResearch?: string[];
 }

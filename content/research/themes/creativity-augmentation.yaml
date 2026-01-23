@@ -1,19 +1,28 @@
 id: creativity-augmentation
+order: 3
+
+sectionLabel:
+  en: The Application
+  ja: 応用
 
 title:
   en: Creativity Augmentation
   ja: 創造性の増強
 
+question:
+  en: Augmenting human creativity
+  ja: 人間の創造性を増強する
+
 description:
   en: |
-    One ambition of our research is to develop a closed-loop system that enhances creativity potential in practical, real-world applications. This system has the potential to transform fields that rely on creative problem-solving by providing innovative tools and methodologies to boost innovation. This work is done in collaboration with Daikin Industries.
+    We develop closed-loop systems that enhance creativity potential in practical applications. This work is done in collaboration with Daikin Industries, aiming to transform fields that rely on creative problem-solving.
   ja: |
-    研究の野心の一つは、実用的な現実世界のアプリケーションで創造性の潜在能力を高めるクローズドループシステムを開発することです。このシステムは、革新的なツールと方法論を提供することで、創造的な問題解決に依存する分野を変革する可能性があります。この研究はダイキン工業との共同で行われています。
+    ダイキン工業との共同研究で、実用的なアプリケーションで創造性の潜在能力を高めるクローズドループシステムを開発しています。創造的な問題解決に依存する分野を変革することを目指しています。
+
+accentColor: "var(--daikin-blue)"
 
 tags:
   - creativity
   - applied-research
   - daikin
   - closed-loop-systems
-
-theme: creativity

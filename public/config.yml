@@ -449,14 +449,33 @@ collections:
     fields:
       - { label: "ID", name: "id", widget: "string" }
       - { label: "Order", name: "order", widget: "number", required: false, hint: "Display order (lower = first)" }
+      - label: Section Label
+        name: sectionLabel
+        widget: object
+        hint: "Short label like 'The Question', 'The Discovery'"
+        fields: *bilingual_text
       - label: Title
         name: title
         widget: object
+        fields: *bilingual_text
+      - label: Question/Tagline
+        name: question
+        widget: object
+        hint: "Short question or statement for the card"
         fields: *bilingual_text
       - label: Description
         name: description
         widget: object
         fields: *bilingual_text_long
+      - label: Accent Color
+        name: accentColor
+        widget: select
+        default: "var(--ircn-blue)"
+        options:
+          - { label: "IRCN Blue", value: "var(--ircn-blue)" }
+          - { label: "IRCN Purple", value: "var(--ircn-purple)" }
+          - { label: "Daikin Blue", value: "var(--daikin-blue)" }
+          - { label: "Gray", value: "var(--ircn-gray)" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - label: Tags
         name: tags
