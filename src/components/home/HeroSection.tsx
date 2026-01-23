@@ -3,12 +3,24 @@
 // ============================================
 // HERO SECTION COMPONENT
 // ============================================
-// Dark bioluminescent theme hero
+// Dark bioluminescent theme hero with rotating image quadrants
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HomepageSettings } from '@/types/content';
+
+// The 4 quadrants of the hero image
+const HERO_IMAGES = [
+  '/uploads/hero-tl.png',
+  '/uploads/hero-tr.png',
+  '/uploads/hero-bl.png',
+  '/uploads/hero-br.png',
+];
+
+const SLIDE_DURATION = 5000; // 5 seconds per slide
+const FADE_DURATION = 1000; // 1 second fade
 
 interface HeroSectionProps {
   settings?: HomepageSettings | null;
@@ -18,6 +30,24 @@ export default function HeroSection({ settings }: HeroSectionProps) {
   const { t } = useLanguage();
   const hasHeroImage = Boolean(settings?.heroImage);
   const labName = settings?.labName ? t(settings.labName) : 'Chao Lab';
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Rotate through images
+  useEffect(() => {
+    if (!hasHeroImage) return;
+
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+        setIsTransitioning(false);
+      }, FADE_DURATION / 2);
+    }, SLIDE_DURATION);
+
+    return () => clearInterval(interval);
+  }, [hasHeroImage]);
 
   return (
     <section className="min-h-screen flex flex-col justify-center px-6 md:px-8 relative z-10">
@@ -101,18 +131,27 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           </div>
         </div>
 
-        {hasHeroImage && settings?.heroImage && (
+        {hasHeroImage && (
           <div className="hidden md:block relative w-full max-w-md lg:max-w-lg justify-self-end aspect-[4/5] rounded-2xl overflow-hidden border border-[var(--card-border)]">
-            <Image
-              src={settings.heroImage}
-              alt={labName}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              priority
-            />
+            {/* Stack all images, control visibility with opacity */}
+            {HERO_IMAGES.map((src, index) => (
+              <Image
+                key={src}
+                src={src}
+                alt={`${labName} - Research ${index + 1}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                priority={index === 0}
+                style={{
+                  opacity: currentIndex === index ? (isTransitioning ? 0 : 1) : 0,
+                  transition: `opacity ${FADE_DURATION}ms ease-in-out`,
+                }}
+              />
+            ))}
+            {/* Gradient overlay */}
             <div
-              className="absolute inset-0 pointer-events-none"
+              className="absolute inset-0 pointer-events-none z-10"
               style={{
                 background: 'linear-gradient(to top, rgba(7, 11, 20, 0.85), transparent 55%)',
               }}

@@ -77,7 +77,8 @@ export function DraggableToy({
 
   // Render different shapes
   const renderShape = () => {
-    const shapeSize = size * 0.8;
+    const isBrainPiece = shape.startsWith('brain-');
+    const shapeSize = isBrainPiece ? size : size * 0.8;
     const brainOutline = `
       M50 12
       C41 4 28 8 24 18
@@ -92,10 +93,9 @@ export function DraggableToy({
     `.trim().replace(/\s+/g, ' ');
 
     const renderBrainPiece = (piece: 'tl' | 'tr' | 'bl' | 'br') => {
-      const clipId = `clip-${id}`;
       const gradId = `grad-${id}`;
 
-      const rect = (() => {
+      const offset = (() => {
         switch (piece) {
           case 'tl':
             return { x: 0, y: 0 };
@@ -111,13 +111,12 @@ export function DraggableToy({
       })();
 
       const glow = `drop-shadow(0 0 ${14 * glowIntensity}px ${color})`;
+      const outlineStroke = 1.5;
+      const detailStroke = 1;
 
       return (
-        <svg width={shapeSize} height={shapeSize} viewBox="0 0 100 100" aria-hidden="true">
+        <svg width={shapeSize} height={shapeSize} viewBox="0 0 50 50" aria-hidden="true">
           <defs>
-            <clipPath id={clipId}>
-              <rect x={rect.x} y={rect.y} width="50" height="50" rx="6" />
-            </clipPath>
             <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity={0.28} />
               <stop offset="60%" stopColor={color} stopOpacity={0.14} />
@@ -125,15 +124,15 @@ export function DraggableToy({
             </linearGradient>
           </defs>
 
-          <g clipPath={`url(#${clipId})`} style={{ filter: glow }}>
-            <path d={brainOutline} fill={`url(#${gradId})`} stroke={color} strokeWidth={3} />
+          <g transform={`translate(${-offset.x}, ${-offset.y})`} style={{ filter: glow }}>
+            <path d={brainOutline} fill={`url(#${gradId})`} stroke={color} strokeWidth={outlineStroke} />
 
             {/* Gyri lines */}
             <path
               d="M32 22 C24 26 24 36 32 40"
               fill="none"
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={detailStroke}
               opacity={0.35}
               strokeLinecap="round"
             />
@@ -141,7 +140,7 @@ export function DraggableToy({
               d="M68 22 C76 26 76 36 68 40"
               fill="none"
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={detailStroke}
               opacity={0.35}
               strokeLinecap="round"
             />
@@ -149,7 +148,7 @@ export function DraggableToy({
               d="M30 48 C22 52 22 62 30 66"
               fill="none"
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={detailStroke}
               opacity={0.25}
               strokeLinecap="round"
             />
@@ -157,7 +156,7 @@ export function DraggableToy({
               d="M70 48 C78 52 78 62 70 66"
               fill="none"
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={detailStroke}
               opacity={0.25}
               strokeLinecap="round"
             />
@@ -165,7 +164,7 @@ export function DraggableToy({
               d="M50 18 C44 26 44 36 50 44 C56 36 56 26 50 18"
               fill="none"
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={detailStroke}
               opacity={0.22}
               strokeLinejoin="round"
             />
@@ -175,7 +174,7 @@ export function DraggableToy({
               d="M50 16 L50 84"
               fill="none"
               stroke={color}
-              strokeWidth={1}
+              strokeWidth={0.7}
               opacity={0.18}
               strokeDasharray="3 3"
             />
@@ -183,14 +182,14 @@ export function DraggableToy({
 
           {/* "Broken edge" frame */}
           <rect
-            x={rect.x + 2}
-            y={rect.y + 2}
-            width="46"
-            height="46"
-            rx="8"
+            x={1.5}
+            y={1.5}
+            width={47}
+            height={47}
+            rx={7}
             fill="none"
             stroke={color}
-            strokeWidth={2}
+            strokeWidth={1.2}
             opacity={0.55}
             strokeDasharray="5 4"
           />

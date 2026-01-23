@@ -39,7 +39,9 @@
       "Bash(npx vercel --prod)",
       "Bash(node scrape-point0.js:*)",
       "Bash(node -e:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:scholar.google.co.uk)",
+      "WebFetch(domain:huji.academia.edu)"
     ]
   }
 }
