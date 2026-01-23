@@ -8,8 +8,9 @@ authors:
   - Dehaene S
 year: 2018
 journal: Neuron
-volume: "100"
-pages: "1252-1266"
+volume: "100(5)"
+pages: "1252-1266.e3"
+doi: "10.1016/j.neuron.2018.10.004"
 type: journal
 tags:
   - prediction

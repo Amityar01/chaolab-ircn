@@ -1,6 +1,5 @@
 id: 2007-electrical-stimuli
-title: Spatio-temporal electrical stimuli shape behavior of an embodied cortical
-  network in a goal-directed learning task
+title: "Spatio-temporal electrical stimuli shape behavior of an embodied cortical network in a goal-directed learning task"
 authors:
   - Chao ZC
   - Bakkum DJ
@@ -9,7 +8,7 @@ year: 2007
 journal: Frontiers in Computational Neuroscience
 volume: "1"
 pages: "5"
-doi: https://doi.org/10.1088/1741-2560/5/3/004
+doi: "10.3389/neuro.10.005.2007"
 type: journal
 tags:
   - robotics
