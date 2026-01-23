@@ -694,7 +694,7 @@ export function FireflySystem({
   }, [fireflies.length, width, height, checkRealObstacle, findBestDirection, getBelief, getVisits, markObstacle, clearCell, updateBeliefDisplay]);
 
   // Handle click
-  const handleClick = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
@@ -752,21 +752,34 @@ export function FireflySystem({
   if (width === 0 || height === 0 || !portalContainer) return null;
 
   const content = (
-    <svg
-      width={width}
-      height={height}
+    <div
+      id="firefly-container"
       onClick={handleClick}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
+        right: 0,
+        bottom: 0,
         width: '100vw',
         height: '100vh',
-        cursor: 'pointer',
+        overflow: 'hidden',
         pointerEvents: 'auto',
         zIndex: 10,
       }}
     >
+      <svg
+        width="100%"
+        height="100%"
+        viewBox={`0 0 ${width} ${height}`}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+        }}
+      >
       {/* Belief heatmap */}
       {beliefCells.map(cell => (
         <BeliefCell
@@ -797,7 +810,8 @@ export function FireflySystem({
           )}
         />
       ))}
-    </svg>
+      </svg>
+    </div>
   );
 
   return createPortal(content, portalContainer);
