@@ -3,6 +3,27 @@
 
 @import 'tailwindcss';
 
+/* Color Palette */
+:root {
+  /* IRCN Brand */
+  --ircn-blue: #0693e3;
+  --ircn-purple: #9b51e0;
+  --ircn-gray: #abb8c3;
+
+  /* Daikin Brand */
+  --daikin-blue: #00A0E9;
+
+  /* Base */
+  --bg: #fafbfc;
+  --bg-card: #ffffff;
+  --text: #1a1a2e;
+  --text-muted: #64748b;
+
+  /* Firefly */
+  --firefly-glow: #b8f090;
+  --firefly-core: #7dd956;
+}
+
 /* Base */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -21,8 +42,8 @@ body {
   font-weight: 400;
   font-size: 16px;
   line-height: 1.7;
-  color: #1a1a1a;
-  background: #ffffff;
+  color: var(--text);
+  background: var(--bg);
   min-height: 100vh;
 }
 
@@ -154,6 +175,17 @@ a {
   font-weight: 500;
   color: #1a1a1a;
   margin-bottom: 0.25rem;
+}
+
+.pub-title a {
+  color: #6B46C1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.pub-title a:hover {
+  color: #553C9A;
+  text-decoration: underline;
 }
 
 .pub-authors {
