@@ -22,12 +22,21 @@ import {
 } from '../cognition';
 
 /**
- * Create a new firefly with random properties
+ * Create a new firefly with distributed positions
  */
-function createFirefly(id: string, canvasBounds: Bounds): Firefly {
-  const margin = 100;
-  const x = margin + Math.random() * (canvasBounds.width - 2 * margin);
-  const y = margin + Math.random() * (canvasBounds.height - 2 * margin);
+function createFirefly(id: string, canvasBounds: Bounds, index: number = 0, total: number = 1): Firefly {
+  // Distribute fireflies across screen in a grid pattern
+  const cols = Math.ceil(Math.sqrt(total));
+  const rows = Math.ceil(total / cols);
+  const col = index % cols;
+  const row = Math.floor(index / cols);
+
+  const cellWidth = canvasBounds.width / cols;
+  const cellHeight = Math.min(canvasBounds.height, 800) / rows; // Limit to viewport
+
+  // Position within cell with some randomness
+  const x = cellWidth * (col + 0.3 + Math.random() * 0.4);
+  const y = cellHeight * (row + 0.3 + Math.random() * 0.4) + 100; // Offset from top
   const heading = Math.random() * Math.PI * 2;
 
   return {
@@ -193,7 +202,7 @@ export function useFireflyEngine(
           Math.abs(prev.canvasBounds.height - canvasBounds.height) > 100
         ) {
           const fireflies = Array.from({ length: fireflyCount }, (_, i) =>
-            createFirefly(`firefly_${i}`, canvasBounds)
+            createFirefly(`firefly_${i}`, canvasBounds, i, fireflyCount)
           );
           return {
             ...prev,

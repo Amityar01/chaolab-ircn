@@ -35,8 +35,8 @@ interface HomeClientProps {
   publications: Publication[];
 }
 
-// Toy configuration
-const TOY_SHAPES: ToyShape[] = ['circle', 'triangle', 'square', 'diamond', 'hexagon', 'circle'];
+// Toy configuration - fewer toys, intentionally placed
+const TOY_SHAPES: ToyShape[] = ['circle', 'triangle', 'square', 'diamond'];
 
 export default function HomeClient({
   settings,
@@ -63,19 +63,24 @@ export default function HomeClient({
   // Build obstacles from DOM elements
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
 
-  // Initialize toys with positions
+  // Initialize toys with intentional positions along margins
   const initialToys = useMemo(() => {
     if (typeof window === 'undefined') return [];
     const width = window.innerWidth;
     const height = window.innerHeight;
 
+    // Place toys deliberately - in margins, not random dump
+    const positions: Vec2[] = [
+      { x: width * 0.08, y: height * 0.25 },   // Left side, upper
+      { x: width * 0.88, y: height * 0.35 },   // Right side
+      { x: width * 0.12, y: height * 0.65 },   // Left side, lower
+      { x: width * 0.85, y: height * 0.75 },   // Right side, lower
+    ];
+
     return TOY_SHAPES.map((shape, i) => ({
       id: `toy_${i}`,
       shape,
-      position: {
-        x: 100 + Math.random() * (width - 200),
-        y: 200 + Math.random() * (height - 400),
-      },
+      position: positions[i] || { x: 100, y: 300 + i * 150 },
       colorIndex: i,
     }));
   }, []);

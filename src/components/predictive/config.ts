@@ -47,9 +47,9 @@ export const CONFIG = {
   // ========================================
   // VISUALS - COUNTS
   // ========================================
-  FIREFLY_COUNT: 4,  // Number of fireflies
-  TOY_COUNT: 6,  // Number of draggable toys
-  PARTICLE_COUNT: 50,  // Ambient particles
+  FIREFLY_COUNT: 6,  // Number of fireflies (spread across screen)
+  TOY_COUNT: 4,  // Number of draggable toys
+  PARTICLE_COUNT: 40,  // Ambient particles
 
   // ========================================
   // VISUALS - FIREFLY APPEARANCE
