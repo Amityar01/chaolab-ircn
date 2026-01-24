@@ -254,7 +254,7 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="home-fullbleed min-h-screen relative"
+      className="min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
       {/* Firefly System - fixed to viewport */}
@@ -314,7 +314,7 @@ export default function HomeClient({
 
         {/* Research Journey Section */}
         <section className="py-20 md:py-32 px-6 md:px-8 relative z-10">
-          <div className="max-w-5xl mx-auto pointer-events-auto">
+          <div className="max-w-5xl mx-auto">
             <p
               className="font-mono text-xs uppercase tracking-widest mb-4"
               style={{ color: 'var(--firefly-glow)' }}

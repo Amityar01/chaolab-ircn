@@ -315,7 +315,7 @@ export function FireflySystem({
   const isInsideObstacle = useCallback((x: number, y: number, padding = 20) => {
     for (const obs of obstaclesRef.current) {
       if (x > obs.x - padding && x < obs.x + obs.width + padding &&
-          y > obs.y - padding && y < obs.y + obs.height + padding) {
+        y > obs.y - padding && y < obs.y + obs.height + padding) {
         return true;
       }
     }
@@ -417,7 +417,7 @@ export function FireflySystem({
     // Only check actual obstacles, not screen edges
     for (const obs of obstaclesRef.current) {
       if (x > obs.x - padding && x < obs.x + obs.width + padding &&
-          y > obs.y - padding && y < obs.y + obs.height + padding) {
+        y > obs.y - padding && y < obs.y + obs.height + padding) {
         return true;
       }
     }
@@ -448,8 +448,14 @@ export function FireflySystem({
         const visits = getVisits(fireflyIndex, sampleX, sampleY);
         const confidence = Math.min(1, visits / 6);
 
-        // Avoid believed obstacles
+        // Avoid believe obstacles
         cost += belief * confidence * (distMult < 0.6 ? 4 : 2);
+
+        // IMMEDIATE SENSORY CHECK (Crucial for not getting stuck)
+        // If this direction hits a real obstacle, avoid it at all costs
+        if (checkRealObstacle(sampleX, sampleY, 5)) {
+          cost += 1000;
+        }
       }
 
       // Prefer wander direction
@@ -473,7 +479,7 @@ export function FireflySystem({
     }
 
     return bestAngle;
-  }, [getBelief, getVisits]);
+  }, [getBelief, getVisits, checkRealObstacle]);
 
   const generatePredictedPath = useCallback((
     firefly: Firefly,
@@ -638,15 +644,27 @@ export function FireflySystem({
             [0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7]
           ];
 
+          let foundEscape = false;
           for (const [dx, dy] of escapeDirections) {
-            if (!checkRealObstacle(x + dx * 15, y + dy * 15, 8)) {
+            // Check slightly further out to ensure we're not just grazing
+            // 20px is safer than 15px
+            if (!checkRealObstacle(x + dx * 20, y + dy * 20, 8)) {
               const escapeAngle = Math.atan2(dy, dx);
               vx = Math.cos(escapeAngle) * newSpeed;
               vy = Math.sin(escapeAngle) * newSpeed;
-              wanderAngle = escapeAngle;
+              wanderAngle = escapeAngle; // Update wander so we don't turn back immediately
+              foundEscape = true;
               break;
             }
           }
+
+          // If totally stuck, just reverse
+          if (!foundEscape) {
+            vx = -vx;
+            vy = -vy;
+            wanderAngle += Math.PI;
+          }
+
           angularVel = 0;
           nextX = x;
           nextY = y;

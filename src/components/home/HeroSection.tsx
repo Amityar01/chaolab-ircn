@@ -57,10 +57,10 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           hasHeroImage ? 'grid md:grid-cols-2 gap-12 lg:gap-16 items-center' : '',
         ].filter(Boolean).join(' ')}
       >
-        <div className="max-w-2xl pointer-events-auto">
+        <div className="max-w-2xl">
           {/* Tagline */}
           <p
-            className="font-mono text-sm uppercase tracking-widest mb-6 animate-fade-in-up"
+            className="font-mono text-sm uppercase tracking-widest mb-6 animate-fade-in-up pointer-events-auto"
             style={{ color: 'var(--firefly-glow)', opacity: 0.9 }}
           >
             {settings?.tagline
@@ -69,12 +69,12 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           </p>
 
           {/* Lab Name */}
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-[var(--text-primary)] tracking-tight mb-8 animate-fade-in-up delay-100">
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-[var(--text-primary)] tracking-tight mb-8 animate-fade-in-up delay-100 pointer-events-auto">
             {labName}
           </h1>
 
           {/* Main description */}
-          <p className="font-body text-xl md:text-2xl text-[var(--text-secondary)] leading-relaxed mb-6 animate-fade-in-up delay-200">
+          <p className="font-body text-xl md:text-2xl text-[var(--text-secondary)] leading-relaxed mb-6 animate-fade-in-up delay-200 pointer-events-auto">
             {settings?.description
               ? t(settings.description)
               : t({
@@ -84,7 +84,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           </p>
 
           {/* Affiliation */}
-          <p className="text-base text-[var(--text-muted)] leading-relaxed mb-12 animate-fade-in-up delay-300">
+          <p className="text-base text-[var(--text-muted)] leading-relaxed mb-12 animate-fade-in-up delay-300 pointer-events-auto">
             {t({
               en: 'International Research Center for Neurointelligence (IRCN), University of Tokyo',
               ja: '東京大学 国際高等研究所 ニューロインテリジェンス国際研究機構（IRCN）'
@@ -97,7 +97,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
           </p>
 
           {/* Links */}
-          <div className="flex flex-wrap gap-6 text-sm animate-fade-in-up delay-400">
+          <div className="flex flex-wrap gap-6 text-sm animate-fade-in-up delay-400 pointer-events-auto">
             <Link
               href="/research"
               className="inline-flex items-center font-medium transition-all group"

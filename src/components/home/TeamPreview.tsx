@@ -22,7 +22,7 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
 
     return (
       <section ref={ref} className="py-16 md:py-24 px-6 md:px-8 relative z-10">
-        <div className="max-w-5xl mx-auto pointer-events-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Section label */}
           <p
             className="font-mono text-xs uppercase tracking-widest mb-3"
@@ -38,7 +38,7 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
             {/* PI Card */}
             {pi && (
-              <div className="card">
+              <div className="card pointer-events-auto">
                 <div className="flex items-start gap-5">
                   {pi.image && (
                     <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-[var(--card-border)]">
@@ -99,7 +99,7 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
             )}
 
             {/* Member count */}
-            <div className="flex flex-col justify-center">
+            <div className="flex flex-col justify-center pointer-events-auto">
               <div className="flex items-baseline gap-3 mb-4">
                 <span
                   className="font-display text-5xl md:text-6xl font-bold"
