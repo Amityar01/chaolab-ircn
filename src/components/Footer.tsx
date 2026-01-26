@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Translations } from '@/types/content';
 
@@ -46,12 +47,24 @@ export default function Footer({ translations }: FooterProps) {
 
         <div className="footer-bottom">
           <p>&copy; {currentYear} Chao Lab, IRCN, University of Tokyo</p>
-          <div className="footer-affiliations">
-            <a href="https://ircn.jp" target="_blank" rel="noopener noreferrer">
-              <span>IRCN</span>
+          <div className="footer-affiliations flex items-center gap-6">
+            <a href="https://ircn.jp" target="_blank" rel="noopener noreferrer" className="opacity-60 hover:opacity-100 transition-opacity">
+              <Image
+                src="/uploads/ircn-logo.png"
+                alt="IRCN - International Research Center for Neurointelligence"
+                width={120}
+                height={40}
+                className="h-8 w-auto object-contain brightness-0 invert"
+              />
             </a>
-            <a href="https://www.u-tokyo.ac.jp" target="_blank" rel="noopener noreferrer">
-              <span>{t({ en: 'UTokyo', ja: '東京大学' })}</span>
+            <a href="https://www.u-tokyo.ac.jp" target="_blank" rel="noopener noreferrer" className="opacity-60 hover:opacity-100 transition-opacity">
+              <Image
+                src="/uploads/utokyo-logo.png"
+                alt={t({ en: 'University of Tokyo', ja: '東京大学' })}
+                width={120}
+                height={40}
+                className="h-8 w-auto object-contain brightness-0 invert"
+              />
             </a>
           </div>
         </div>
