@@ -31,6 +31,7 @@ interface HomeClientProps {
   members: Member[];
   memberCount: number;
   publications: Publication[];
+  pi: Member | null;
 }
 
 type ToyShape = 'brain-tl' | 'brain-tr' | 'brain-bl' | 'brain-br';
@@ -57,6 +58,7 @@ export default function HomeClient({
   members,
   memberCount,
   publications,
+  pi,
 }: HomeClientProps) {
   const sortedThemes = [...themes].sort((a, b) => (a.order || 99) - (b.order || 99));
   const { t } = useLanguage();
@@ -356,6 +358,7 @@ export default function HomeClient({
           <TeamPreview
             members={members}
             memberCount={memberCount}
+            pi={pi || undefined}
           />
         </div>
 

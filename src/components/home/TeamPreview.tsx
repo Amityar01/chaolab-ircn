@@ -11,16 +11,17 @@ import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Member } from '@/types/content';
 
-const ROTATE_INTERVAL = 4000; // 4 seconds per member
-const FADE_DURATION = 600; // 600ms fade
+const ROTATE_INTERVAL = 30000; // 30 seconds per member
+const FADE_DURATION = 1500; // 1.5s fade for smoother dissolve
 
 interface TeamPreviewProps {
   members: Member[];
   memberCount: number;
+  pi?: Member;
 }
 
 const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
-  ({ members, memberCount }, ref) => {
+  ({ members, memberCount, pi }, ref) => {
     const { t, language } = useLanguage();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);

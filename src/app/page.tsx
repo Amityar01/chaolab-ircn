@@ -13,6 +13,9 @@ export default function HomePage() {
   const activeMembers = members.filter(m => m.category !== 'alumni');
   const memberCount = activeMembers.length;
 
+  // Find PI (zenas-chao)
+  const pi = members.find(m => m.slug === 'zenas-chao') || null;
+
   return (
     <HomeClient
       settings={settings}
@@ -22,6 +25,7 @@ export default function HomePage() {
       members={activeMembers}
       memberCount={memberCount}
       publications={publications}
+      pi={pi}
     />
   );
 }
