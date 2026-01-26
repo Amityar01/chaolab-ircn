@@ -3,22 +3,54 @@
 // ============================================
 // TEAM PREVIEW COMPONENT
 // ============================================
-// Dark bioluminescent theme team section
+// Dark bioluminescent theme team section with rotating members
 
-import { forwardRef } from 'react';
+import { forwardRef, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Member } from '@/types/content';
 
+const ROTATE_INTERVAL = 4000; // 4 seconds per member
+const FADE_DURATION = 600; // 600ms fade
+
 interface TeamPreviewProps {
-  pi: Member | null;
+  members: Member[];
   memberCount: number;
 }
 
 const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
-  ({ pi, memberCount }, ref) => {
+  ({ members, memberCount }, ref) => {
     const { t, language } = useLanguage();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
+    // Pick a random next member (different from current)
+    const pickRandomNext = useCallback(() => {
+      if (members.length <= 1) return 0;
+      let next;
+      do {
+        next = Math.floor(Math.random() * members.length);
+      } while (next === currentIndex);
+      return next;
+    }, [members.length, currentIndex]);
+
+    // Rotate members randomly
+    useEffect(() => {
+      if (members.length <= 1) return;
+
+      const interval = setInterval(() => {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentIndex(pickRandomNext());
+          setIsTransitioning(false);
+        }, FADE_DURATION / 2);
+      }, ROTATE_INTERVAL);
+
+      return () => clearInterval(interval);
+    }, [members.length, pickRandomNext]);
+
+    const currentMember = members[currentIndex];
 
     return (
       <section ref={ref} className="pb-20 md:pb-32 px-6 md:px-8 relative z-10" style={{ paddingTop: '200px' }}>
@@ -36,15 +68,21 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
           </h2>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-start">
-            {/* PI Card */}
-            {pi && (
-              <div className="card pointer-events-auto">
+            {/* Member Card - rotates through members */}
+            {currentMember && (
+              <div
+                className="card pointer-events-auto"
+                style={{
+                  opacity: isTransitioning ? 0 : 1,
+                  transition: `opacity ${FADE_DURATION}ms ease-in-out`,
+                }}
+              >
                 <div className="flex items-start gap-5">
-                  {pi.image && (
+                  {currentMember.image && (
                     <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-[var(--card-border)]">
                       <Image
-                        src={pi.image}
-                        alt={language === 'ja' ? pi.name.ja : pi.name.en}
+                        src={currentMember.image}
+                        alt={language === 'ja' ? currentMember.name.ja : currentMember.name.en}
                         fill
                         className="object-cover"
                       />
@@ -52,33 +90,33 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
                   )}
                   <div>
                     <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-1">
-                      {language === 'ja' ? pi.name.ja : pi.name.en}
+                      {language === 'ja' ? currentMember.name.ja : currentMember.name.en}
                     </h3>
                     <p
                       className="text-sm font-medium mb-3"
                       style={{ color: 'var(--accent-purple)' }}
                     >
-                      {t(pi.role)}
+                      {t(currentMember.role)}
                     </p>
-                    {pi.email && (
+                    {currentMember.email && (
                       <a
-                        href={`mailto:${pi.email}`}
+                        href={`mailto:${currentMember.email}`}
                         className="text-sm text-[var(--text-muted)] hover:text-[var(--firefly-glow)] transition-colors"
                       >
-                        {pi.email}
+                        {currentMember.email}
                       </a>
                     )}
                   </div>
                 </div>
 
-                {pi.bio && (
+                {currentMember.bio && (
                   <p className="mt-5 text-sm text-[var(--text-muted)] leading-relaxed line-clamp-4">
-                    {t(pi.bio)}
+                    {t(currentMember.bio)}
                   </p>
                 )}
 
                 <Link
-                  href={`/members/${pi.slug}`}
+                  href={`/members/${currentMember.slug}`}
                   className="inline-flex items-center mt-4 text-sm font-medium transition-colors group"
                   style={{ color: 'var(--accent-cyan)' }}
                 >

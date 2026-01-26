@@ -29,7 +29,7 @@ const PublicationsPreview = forwardRef<HTMLDivElement, PublicationsPreviewProps>
       <div style={{ marginTop: '100px' }}>
         <section
           ref={ref}
-          className="py-16 md:py-24 px-6 md:px-8 relative z-10 pointer-events-auto"
+          className="py-20 md:py-28 px-6 md:px-8 relative z-10 pointer-events-auto"
           style={{ background: 'var(--card-glass)' }}
         >
           <div className="max-w-5xl mx-auto">
@@ -45,7 +45,7 @@ const PublicationsPreview = forwardRef<HTMLDivElement, PublicationsPreviewProps>
               {t({ en: 'Latest publications', ja: '最新の論文' })}
             </h2>
 
-            <div className="space-y-1">
+            <div className="space-y-4">
               {publications.slice(0, 4).map((pub) => (
                 <article
                   key={pub.id}

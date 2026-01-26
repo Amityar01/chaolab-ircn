@@ -9,8 +9,9 @@ export default function HomePage() {
   const members = getAllMembers();
   const publications = getAllPublications().slice(0, 4);
 
-  const pi = members.find(m => m.category === 'faculty') || null;
-  const memberCount = members.filter(m => m.category !== 'alumni').length;
+  // Filter out alumni for display
+  const activeMembers = members.filter(m => m.category !== 'alumni');
+  const memberCount = activeMembers.length;
 
   return (
     <HomeClient
@@ -18,7 +19,7 @@ export default function HomePage() {
       contact={contact}
       news={news}
       themes={themes}
-      pi={pi}
+      members={activeMembers}
       memberCount={memberCount}
       publications={publications}
     />

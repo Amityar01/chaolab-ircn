@@ -28,7 +28,7 @@ interface HomeClientProps {
   contact: ContactInfo | null;
   news: NewsItem[];
   themes: ResearchTheme[];
-  pi: Member | null;
+  members: Member[];
   memberCount: number;
   publications: Publication[];
 }
@@ -54,7 +54,7 @@ interface ToyState {
 export default function HomeClient({
   settings,
   themes,
-  pi,
+  members,
   memberCount,
   publications,
 }: HomeClientProps) {
@@ -354,7 +354,7 @@ export default function HomeClient({
         {/* Team Preview */}
         <div className="team-preview mt-24 md:mt-40">
           <TeamPreview
-            pi={pi}
+            members={members}
             memberCount={memberCount}
           />
         </div>
