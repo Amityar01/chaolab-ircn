@@ -5,15 +5,25 @@
 // ============================================
 // Main homepage with predictive fireflies (simplified)
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useLanguage } from '@/contexts/LanguageContext';
 import HeroSection from '@/components/home/HeroSection';
 import TeamPreview from '@/components/home/TeamPreview';
 import PublicationsPreview from '@/components/home/PublicationsPreview';
 import ResearchCard from '@/components/home/ResearchCard';
-import { DraggableToy } from '@/components/home/DraggableToy';
-import { FireflySystem } from '@/components/predictive/FireflySystem';
 import { TOY_COLORS } from '@/components/predictive/config';
+
+// Dynamic imports for heavy components (code splitting)
+const FireflySystem = dynamic(
+  () => import('@/components/predictive/FireflySystem').then(mod => ({ default: mod.FireflySystem })),
+  { ssr: false }
+);
+
+const DraggableToy = dynamic(
+  () => import('@/components/home/DraggableToy').then(mod => ({ default: mod.DraggableToy })),
+  { ssr: false }
+);
 import type {
   HomepageSettings,
   NewsItem,

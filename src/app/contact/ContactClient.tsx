@@ -10,28 +10,41 @@ interface ContactClientProps {
 
 export default function ContactClient({ contact }: ContactClientProps) {
   const { t } = useLanguage();
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('sending');
+    setErrorMessage('');
 
-    // For now, just simulate sending (you can connect to a real API later)
-    // In production, you'd send to a serverless function or email service
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-      // Create mailto link as fallback
-      const subject = encodeURIComponent(`Contact from ${formData.name}`);
-      const body = encodeURIComponent(`From: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
-      window.location.href = `mailto:${contact?.email || 'zenas.c.chao@ircn.jp'}?subject=${subject}&body=${body}`;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message');
+      }
+
+      // Check if fallback was used (no email service configured)
+      if (data.fallback) {
+        // Fall back to mailto for development
+        const subject = encodeURIComponent(`Contact from ${formData.name}`);
+        const body = encodeURIComponent(`From: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
+        window.location.href = `mailto:${contact?.email || 'zenas.c.chao@ircn.jp'}?subject=${subject}&body=${body}`;
+      }
 
       setStatus('sent');
-      setFormData({ name: '', email: '', message: '' });
-    } catch {
+      setFormData({ name: '', email: '', message: '', website: '' });
+    } catch (error) {
       setStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
     }
   };
 
@@ -98,6 +111,24 @@ export default function ContactClient({ contact }: ContactClientProps) {
                 {t({ en: 'Message sent! We\'ll get back to you soon.', ja: 'メッセージを送信しました！' })}
               </p>
             )}
+
+            {status === 'error' && (
+              <p className="form-error">
+                {errorMessage || t({ en: 'Failed to send message. Please try again.', ja: 'メッセージの送信に失敗しました。' })}
+              </p>
+            )}
+
+            {/* Honeypot field - hidden from humans, bots will fill it */}
+            <input
+              type="text"
+              name="website"
+              value={formData.website}
+              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+              style={{ position: 'absolute', left: '-9999px', opacity: 0 }}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
           </form>
         </div>
 
@@ -283,6 +314,12 @@ export default function ContactClient({ contact }: ContactClientProps) {
 
         .form-success {
           color: #4ade80;
+          font-size: 0.9rem;
+          margin-top: 0.5rem;
+        }
+
+        .form-error {
+          color: #f87171;
           font-size: 0.9rem;
           margin-top: 0.5rem;
         }

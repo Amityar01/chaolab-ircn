@@ -144,8 +144,10 @@ export default function HeroSection({ settings }: HeroSectionProps) {
                 alt={image.alt}
                 fill
                 className="object-contain p-2"
-                sizes="(max-width: 1024px) 100vw, 40vw"
+                sizes="(max-width: 768px) 0vw, (max-width: 1024px) 50vw, 40vw"
                 priority={index === 0}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                quality={85}
                 style={{
                   opacity: currentIndex === index ? (isTransitioning ? 0 : 1) : 0,
                   transition: `opacity ${FADE_DURATION}ms ease-in-out`,
