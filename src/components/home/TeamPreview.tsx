@@ -21,7 +21,7 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
     const { t, language } = useLanguage();
 
     return (
-      <section ref={ref} className="py-16 md:py-24 px-6 md:px-8 relative z-10">
+      <section ref={ref} className="py-20 md:py-32 px-6 md:px-8 relative z-10">
         <div className="max-w-5xl mx-auto">
           {/* Section label */}
           <p
@@ -35,7 +35,7 @@ const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
             {t({ en: 'Meet the researchers', ja: '研究者紹介' })}
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+          <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-start">
             {/* PI Card */}
             {pi && (
               <div className="card pointer-events-auto">

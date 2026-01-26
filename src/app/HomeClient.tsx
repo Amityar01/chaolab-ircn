@@ -202,7 +202,7 @@ export default function HomeClient({
       });
 
       // Block elements - use bounding rect
-      const blockSelectors = ['.research-card', 'footer'];
+      const blockSelectors = ['.research-card', 'footer', '.hero-image-container'];
       blockSelectors.forEach(selector => {
         container.querySelectorAll(selector).forEach(el => {
           const rect = el.getBoundingClientRect();

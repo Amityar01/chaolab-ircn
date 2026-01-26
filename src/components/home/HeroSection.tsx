@@ -133,7 +133,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
         {hasHeroImage && (
           <div
-            className="hidden md:block relative w-full max-w-md lg:max-w-lg justify-self-end aspect-[4/5] rounded-2xl overflow-hidden border border-[var(--card-border)] pointer-events-auto p-4"
+            className="hero-image-container hidden md:block relative w-full max-w-md lg:max-w-lg justify-self-end aspect-[4/5] rounded-2xl overflow-hidden border border-[var(--card-border)] pointer-events-auto p-4"
             style={{ background: 'rgba(20, 25, 35, 0.8)' }}
           >
             {/* Stack all images, control visibility with opacity */}
