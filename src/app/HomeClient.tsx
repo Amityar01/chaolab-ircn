@@ -314,24 +314,24 @@ export default function HomeClient({
           </div>
         )}
 
-        {/* Research Journey Section */}
-        <section className="py-20 md:py-32 px-6 md:px-8 relative z-10">
+        {/* Research Section */}
+        <section className="py-24 md:py-40 px-6 md:px-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <p
               className="font-mono text-xs uppercase tracking-widest mb-4"
               style={{ color: 'var(--firefly-glow)' }}
             >
-              {t({ en: 'Our Research Journey', ja: '研究の旅' })}
+              {t({ en: 'Research', ja: '研究' })}
             </p>
 
-            <h2 className="font-display text-3xl md:text-5xl text-[var(--text-primary)] mb-4 tracking-tight">
-              {t({ en: 'From prediction to creativity', ja: '予測から創造性へ' })}
+            <h2 className="font-display text-3xl md:text-5xl text-[var(--text-primary)] mb-6 tracking-tight">
+              {t({ en: 'Predictive and Creative Brain', ja: '予測的で創造的な脳' })}
             </h2>
 
-            <p className="text-[var(--text-muted)] mb-12 max-w-2xl text-lg">
+            <p className="text-[var(--text-muted)] mb-12 max-w-3xl text-lg leading-relaxed">
               {t({
-                en: 'Watch fireflies navigate using predictive coding — the same principles we study in the brain. They build beliefs about obstacles, show surprise when wrong, and confusion when things disappear.',
-                ja: '予測符号化を使ってナビゲートするホタルを観察してください。障害物についての信念を形成し、予測が外れると驚き、物が消えると混乱します。'
+                en: 'The predictive coding theory proposes that the brain continuously generates and updates predictions of sensory information at multiple levels of abstraction, and emits prediction-error signals when the predicted and actual sensory inputs differ. This theory offers a comprehensive framework for understanding perception, action, and internal processes such as creativity.',
+                ja: '予測符号化理論は、脳が複数の抽象化レベルで感覚情報の予測を継続的に生成・更新し、予測と実際の感覚入力が異なる場合に予測誤差信号を発することを提唱しています。この理論は、知覚、行動、創造性などの内部プロセスを理解するための包括的な枠組みを提供します。'
               })}
             </p>
 
