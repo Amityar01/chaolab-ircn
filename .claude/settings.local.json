@@ -43,7 +43,8 @@
       "WebFetch(domain:scholar.google.co.uk)",
       "WebFetch(domain:huji.academia.edu)",
       "WebFetch(domain:orcid.org)",
-      "WebFetch(domain:jp.linkedin.com)"
+      "WebFetch(domain:jp.linkedin.com)",
+      "Bash(git status:*)"
     ]
   }
 }
