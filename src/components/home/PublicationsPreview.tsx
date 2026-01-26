@@ -28,7 +28,7 @@ const PublicationsPreview = forwardRef<HTMLDivElement, PublicationsPreviewProps>
     return (
       <section
         ref={ref}
-        className="py-20 md:py-32 px-6 md:px-8 relative z-10 pointer-events-auto"
+        className="pt-32 md:pt-48 pb-20 md:pb-32 px-6 md:px-8 relative z-10 pointer-events-auto"
         style={{ background: 'var(--card-glass)' }}
       >
         <div className="max-w-5xl mx-auto">
