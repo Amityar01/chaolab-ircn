@@ -8,10 +8,6 @@ backend:
 media_folder: public/uploads
 public_folder: /uploads
 
-# Media library settings
-media_library:
-  max_file_size: 5120000  # 5MB
-
 # Bilingual text field template
 bilingual_text: &bilingual_text
   - { label: "English", name: "en", widget: "string" }
