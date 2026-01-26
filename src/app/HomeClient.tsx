@@ -352,7 +352,7 @@ export default function HomeClient({
         </section>
 
         {/* Team Preview */}
-        <div className="team-preview">
+        <div className="team-preview mt-16 md:mt-24">
           <TeamPreview
             pi={pi}
             memberCount={memberCount}
@@ -360,7 +360,7 @@ export default function HomeClient({
         </div>
 
         {/* Publications Preview */}
-        <div className="publications-preview">
+        <div className="publications-preview mt-16 md:mt-24">
           <PublicationsPreview
             publications={publications}
           />
