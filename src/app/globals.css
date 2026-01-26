@@ -957,3 +957,6 @@ a:hover {
 .delay-700 {
   animation-delay: 700ms;
 }
+
+/* Neural Background Hook */
+.neural-bg-active { background: var(--deep-space); }

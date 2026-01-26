@@ -261,6 +261,25 @@ export default function HomeClient({
       className="min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
+      {/* Neural Background - Very subtle */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Fine grid/dots */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.8) 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }}
+        />
+        {/* Network lines - SVG pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='800' height='800' viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 100 Q 200 50, 300 150 T 500 100 Q 600 200, 700 150 M50 400 Q 150 350, 250 450 T 450 400 Q 550 500, 650 450 M200 700 Q 300 650, 400 750 T 600 700 Q 700 800, 800 750' stroke='white' fill='transparent' stroke-width='0.5'/%3E%3C/svg%3E")`,
+            backgroundRepeat: 'repeat'
+          }}
+        />
+      </div>
       {/* Firefly System - fixed to viewport */}
       {mounted && !reducedMotion && viewportSize.width > 0 && (
         <FireflySystem
