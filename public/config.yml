@@ -10,9 +10,7 @@ public_folder: /uploads
 
 # Media library settings
 media_library:
-  name: default
   max_file_size: 5120000  # 5MB
-  folder_support: true
 
 # Bilingual text field template
 bilingual_text: &bilingual_text
