@@ -124,6 +124,36 @@ h6 {
 }
 
 /* ============================================
+   FOCUS INDICATORS (Accessibility)
+   ============================================ */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--firefly-glow);
+  outline-offset: 2px;
+}
+
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--firefly-glow);
+  color: var(--deep-space);
+  padding: 8px 16px;
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ============================================
    LINKS
    ============================================ */
 a {

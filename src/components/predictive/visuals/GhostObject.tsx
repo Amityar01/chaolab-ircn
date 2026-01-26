@@ -6,7 +6,7 @@
 // Fading memory visualization for objects that disappeared
 
 import React, { useState, useEffect } from 'react';
-import type { MemorizedObject, Vec2 } from '../types';
+import type { MemorizedObject } from '../types';
 import { CONFIG } from '../config';
 
 interface GhostObjectProps {

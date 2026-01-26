@@ -25,8 +25,8 @@ interface Props {
 
 export default function NeuralNetworkBackground({
   mousePos,
-  predictionError,
-  isOmission,
+  predictionError: _predictionError,
+  isOmission: _isOmission,
   className = ''
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);

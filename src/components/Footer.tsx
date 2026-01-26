@@ -9,7 +9,7 @@ interface FooterProps {
   translations: Translations | null;
 }
 
-export default function Footer({ translations }: FooterProps) {
+export default function Footer({ translations: _translations }: FooterProps) {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 

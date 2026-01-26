@@ -5,8 +5,8 @@
 // ============================================
 // Main SVG container for all firefly visualizations
 
-import React, { useMemo } from 'react';
-import type { Obstacle, Bounds, Firefly as FireflyType } from './types';
+import React from 'react';
+import type { Bounds, Firefly as FireflyType } from './types';
 import { CONFIG } from './config';
 import {
   Firefly,

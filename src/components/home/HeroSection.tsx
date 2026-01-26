@@ -11,12 +11,12 @@ import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { HomepageSettings } from '@/types/content';
 
-// The 4 quadrants of the hero image
+// The 4 quadrants of the hero image with descriptive alt text
 const HERO_IMAGES = [
-  '/uploads/hero-tl.png',
-  '/uploads/hero-tr.png',
-  '/uploads/hero-bl.png',
-  '/uploads/hero-br.png',
+  { src: '/uploads/hero-tl.png', alt: 'Predictive brain model visualization showing neural activity patterns' },
+  { src: '/uploads/hero-tr.png', alt: 'Large-scale neural network dynamics and connectivity' },
+  { src: '/uploads/hero-bl.png', alt: 'Experimental paradigms for studying prediction and creativity' },
+  { src: '/uploads/hero-br.png', alt: 'Computational models of cortical processing' },
 ];
 
 const SLIDE_DURATION = 5000; // 5 seconds per slide
@@ -137,11 +137,11 @@ export default function HeroSection({ settings }: HeroSectionProps) {
             style={{ background: 'rgba(20, 25, 35, 0.8)' }}
           >
             {/* Stack all images, control visibility with opacity */}
-            {HERO_IMAGES.map((src, index) => (
+            {HERO_IMAGES.map((image, index) => (
               <Image
-                key={src}
-                src={src}
-                alt={`${labName} - Research ${index + 1}`}
+                key={image.src}
+                src={image.src}
+                alt={image.alt}
                 fill
                 className="object-contain p-2"
                 sizes="(max-width: 1024px) 100vw, 40vw"
@@ -164,7 +164,11 @@ export default function HeroSection({ settings }: HeroSectionProps) {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in delay-700">
+      <div
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in delay-700"
+        role="presentation"
+        aria-hidden="true"
+      >
         <div className="flex flex-col items-center gap-2">
           <span className="font-mono text-xs text-[var(--text-muted)] opacity-50">
             {t({ en: 'scroll', ja: 'スクロール' })}

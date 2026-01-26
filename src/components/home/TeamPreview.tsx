@@ -21,7 +21,7 @@ interface TeamPreviewProps {
 }
 
 const TeamPreview = forwardRef<HTMLDivElement, TeamPreviewProps>(
-  ({ members, memberCount, pi }, ref) => {
+  ({ members, memberCount, pi: _pi }, ref) => {
     const { t, language } = useLanguage();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(false);

@@ -16,13 +16,12 @@ import {
   NetworkInput,
   ReadoutLayer,
   DEFAULT_CONFIG,
-  WherePrediction,
-  WhenPrediction,
 } from './types';
 
 // Simple prediction state (bypasses complex readout)
-const smoothPredX = 0.5;
-const smoothPredY = 0.5;
+// Reserved for future use
+const _smoothPredX = 0.5;
+const _smoothPredY = 0.5;
 import { stepNeuron, updateFiringRate, computeInputCurrent } from './izhikevich';
 import { computeSynapticInputs, updateSynapses } from './synapse';
 import { createReservoir, resetNeuronStates, resetSynapseWeights } from './reservoir';
@@ -126,7 +125,7 @@ export class SpikingNetworkSimulation {
 
     // Compute predictions
     const wherePred = predictWhere(this.whereReadout, this.neurons);
-    const whenPred = predictWhen(this.whenReadout, this.neurons);
+    const _whenPred = predictWhen(this.whenReadout, this.neurons);
 
     // Train readouts
     if (learningEnabled) {

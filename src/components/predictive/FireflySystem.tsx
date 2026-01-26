@@ -78,7 +78,7 @@ function FireflyOrb({
   predictedPath: Array<{ x: number; y: number; blocked: boolean }>;
   onClick: () => void;
 }) {
-  const { x, y, vx, vy, surprised, omissionSurprise, phase, trail, hue } = firefly;
+  const { x, y, surprised, omissionSurprise, phase, trail, hue } = firefly;
 
   // Pulsing glow
   const time = Date.now() / 1000;

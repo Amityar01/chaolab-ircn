@@ -7,14 +7,13 @@
 
 import React, { useMemo } from 'react';
 import type { Firefly as FireflyType } from '../types';
-import { CONFIG } from '../config';
 
 interface FireflyProps {
   firefly: FireflyType;
   showTrail?: boolean;
 }
 
-export function Firefly({ firefly, showTrail = true }: FireflyProps) {
+export function Firefly({ firefly, showTrail: _showTrail = true }: FireflyProps) {
   const {
     position,
     heading,

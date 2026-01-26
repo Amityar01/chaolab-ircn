@@ -88,6 +88,51 @@ export function DraggableToy({
     }
   }, []);
 
+  // Keyboard navigation for accessibility
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const step = e.shiftKey ? 50 : 10; // Larger steps with Shift key
+    let newX = x;
+    let newY = y;
+
+    switch (e.key) {
+      case 'ArrowUp':
+        newY = y - step;
+        e.preventDefault();
+        break;
+      case 'ArrowDown':
+        newY = y + step;
+        e.preventDefault();
+        break;
+      case 'ArrowLeft':
+        newX = x - step;
+        e.preventDefault();
+        break;
+      case 'ArrowRight':
+        newX = x + step;
+        e.preventDefault();
+        break;
+      default:
+        return;
+    }
+
+    onDrag(id, newX, newY);
+  }, [id, x, y, onDrag]);
+
+  // Get accessible label for the shape
+  const getShapeLabel = () => {
+    const labels: Record<ToyShape, string> = {
+      'circle': 'Circle shape',
+      'triangle': 'Triangle shape',
+      'diamond': 'Diamond shape',
+      'hexagon': 'Hexagon shape',
+      'brain-tl': 'Brain puzzle piece, top left',
+      'brain-tr': 'Brain puzzle piece, top right',
+      'brain-bl': 'Brain puzzle piece, bottom left',
+      'brain-br': 'Brain puzzle piece, bottom right',
+    };
+    return labels[shape] || 'Draggable shape';
+  };
+
   // Render different shapes
   const renderShape = () => {
     const isBrainPiece = shape.startsWith('brain-');
@@ -292,6 +337,9 @@ export function DraggableToy({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${getShapeLabel()}. Draggable. Use arrow keys to move, hold Shift for larger steps.`}
       style={{
         position: 'absolute',
         left: x,
@@ -306,11 +354,13 @@ export function DraggableToy({
         justifyContent: 'center',
         transform: isDragging ? 'scale(1.1)' : 'scale(1)',
         transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+        outline: 'none',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onKeyDown={handleKeyDown}
     >
       {renderShape()}
     </div>

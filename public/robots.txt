@@ -1,0 +1,10 @@
+# Robots.txt for Chao Lab Website
+# https://chaolab.ircn.jp
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://chaolab.ircn.jp/sitemap.xml

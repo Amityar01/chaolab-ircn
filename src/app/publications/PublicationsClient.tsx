@@ -146,7 +146,7 @@ export default function PublicationsClient({ publications }: PublicationsClientP
             <section key={year} className="year-section">
               <h2 className="year-heading">{year}</h2>
               <div className="year-publications">
-                {pubsByYear[year].map((pub, index) => (
+                {pubsByYear[year].map((pub) => (
                   <article key={pub.id} className="pub-card">
                     <div className="pub-type-badge">
                       {typeLabels[pub.type] ? t(typeLabels[pub.type]) : pub.type}

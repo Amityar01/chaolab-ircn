@@ -25,7 +25,7 @@ function magnitude(v: Vec2): number {
 /**
  * Normalize a vector
  */
-function normalize(v: Vec2): Vec2 {
+function _normalize(v: Vec2): Vec2 {
   const mag = magnitude(v);
   if (mag === 0) return { x: 0, y: 0 };
   return { x: v.x / mag, y: v.y / mag };

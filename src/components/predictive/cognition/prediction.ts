@@ -7,9 +7,7 @@ import type {
   ObjectFeatures,
   MemorizedObject,
   PredictionError,
-  PredictionErrorType,
   PredictionState,
-  Vec2,
   Bounds
 } from '../types';
 import { CONFIG } from '../config';

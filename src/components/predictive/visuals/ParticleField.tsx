@@ -5,7 +5,7 @@
 // ============================================
 // Ambient floating dust motes for atmospheric depth
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CONFIG } from '../config';
 
 interface Particle {

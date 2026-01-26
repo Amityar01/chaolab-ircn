@@ -5,7 +5,7 @@
 // ============================================
 // Main orchestration: animation loop, state management, cognitive updates
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Firefly, Obstacle, EngineState, Bounds, ObjectFeatures, PredictionError } from '../types';
 import { CONFIG } from '../config';
 import {
@@ -121,7 +121,7 @@ function processPerception(
   }
 
   // Update memory with visible objects
-  const { memory: newMemory, matched, newObjects, movedObjects } = updateMemory(
+  const { memory: newMemory, matched, newObjects: _newObjects, movedObjects } = updateMemory(
     detectedObjects,
     firefly.memory,
     16, // deltaTime

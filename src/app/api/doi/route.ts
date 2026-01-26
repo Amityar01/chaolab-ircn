@@ -22,6 +22,9 @@ interface CrossRefResponse {
   };
 }
 
+// Validate DOI format (10.xxxx/xxxxx pattern)
+const DOI_REGEX = /^10\.\d{4,}\/[^\s]+$/;
+
 export async function GET(request: NextRequest) {
   const doi = request.nextUrl.searchParams.get('doi');
 
@@ -29,14 +32,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing DOI parameter' }, { status: 400 });
   }
 
+  // Validate DOI format to prevent malformed URLs
+  if (!DOI_REGEX.test(doi)) {
+    return NextResponse.json({ error: 'Invalid DOI format' }, { status: 400 });
+  }
+
   try {
-    // Fetch from CrossRef API
+    // Fetch from CrossRef API with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
     const response = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`, {
+      signal: controller.signal,
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'ChaoLab-Website/1.0 (mailto:zenas.c.chao@ircn.jp)',
       },
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       return NextResponse.json({ error: 'DOI not found' }, { status: 404 });
@@ -79,7 +93,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(publication);
   } catch (error) {
-    console.error('DOI lookup error:', error);
+    // Handle timeout specifically
+    if (error instanceof Error && error.name === 'AbortError') {
+      return NextResponse.json({ error: 'DOI lookup timed out' }, { status: 504 });
+    }
+    // Log only the error message, not the full error object (security)
+    console.error('DOI lookup error:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json({ error: 'Failed to fetch DOI metadata' }, { status: 500 });
   }
 }

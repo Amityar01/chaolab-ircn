@@ -169,7 +169,7 @@ function BrainMesh({ mousePos, predictionError, isOmission }: NeuralActivityProp
 }
 
 // Simpler electrode points - fewer, calmer
-function Electrodes({ mousePos, predictionError, isOmission }: NeuralActivityProps) {
+function Electrodes({ mousePos }: Pick<NeuralActivityProps, 'mousePos'>) {
   const pointsRef = useRef<THREE.Points>(null);
   const electrodePositions = useMemo(() => generateElectrodePositions(6, 10, 1.35), []);
 
@@ -235,16 +235,12 @@ function Electrodes({ mousePos, predictionError, isOmission }: NeuralActivityPro
 
 export default function CorticalSurface({
   mousePos = { x: 0, y: 0 },
-  predictedPos = { x: 0, y: 0 },
   predictionError = 0,
   isOmission = false,
-  omissionLocation = { x: 0, y: 0 }
 }: {
   mousePos?: { x: number; y: number };
-  predictedPos?: { x: number; y: number };
   predictionError?: number;
   isOmission?: boolean;
-  omissionLocation?: { x: number; y: number };
 }) {
   return (
     <div className="absolute inset-0 w-full h-full" style={{ opacity: 0.85 }}>
@@ -265,8 +261,6 @@ export default function CorticalSurface({
 
         <Electrodes
           mousePos={mousePos}
-          predictionError={predictionError}
-          isOmission={isOmission}
         />
 
         <OrbitControls

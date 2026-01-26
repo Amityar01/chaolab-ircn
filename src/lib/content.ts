@@ -18,33 +18,47 @@ import type {
 
 const contentDir = path.join(process.cwd(), 'content');
 
-// Helper to read YAML file
+// Helper to read YAML file with improved error logging
 function readYaml<T>(filePath: string): T | null {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
     return yaml.load(content) as T;
-  } catch {
+  } catch (error) {
+    // Log meaningful context for debugging in development
+    if (process.env.NODE_ENV === 'development') {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn(`[Content] Failed to load YAML: ${filePath}`, errorMessage);
+    }
     return null;
   }
 }
 
-// Helper to read Markdown file with frontmatter
+// Helper to read Markdown file with frontmatter and improved error logging
 function readMarkdown<T>(filePath: string): (T & { content: string }) | null {
   try {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContent);
     return { ...data, content } as T & { content: string };
-  } catch {
+  } catch (error) {
+    // Log meaningful context for debugging in development
+    if (process.env.NODE_ENV === 'development') {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn(`[Content] Failed to load Markdown: ${filePath}`, errorMessage);
+    }
     return null;
   }
 }
 
-// Helper to get all files in directory
+// Helper to get all files in directory with improved error logging
 function getFilesInDir(dir: string, ext: string): string[] {
   try {
     if (!fs.existsSync(dir)) return [];
     return fs.readdirSync(dir).filter((f) => f.endsWith(ext));
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn(`[Content] Failed to read directory: ${dir}`, errorMessage);
+    }
     return [];
   }
 }
