@@ -254,7 +254,7 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen relative"
+      className="home-fullbleed min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
       {/* Firefly System - fixed to viewport */}
