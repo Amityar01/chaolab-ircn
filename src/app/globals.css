@@ -153,6 +153,26 @@ a:hover {
   z-index: 10;
 }
 
+/* ============================================
+   FULL-BLEED (HOME OVERLAY SAFE)
+   ============================================ */
+.home-fullbleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: -6rem; /* cancels .main-content top padding */
+  padding-top: 6rem; /* restore content spacing, keep canvas full-height */
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (max-width: 768px) {
+  .home-fullbleed {
+    margin-top: -5rem; /* cancels mobile .main-content top padding */
+    padding-top: 5rem;
+  }
+}
+
 
 
 /* ============================================
