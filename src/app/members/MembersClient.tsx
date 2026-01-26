@@ -219,9 +219,9 @@ export default function MembersClient({ members, categories }: MembersClientProp
 
         .members-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
           gap: 1.5rem;
-          justify-items: start;
+          justify-content: start;
         }
 
         /* Member Card */
@@ -234,8 +234,9 @@ export default function MembersClient({ members, categories }: MembersClientProp
           border-radius: 12px;
           transition: all 0.2s;
           text-decoration: none;
-          max-width: 400px;
           width: 100%;
+          box-sizing: border-box;
+          overflow: hidden;
         }
 
         .member-card:hover {
