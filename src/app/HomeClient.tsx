@@ -91,8 +91,10 @@ export default function HomeClient({
     const timer = setTimeout(() => setShowHint(false), 8000);
 
     const updateSize = () => {
-      const w = window.innerWidth;
-      const nextToySize = getToySize(w);
+      const viewportW = window.innerWidth;
+      const nextToySize = getToySize(viewportW);
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      const w = Math.round(containerRect?.width ?? viewportW);
       // Use full document height - fireflies cover entire page
       const h = Math.max(
         document.body.scrollHeight,
@@ -102,7 +104,7 @@ export default function HomeClient({
       setViewportSize({ width: w, height: h });
       setToySize(nextToySize);
 
-      // Initialize toys in document coordinates
+      // Initialize toys
       setToys(prev => {
         if (prev.length > 0) return prev;
         const clusterSize = nextToySize * 2;
@@ -254,7 +256,7 @@ export default function HomeClient({
   return (
     <div
       ref={containerRef}
-      className="home-fullbleed min-h-screen relative"
+      className="min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
       {/* Firefly System - fixed to viewport */}

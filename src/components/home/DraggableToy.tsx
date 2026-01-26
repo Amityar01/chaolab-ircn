@@ -49,23 +49,36 @@ export function DraggableToy({
     return () => clearInterval(interval);
   }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // Store offset using document coordinates
-    const docX = e.clientX + window.scrollX;
-    const docY = e.clientY + window.scrollY;
-    dragOffset.current = { x: docX - x, y: docY - y };
+
+    const target = e.currentTarget as HTMLDivElement;
+    const parent =
+      (target.offsetParent instanceof HTMLElement ? target.offsetParent : null) ??
+      target.parentElement;
+    const parentRect = parent?.getBoundingClientRect();
+    const localX = e.clientX - (parentRect?.left ?? 0);
+    const localY = e.clientY - (parentRect?.top ?? 0);
+
+    // Store offset using parent-relative coordinates
+    dragOffset.current = { x: localX - x, y: localY - y };
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
   }, [x, y]);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging) return;
-    // Convert to document coordinates
-    const docX = e.clientX + window.scrollX;
-    const docY = e.clientY + window.scrollY;
-    onDrag(id, docX - dragOffset.current.x, docY - dragOffset.current.y);
+
+    const target = e.currentTarget as HTMLDivElement;
+    const parent =
+      (target.offsetParent instanceof HTMLElement ? target.offsetParent : null) ??
+      target.parentElement;
+    const parentRect = parent?.getBoundingClientRect();
+    const localX = e.clientX - (parentRect?.left ?? 0);
+    const localY = e.clientY - (parentRect?.top ?? 0);
+
+    onDrag(id, localX - dragOffset.current.x, localY - dragOffset.current.y);
   }, [isDragging, id, onDrag]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
