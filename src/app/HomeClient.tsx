@@ -261,18 +261,7 @@ export default function HomeClient({
       className="min-h-screen relative"
       style={{ background: 'var(--deep-space)' }}
     >
-      {/* Background Image - User Provided */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: 'url(/uploads/neural-bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.15,
-          mixBlendMode: 'screen'
-        }}
-      />
+
 
       {/* Firefly System - fixed to viewport */}
       {mounted && !reducedMotion && viewportSize.width > 0 && (
