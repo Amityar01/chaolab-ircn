@@ -13,13 +13,25 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 const CONFIG = {
   NUM_FIREFLIES: 5,
   GRID_SIZE: 16,
-  SENSE_DISTANCE: 80,
+  SENSE_DISTANCE: 60,
   SURPRISE_DURATION: 1000,
 
-  // Movement
-  BASE_SPEED: 1.2,
-  TURN_SMOOTHING: 0.12,
-  WANDER_RATE: 0.06,
+  // Movement - smooth rotation-based
+  BASE_SPEED: 1.3,
+  MAX_SPEED: 1.8,
+  TURN_SMOOTHING: 0.04,   // Gentle turning
+  ANGULAR_DAMPING: 0.96,  // High = smooth curves, keeps rotating
+  WANDER_STRENGTH: 0.015, // Continuous gentle curve
+  WANDER_VARIATION: 0.008, // Random variation in curve
+
+  // Cursor attraction
+  CURSOR_ATTRACTION: 0.12,  // Turn rate toward cursor per frame
+  CURSOR_RANGE: 700,        // Max distance for cursor attraction
+
+  // Belief formation
+  SOLID_PADDING: 0,      // No expansion - must be exactly inside obstacle to mark belief
+  SENSE_PADDING: 8,      // Padding for detecting obstacles during sensing (slightly larger)
+  COLLISION_PADDING: 10, // Padding for actual collision detection
 
   // Visuals
   ORB_SIZE: 8,
@@ -45,6 +57,9 @@ interface Firefly {
   phase: number;
   trail: Array<{ x: number; y: number }>;
   hue: number;
+  // Avoidance state - turn away from expected obstacles
+  avoidAngle: number;      // Direction to avoid
+  avoidUntil: number;      // Timestamp until which to keep avoiding
 }
 
 interface Obstacle {
@@ -305,11 +320,36 @@ export function FireflySystem({
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(Date.now());
   const obstaclesRef = useRef(obstacles);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const cursorRef = useRef<{ x: number; y: number }>({ x: -1000, y: -1000 });
 
   // Update obstacles ref
   useEffect(() => {
     obstaclesRef.current = obstacles;
   }, [obstacles]);
+
+  // Track cursor position relative to SVG element
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (svgRef.current) {
+        const rect = svgRef.current.getBoundingClientRect();
+        // clientX/Y minus rect gives position relative to SVG
+        // rect.top is already adjusted for scroll (it's viewport-relative)
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        cursorRef.current = { x, y };
+      }
+    };
+    const handleMouseLeave = () => {
+      cursorRef.current = { x: -1000, y: -1000 };
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   // Check if position is inside any obstacle
   const isInsideObstacle = useCallback((x: number, y: number, padding = 20) => {
@@ -364,6 +404,8 @@ export function FireflySystem({
           phase: Math.random() * Math.PI * 2,
           trail: [],
           hue: 35 + Math.random() * 25,
+          avoidAngle: 0,
+          avoidUntil: 0,
         };
       });
 
@@ -413,8 +455,10 @@ export function FireflySystem({
     return hadBelief;
   }, []);
 
+  // Check if point is inside obstacle with given padding
+  // Positive padding = expand obstacle bounds (for avoidance)
+  // Negative padding = shrink bounds (must be well inside for belief marking)
   const checkRealObstacle = useCallback((x: number, y: number, padding = 8) => {
-    // Only check actual obstacles, not screen edges
     for (const obs of obstaclesRef.current) {
       if (x > obs.x - padding && x < obs.x + obs.width + padding &&
         y > obs.y - padding && y < obs.y + obs.height + padding) {
@@ -448,13 +492,12 @@ export function FireflySystem({
         const visits = getVisits(fireflyIndex, sampleX, sampleY);
         const confidence = Math.min(1, visits / 6);
 
-        // Avoid believe obstacles
-        cost += belief * confidence * (distMult < 0.6 ? 4 : 2);
+        // Avoid believed obstacles
+        cost += belief * confidence * (distMult < 0.6 ? 3 : 1.5);
 
-        // IMMEDIATE SENSORY CHECK (Crucial for not getting stuck)
-        // If this direction hits a real obstacle, avoid it at all costs
-        if (checkRealObstacle(sampleX, sampleY, 5)) {
-          cost += 1000;
+        // Sensory check - low penalty so they often fail to avoid
+        if (checkRealObstacle(sampleX, sampleY, CONFIG.SENSE_PADDING)) {
+          cost += distMult < 0.6 ? 3 : 1.5; // Low penalty - they'll often crash
         }
       }
 
@@ -463,14 +506,14 @@ export function FireflySystem({
         Math.sin(testAngle - wanderAngle),
         Math.cos(testAngle - wanderAngle)
       ));
-      cost += wanderDiff * 0.4;
+      cost += wanderDiff * 0.3;
 
-      // Momentum - prefer current direction
+      // Strong momentum - prefer current direction (makes them crash more)
       const momDiff = Math.abs(Math.atan2(
         Math.sin(testAngle - currentAngle),
         Math.cos(testAngle - currentAngle)
       ));
-      cost += momDiff * 0.15;
+      cost += momDiff * 0.8; // Much higher momentum cost
 
       if (cost < lowestCost) {
         lowestCost = cost;
@@ -559,23 +602,46 @@ export function FireflySystem({
         const currentAngle = Math.atan2(vy, vx);
         const speed = Math.sqrt(vx * vx + vy * vy);
 
-        // Random wander
-        wanderAngle += (Math.random() - 0.5) * CONFIG.WANDER_RATE * delta;
-        if (Math.random() < 0.003) {
-          wanderAngle = Math.random() * Math.PI * 2;
+        // Smooth continuous wander - gentle curves, no sudden changes
+        // Each firefly has a persistent turn bias that slowly evolves
+        const wanderBias = Math.sin(now / 3000 + phase * 10) * CONFIG.WANDER_STRENGTH;
+        const wanderNoise = (Math.sin(now / 500 + phase * 5) * 0.5 + Math.sin(now / 1300 + phase * 7) * 0.5) * CONFIG.WANDER_VARIATION;
+        wanderAngle = currentAngle + wanderBias + wanderNoise;
+
+        // Cursor attraction - fireflies are drawn to cursor
+        let cursorTurnForce = 0;
+        const cursor = cursorRef.current;
+        const cdx = cursor.x - x;
+        const cdy = cursor.y - y;
+        const cursorDist = Math.sqrt(cdx * cdx + cdy * cdy);
+        if (cursorDist < CONFIG.CURSOR_RANGE && cursorDist > 15) {
+          const angleToCursor = Math.atan2(cdy, cdx);
+          let cursorAngleDiff = angleToCursor - currentAngle;
+          // Normalize to -PI to PI
+          while (cursorAngleDiff > Math.PI) cursorAngleDiff -= Math.PI * 2;
+          while (cursorAngleDiff < -Math.PI) cursorAngleDiff += Math.PI * 2;
+          // Attraction strength based on distance
+          const strength = (1 - cursorDist / CONFIG.CURSOR_RANGE) * CONFIG.CURSOR_ATTRACTION;
+          cursorTurnForce = cursorAngleDiff * strength;
         }
 
         // Active sensing - look ahead and update beliefs
         let omissionDetected = false;
+        let expectedObstacleAhead = false;
+        let obstacleAvoidAngle = 0;
 
-        for (let angleOff = -0.6; angleOff <= 0.6; angleOff += 0.3) {
-          for (let dist = 15; dist <= CONFIG.SENSE_DISTANCE; dist += 12) {
+        for (let angleOff = -0.5; angleOff <= 0.5; angleOff += 0.25) {
+          for (let dist = 15; dist <= CONFIG.SENSE_DISTANCE; dist += 10) {
             const senseAngle = currentAngle + angleOff;
             const senseX = x + Math.cos(senseAngle) * dist;
             const senseY = y + Math.sin(senseAngle) * dist;
 
             const belief = getBelief(idx, senseX, senseY);
-            const realObstacle = checkRealObstacle(senseX, senseY, 5);
+            const visits = getVisits(idx, senseX, senseY);
+            // Use padded check for detecting presence (for omission check)
+            const realObstacle = checkRealObstacle(senseX, senseY, CONFIG.SENSE_PADDING);
+            // Use negative padding - only mark if WELL INSIDE obstacle (not at edges)
+            const solidInside = checkRealObstacle(senseX, senseY, CONFIG.SOLID_PADDING);
 
             // Omission: believed obstacle but nothing there
             if (belief > 0.4 && !realObstacle) {
@@ -585,11 +651,32 @@ export function FireflySystem({
               }
             }
 
-            // Mark real obstacles
-            if (realObstacle) {
+            // Only mark beliefs when solidly inside obstacle
+            if (solidInside) {
               markObstacle(idx, senseX, senseY);
             }
+
+            // Check if we EXPECT an obstacle ahead (from beliefs or real sensing)
+            // Only react to close obstacles in our forward direction
+            const isForward = Math.abs(angleOff) < 0.3;
+            const isClose = dist < CONFIG.SENSE_DISTANCE * 0.6;
+            const isExpected = (belief > 0.3 && visits > 1) || realObstacle;
+
+            if (isForward && isClose && isExpected && !expectedObstacleAhead) {
+              expectedObstacleAhead = true;
+              // Turn away from obstacle - perpendicular to approach
+              obstacleAvoidAngle = currentAngle + (angleOff >= 0 ? -Math.PI / 2 : Math.PI / 2);
+            }
           }
+        }
+
+        // Get avoidance state from firefly
+        let { avoidAngle, avoidUntil } = firefly;
+
+        // Set new avoidance if we expect obstacle ahead
+        if (expectedObstacleAhead && now > avoidUntil) {
+          avoidAngle = obstacleAvoidAngle;
+          avoidUntil = now + 800; // Avoid for 800ms
         }
 
         if (omissionDetected && !omissionSurprise && !surprised) {
@@ -602,20 +689,38 @@ export function FireflySystem({
         const bestAngle = findBestDirection(idx, x, y, currentAngle, wanderAngle);
         targetAngle = bestAngle;
 
-        // Smooth turning
-        const angleDiff = Math.atan2(
+        // Smooth turning with momentum
+        let angleDiff = Math.atan2(
           Math.sin(targetAngle - currentAngle),
           Math.cos(targetAngle - currentAngle)
         );
+
+        // If actively avoiding, override with avoidance direction
+        if (now < avoidUntil) {
+          let avoidDiff = avoidAngle - currentAngle;
+          while (avoidDiff > Math.PI) avoidDiff -= Math.PI * 2;
+          while (avoidDiff < -Math.PI) avoidDiff += Math.PI * 2;
+          // Strong turn toward avoid angle
+          angleDiff = avoidDiff * 0.5;
+        }
+
+        // Apply turn forces: navigation + wander + cursor
         angularVel += angleDiff * CONFIG.TURN_SMOOTHING * delta;
-        angularVel *= 0.85; // Damping
+        angularVel += cursorTurnForce; // Direct cursor influence
+
+        // Damping for smooth curves
+        angularVel *= CONFIG.ANGULAR_DAMPING;
+
+        // Clamp angular velocity
+        angularVel = Math.max(-0.15, Math.min(0.15, angularVel));
 
         const newAngle = currentAngle + angularVel * delta;
 
         // Natural speed variation
-        const speedOsc = Math.sin(now / 300 + phase) * 0.2;
+        const speedOsc = Math.sin(now / 300 + phase) * 0.3;
         const targetSpeed = CONFIG.BASE_SPEED + speedOsc;
-        const newSpeed = speed + (targetSpeed - speed) * 0.1 * delta;
+        // Gradual speed changes (momentum)
+        const newSpeed = Math.min(CONFIG.MAX_SPEED, speed + (targetSpeed - speed) * 0.08 * delta);
 
         vx = Math.cos(newAngle) * newSpeed;
         vy = Math.sin(newAngle) * newSpeed;
@@ -624,50 +729,67 @@ export function FireflySystem({
         let nextY = y + vy * delta;
 
         // Check for collision
-        const hitObstacle = checkRealObstacle(nextX, nextY, 10);
+        const hitObstacle = checkRealObstacle(nextX, nextY, CONFIG.COLLISION_PADDING);
         const belief = getBelief(idx, nextX, nextY);
         const visits = getVisits(idx, nextX, nextY);
-        const expectedHit = belief > 0.5 && visits > 2;
+        // Need higher threshold since we only mark solid hits now
+        const expectedHit = belief > 0.3 && visits > 1;
 
         // Surprise on unexpected collision
         if (hitObstacle && !expectedHit) {
           surprised = true;
           omissionSurprise = false;
           surpriseTime = now;
-          markObstacle(idx, nextX, nextY);
         }
 
-        // Hard collision - find escape direction
+        // Hard collision - bounce off forcefully
         if (hitObstacle) {
+          // Always reinforce belief on collision
+          markObstacle(idx, nextX, nextY);
+
+          // Find escape direction - check multiple angles
           const escapeDirections = [
             [1, 0], [-1, 0], [0, 1], [0, -1],
-            [0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7]
+            [0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7],
+            [0.9, 0.4], [-0.9, 0.4], [0.9, -0.4], [-0.9, -0.4],
           ];
 
-          let foundEscape = false;
-          for (const [dx, dy] of escapeDirections) {
-            // Check slightly further out to ensure we're not just grazing
-            // 20px is safer than 15px
-            if (!checkRealObstacle(x + dx * 20, y + dy * 20, 8)) {
-              const escapeAngle = Math.atan2(dy, dx);
-              vx = Math.cos(escapeAngle) * newSpeed;
-              vy = Math.sin(escapeAngle) * newSpeed;
-              wanderAngle = escapeAngle; // Update wander so we don't turn back immediately
-              foundEscape = true;
+          let escapeX = -vx; // Default: reverse
+          let escapeY = -vy;
+
+          for (const [edx, edy] of escapeDirections) {
+            const testX = x + edx * 30;
+            const testY = y + edy * 30;
+            if (!checkRealObstacle(testX, testY, 12)) {
+              escapeX = edx;
+              escapeY = edy;
               break;
             }
           }
 
-          // If totally stuck, just reverse
-          if (!foundEscape) {
-            vx = -vx;
-            vy = -vy;
-            wanderAngle += Math.PI;
+          // Normalize escape direction
+          const escapeMag = Math.sqrt(escapeX * escapeX + escapeY * escapeY);
+          if (escapeMag > 0) {
+            escapeX /= escapeMag;
+            escapeY /= escapeMag;
           }
 
-          angularVel = 0;
-          nextX = x;
-          nextY = y;
+          // HARD bounce - push away with force
+          const bounceSpeed = Math.max(CONFIG.BASE_SPEED * 1.5, newSpeed);
+          vx = escapeX * bounceSpeed;
+          vy = escapeY * bounceSpeed;
+
+          // Strong angular kick in escape direction
+          const escapeAngle = Math.atan2(escapeY, escapeX);
+          angularVel = (escapeAngle - currentAngle) * 0.5;
+
+          // Set avoidance to keep turning away after collision
+          avoidAngle = escapeAngle;
+          avoidUntil = now + 1200; // Avoid for 1.2 seconds after collision
+
+          // Push position away from obstacle
+          nextX = x + escapeX * 5;
+          nextY = y + escapeY * 5;
         }
 
         // Clear surprise after duration
@@ -712,6 +834,8 @@ export function FireflySystem({
           omissionSurprise,
           surpriseTime,
           trail: newTrail,
+          avoidAngle,
+          avoidUntil,
         };
       }));
 
@@ -741,6 +865,7 @@ export function FireflySystem({
 
   return (
     <svg
+      ref={svgRef}
       width={width}
       height={height}
       style={{
