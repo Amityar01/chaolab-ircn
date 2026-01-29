@@ -8,9 +8,10 @@
 @import 'tailwindcss';
 
 /* ============================================
-   COLOR PALETTE
+   COLOR PALETTE - DARK MODE (Default)
    ============================================ */
-:root {
+:root,
+[data-theme="dark"] {
   /* Night Sky Background */
   --deep-space: #070b14;
   --night-indigo: #0a0e1a;
@@ -56,11 +57,80 @@
   --daikin-blue-light: #00a0e9;
   --daikin-blue-dark: #005a8c;
   --ircn-blue: #1e3a5f;
+  --ircn-gold: #d4a012;
+  --ircn-gold-light: #f5c518;
+  --ircn-gold-dark: #b8860b;
 
   /* Legacy compatibility */
   --bg: var(--deep-space);
   --bg-card: var(--card-glass);
   --text: var(--text-primary);
+
+  /* Logo filter */
+  --logo-filter: brightness(0) invert(1);
+}
+
+/* ============================================
+   COLOR PALETTE - LIGHT MODE
+   Clean white with IRCN Blue/Gold + Daikin Blue accents
+   ============================================ */
+[data-theme="light"] {
+  /* Clean white/light gray backgrounds */
+  --deep-space: #ffffff;
+  --night-indigo: #f8fafc;
+  --twilight-blue: #f1f5f9;
+  --ambient-glow: #e2e8f0;
+
+  /* IRCN Gold as primary hover/accent (like firefly in dark mode) */
+  --firefly-glow: #d4a012;
+  --firefly-core: #b8860b;
+  --firefly-hot: #f5c518;
+  --firefly-halo: #fef3c7;
+
+  /* Perception - Daikin blues */
+  --fov-fill: rgba(0, 120, 193, 0.08);
+  --fov-stroke: rgba(0, 120, 193, 0.2);
+  --edge-detect: #0078C1;
+  --neural-activation: #00a0e9;
+
+  /* Memory States - teal greens */
+  --memory-active: #0d9488;
+  --memory-fading: #14b8a6;
+  --memory-ghost: rgba(13, 148, 136, 0.2);
+
+  /* Prediction Errors */
+  --surprise: #dc2626;
+  --confusion: #0078C1;
+  --confirmed: #0d9488;
+
+  /* Content - IRCN navy for text on white */
+  --card-glass: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(30, 58, 95, 0.12);
+  --card-hover: rgba(255, 255, 255, 1);
+  --text-primary: #1e3a5f;
+  --text-secondary: #2d4a6f;
+  --text-muted: #5a7a9a;
+
+  /* Accents - Daikin blue for links, IRCN gold for highlights */
+  --accent-purple: #0078C1;
+  --accent-cyan: #00a0e9;
+
+  /* Partner Colors */
+  --daikin-blue: #0078C1;
+  --daikin-blue-light: #00a0e9;
+  --daikin-blue-dark: #005a8c;
+  --ircn-blue: #1e3a5f;
+  --ircn-gold: #d4a012;
+  --ircn-gold-light: #f5c518;
+  --ircn-gold-dark: #b8860b;
+
+  /* Legacy compatibility */
+  --bg: var(--deep-space);
+  --bg-card: var(--card-glass);
+  --text: var(--text-primary);
+
+  /* Logo filter - keep original colors */
+  --logo-filter: none;
 }
 
 /* ============================================
@@ -485,6 +555,10 @@ a:hover {
   color: var(--firefly-glow);
 }
 
+.footer-logo {
+  filter: var(--logo-filter);
+}
+
 /* ============================================
    LANGUAGE TOGGLE
    ============================================ */
@@ -516,6 +590,41 @@ a:hover {
 
 .lang-btn:hover:not(.active) {
   color: var(--text-primary);
+}
+
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--firefly-glow);
+  border-color: var(--firefly-glow);
+}
+
+[data-theme="light"] .theme-toggle-btn {
+  background: var(--twilight-blue);
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: var(--daikin-blue);
+  color: white;
+  border-color: var(--daikin-blue);
 }
 
 /* ============================================
@@ -990,3 +1099,205 @@ a:hover {
 
 /* Neural Background Hook */
 .neural-bg-active { background: var(--deep-space); }
+
+/* ============================================
+   LIGHT MODE SPECIFIC OVERRIDES
+   Clean white with IRCN/Daikin accents
+   ============================================ */
+[data-theme="light"] body {
+  background: var(--deep-space);
+}
+
+[data-theme="light"] .nav {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .nav.scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid rgba(0, 120, 193, 0.15);
+  box-shadow: 0 2px 16px rgba(30, 58, 95, 0.08);
+}
+
+[data-theme="light"] .nav-logo {
+  color: var(--ircn-blue);
+}
+
+[data-theme="light"] .nav-link {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.active {
+  color: var(--daikin-blue);
+}
+
+[data-theme="light"] .card {
+  background: #ffffff;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+  box-shadow: 0 1px 3px rgba(30, 58, 95, 0.06);
+}
+
+[data-theme="light"] .card:hover {
+  border-color: var(--daikin-blue);
+  box-shadow: 0 8px 24px rgba(0, 120, 193, 0.1);
+}
+
+[data-theme="light"] .card::after {
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 120, 193, 0.06), transparent 40%);
+}
+
+[data-theme="light"] .research-card {
+  background: #ffffff;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .research-card::before {
+  background: linear-gradient(90deg, transparent, var(--daikin-blue), transparent);
+}
+
+[data-theme="light"] .research-card:hover {
+  border-color: var(--daikin-blue);
+  box-shadow: 0 12px 32px rgba(0, 120, 193, 0.12);
+}
+
+[data-theme="light"] .member-card {
+  background: #ffffff;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .member-card:hover {
+  border-color: var(--daikin-blue);
+  box-shadow: 0 4px 16px rgba(0, 120, 193, 0.1);
+}
+
+[data-theme="light"] .member-photo {
+  background: var(--twilight-blue);
+  border-color: rgba(30, 58, 95, 0.15);
+}
+
+[data-theme="light"] .footer {
+  background: var(--night-indigo);
+  border-top: 1px solid rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .footer-brand h3 {
+  color: var(--ircn-blue);
+}
+
+[data-theme="light"] .lang-toggle {
+  background: var(--twilight-blue);
+  border: 1px solid rgba(30, 58, 95, 0.12);
+}
+
+[data-theme="light"] .lang-btn {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .lang-btn.active {
+  background: var(--daikin-blue);
+  color: white;
+}
+
+[data-theme="light"] .lang-btn:hover:not(.active) {
+  color: var(--ircn-blue);
+}
+
+[data-theme="light"] .legend {
+  background: #ffffff;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.08);
+}
+
+[data-theme="light"] .mobile-menu {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+[data-theme="light"] .mobile-nav-link {
+  color: var(--text-muted);
+  border-bottom-color: rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .mobile-nav-link:hover,
+[data-theme="light"] .mobile-nav-link.active {
+  color: var(--daikin-blue);
+}
+
+[data-theme="light"] ::selection {
+  background: var(--daikin-blue);
+  color: white;
+}
+
+[data-theme="light"] .page-container {
+  background: var(--deep-space);
+}
+
+[data-theme="light"] .vignette {
+  display: none;
+}
+
+[data-theme="light"] a:hover {
+  color: var(--daikin-blue);
+}
+
+[data-theme="light"] .pub-title a {
+  color: var(--daikin-blue);
+}
+
+[data-theme="light"] .pub-title a:hover {
+  color: var(--ircn-gold-dark);
+}
+
+[data-theme="light"] .page-header {
+  border-bottom-color: rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .page-header h1 {
+  color: var(--ircn-blue);
+}
+
+[data-theme="light"] .pub-item,
+[data-theme="light"] .news-item {
+  border-bottom-color: rgba(30, 58, 95, 0.08);
+}
+
+[data-theme="light"] .contact-item svg {
+  color: var(--daikin-blue);
+}
+
+/* Scrollbar for light mode */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: var(--twilight-blue);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(30, 58, 95, 0.2);
+  border-radius: 4px;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--daikin-blue);
+}
+
+/* Map filter for light mode */
+[data-theme="light"] .map-container iframe {
+  filter: none;
+}
+
+/* Focus indicators for light mode */
+[data-theme="light"] a:focus-visible,
+[data-theme="light"] button:focus-visible,
+[data-theme="light"] [role="button"]:focus-visible {
+  outline-color: var(--daikin-blue);
+}
+
+/* Skip link for light mode */
+[data-theme="light"] .skip-link {
+  background: var(--daikin-blue);
+  color: white;
+}
+
+/* Buttons and interactive elements */
+[data-theme="light"] .contact-item svg {
+  color: var(--daikin-blue);
+}

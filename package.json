@@ -11,7 +11,10 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "responses": "node scripts/fetch-form-responses.js",
+    "responses:json": "node scripts/fetch-form-responses.js --json",
+    "responses:csv": "node scripts/fetch-form-responses.js --csv"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -41,6 +44,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9",
     "eslint-config-next": "^15.0.0",
+    "googleapis": "^170.1.0",
     "jsdom": "^27.4.0",
     "playwright": "^1.57.0",
     "resend": "^6.8.0",

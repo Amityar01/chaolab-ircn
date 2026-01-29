@@ -54,7 +54,7 @@ export default function Footer({ translations: _translations }: FooterProps) {
                 alt="IRCN - International Research Center for Neurointelligence"
                 width={120}
                 height={40}
-                className="h-8 w-auto object-contain brightness-0 invert"
+                className="h-8 w-auto object-contain footer-logo"
               />
             </a>
             <a href="https://www.u-tokyo.ac.jp" target="_blank" rel="noopener noreferrer" className="opacity-60 hover:opacity-100 transition-opacity">
@@ -63,7 +63,7 @@ export default function Footer({ translations: _translations }: FooterProps) {
                 alt={t({ en: 'University of Tokyo', ja: '東京大学' })}
                 width={120}
                 height={40}
-                className="h-8 w-auto object-contain brightness-0 invert"
+                className="h-8 w-auto object-contain footer-logo"
               />
             </a>
           </div>

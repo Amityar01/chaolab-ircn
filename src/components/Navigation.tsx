@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import LanguageToggle from './LanguageToggle';
+import ThemeToggle from './ThemeToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Translations } from '@/types/content';
 
@@ -57,6 +58,7 @@ export default function Navigation({ translations }: NavigationProps) {
             </Link>
           ))}
           <LanguageToggle />
+          <ThemeToggle />
         </div>
 
         {/* Mobile menu button */}
@@ -82,8 +84,9 @@ export default function Navigation({ translations }: NavigationProps) {
               {t(item.label)}
             </Link>
           ))}
-          <div className="mobile-lang-toggle">
+          <div className="mobile-lang-toggle" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <LanguageToggle />
+            <ThemeToggle />
           </div>
         </div>
       )}

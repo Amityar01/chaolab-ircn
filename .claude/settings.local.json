@@ -44,7 +44,19 @@
       "WebFetch(domain:huji.academia.edu)",
       "WebFetch(domain:orcid.org)",
       "WebFetch(domain:jp.linkedin.com)",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "Bash(vercel:*)",
+      "Bash(wc:*)",
+      "Bash(xargs:*)",
+      "Bash(sort:*)",
+      "Bash(npm run test:*)",
+      "Bash(npx vercel:*)",
+      "Bash(gcloud auth list:*)",
+      "Bash(node scripts/fetch-form-responses.js:*)",
+      "Bash(gcloud config:*)",
+      "Bash(gcloud services enable:*)",
+      "Bash(gcloud auth application-default login:*)",
+      "Bash(npm run responses:*)"
     ]
   }
 }

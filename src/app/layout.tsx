@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { getTranslations } from '@/lib/content';
@@ -105,13 +106,15 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <LanguageProvider>
-          <div className="page-container">
-            <Navigation translations={translations} />
-            <main className="main-content">{children}</main>
-            <Footer translations={translations} />
-          </div>
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <div className="page-container">
+              <Navigation translations={translations} />
+              <main className="main-content">{children}</main>
+              <Footer translations={translations} />
+            </div>
+          </LanguageProvider>
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>
