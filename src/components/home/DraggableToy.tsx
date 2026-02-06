@@ -25,6 +25,7 @@ interface DraggableToyProps {
   size?: number;
   color: string;
   onDrag: (id: string, x: number, y: number) => void;
+  isResetting?: boolean;
 }
 
 export function DraggableToy({
@@ -35,6 +36,7 @@ export function DraggableToy({
   size = 50,
   color,
   onDrag,
+  isResetting = false,
 }: DraggableToyProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [glowIntensity, setGlowIntensity] = useState(0.6);
@@ -335,6 +337,13 @@ export function DraggableToy({
     }
   };
 
+  // Fly-back animation style
+  const flyBackTransition = isResetting
+    ? 'left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease-out'
+    : isDragging
+    ? 'none'
+    : 'transform 0.15s ease-out';
+
   return (
     <div
       role="button"
@@ -346,15 +355,16 @@ export function DraggableToy({
         top: y,
         width: size,
         height: size,
-        cursor: isDragging ? 'grabbing' : 'grab',
+        cursor: isResetting ? 'default' : isDragging ? 'grabbing' : 'grab',
         zIndex: isDragging ? 100 : 20,
         touchAction: 'none',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        transform: isDragging ? 'scale(1.1)' : 'scale(1)',
-        transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+        transform: isDragging ? 'scale(1.1)' : isResetting ? 'scale(1.05)' : 'scale(1)',
+        transition: flyBackTransition,
         outline: 'none',
+        pointerEvents: isResetting ? 'none' : 'auto',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

@@ -84,6 +84,10 @@ export default function HomeClient({
 
   // Toy positions (draggable)
   const [toys, setToys] = useState<ToyState[]>([]);
+  const [isResetting, setIsResetting] = useState(false);
+  const [showRewiring, setShowRewiring] = useState(false);
+  const resetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const initialPositionsRef = useRef<{ x: number; y: number }[]>([]);
 
   // Obstacles for fireflies
   const [obstacles, setObstacles] = useState<Array<{ id: string; x: number; y: number; width: number; height: number }>>([]);
@@ -138,6 +142,14 @@ export default function HomeClient({
             shelfRect.top - containerRect.top + Math.max(TOY_MARGIN, TOY_SHELF_EXTRA_SPACE / 2)
           );
         }
+
+        // Store initial positions for reset
+        initialPositionsRef.current = [
+          { x: baseX, y: baseY },
+          { x: baseX + nextToySize, y: baseY },
+          { x: baseX, y: baseY + nextToySize },
+          { x: baseX + nextToySize, y: baseY + nextToySize },
+        ];
 
         return [
           { id: 'toy_0', shape: 'brain-tl', x: baseX, y: baseY },
@@ -257,11 +269,71 @@ export default function HomeClient({
     };
   }, [mounted, viewportSize.width, viewportSize.height, toys, toySize]);
 
+  // Check if pieces have been moved significantly from initial positions
+  const checkIfMoved = useCallback((currentToys: ToyState[]) => {
+    if (initialPositionsRef.current.length === 0) return false;
+    const threshold = toySize * 0.5; // Consider "moved" if displaced by half a toy size
+    return currentToys.some((toy, i) => {
+      const initial = initialPositionsRef.current[i];
+      if (!initial) return false;
+      const dx = Math.abs(toy.x - initial.x);
+      const dy = Math.abs(toy.y - initial.y);
+      return dx > threshold || dy > threshold;
+    });
+  }, [toySize]);
+
+  // Reset toys to initial positions with fly-back animation
+  const resetToys = useCallback(() => {
+    if (initialPositionsRef.current.length === 0 || isResetting) return;
+
+    setIsResetting(true);
+    setShowRewiring(true);
+
+    // Animate back to initial positions
+    setToys(prev => prev.map((toy, i) => ({
+      ...toy,
+      x: initialPositionsRef.current[i]?.x ?? toy.x,
+      y: initialPositionsRef.current[i]?.y ?? toy.y,
+    })));
+
+    // Hide rewiring effect after animation completes
+    setTimeout(() => {
+      setShowRewiring(false);
+      setIsResetting(false);
+    }, 800);
+  }, [isResetting]);
+
   // Handle toy drag - simple viewport coordinates
   const handleToyDrag = useCallback((id: string, x: number, y: number) => {
-    setToys(prev => prev.map(toy =>
-      toy.id === id ? { ...toy, x, y } : toy
-    ));
+    // Clear any pending reset when user drags
+    if (resetTimeoutRef.current) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
+
+    setToys(prev => {
+      const newToys = prev.map(toy =>
+        toy.id === id ? { ...toy, x, y } : toy
+      );
+
+      // Start reset timer if pieces have been moved
+      if (checkIfMoved(newToys)) {
+        resetTimeoutRef.current = setTimeout(() => {
+          resetToys();
+        }, 5000); // Reset after 5 seconds of no interaction
+      }
+
+      return newToys;
+    });
+  }, [checkIfMoved, resetToys]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (resetTimeoutRef.current) {
+        clearTimeout(resetTimeoutRef.current);
+      }
+    };
   }, []);
 
 
@@ -293,8 +365,66 @@ export default function HomeClient({
           size={toySize}
           color={TOY_COLORS[i % TOY_COLORS.length]}
           onDrag={handleToyDrag}
+          isResetting={isResetting}
         />
       ))}
+
+      {/* Rewiring effect - neural connections during reset */}
+      {showRewiring && toys.length === 4 && (
+        <svg
+          className="pointer-events-none"
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 15,
+            overflow: 'visible',
+          }}
+        >
+          <defs>
+            <linearGradient id="rewire-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={TOY_COLORS[0]} stopOpacity="0.8" />
+              <stop offset="50%" stopColor={TOY_COLORS[1]} stopOpacity="0.6" />
+              <stop offset="100%" stopColor={TOY_COLORS[2]} stopOpacity="0.8" />
+            </linearGradient>
+          </defs>
+          {/* Connection lines between pieces */}
+          {[
+            [0, 1], [1, 3], [3, 2], [2, 0], // edges
+            [0, 3], [1, 2], // diagonals
+          ].map(([from, to], idx) => {
+            const fromToy = toys[from];
+            const toToy = toys[to];
+            const halfSize = toySize / 2;
+            return (
+              <line
+                key={idx}
+                x1={fromToy.x + halfSize}
+                y1={fromToy.y + halfSize}
+                x2={toToy.x + halfSize}
+                y2={toToy.y + halfSize}
+                stroke="url(#rewire-gradient)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity="0.6"
+                style={{
+                  animation: 'rewire-pulse 0.6s ease-out forwards',
+                  animationDelay: `${idx * 0.05}s`,
+                }}
+              />
+            );
+          })}
+          <style>{`
+            @keyframes rewire-pulse {
+              0% { opacity: 0; stroke-dasharray: 0 1000; }
+              30% { opacity: 0.8; }
+              100% { opacity: 0; stroke-dasharray: 1000 0; }
+            }
+          `}</style>
+        </svg>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 pointer-events-none">
