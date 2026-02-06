@@ -9,4 +9,51 @@ role:
   en: Postdoctoral Fellow
   ja: 博士研究員
 
+bio:
+  en: |
+    I am a researcher in cognitive neuroscience interested in the neural basis of creativity and the mechanisms underlying social decision-making. My work involves applying advanced statistical modeling and computational methods to neuroimaging data to better understand how the brain processes complex information.
+  ja: |
+    認知神経科学の研究者として、創造性の神経基盤と社会的意思決定のメカニズムに興味を持っています。高度な統計モデリングと計算手法を神経画像データに適用し、脳が複雑な情報をどのように処理するかをより深く理解することに取り組んでいます。
+
 image: /uploads/shengbin-cui.jpg
+secondaryImage: /uploads/shengbin-cui-new.jpg
+
+email: shengbin.cui.1230@gmail.com
+
+links:
+  - type: Website
+    url: https://shengbcui.github.io/
+    label:
+      en: Personal Website
+      ja: 個人サイト
+  - type: Google Scholar
+    url: https://scholar.google.com/citations?hl=en&user=60OQtcEAAAAJ
+    label:
+      en: Google Scholar
+      ja: Google Scholar
+  - type: ORCID
+    url: https://orcid.org/0000-0001-5674-1551
+    label:
+      en: ORCID
+      ja: ORCID
+  - type: Twitter
+    url: https://x.com/1230Shengbin
+    label:
+      en: Twitter/X
+      ja: Twitter/X
+  - type: GitHub
+    url: https://github.com/ShengbCui
+    label:
+      en: GitHub
+      ja: GitHub
+
+research:
+  - Interoception
+  - Creativity
+  - Social decision-making
+  - Neuroimaging
+
+tags:
+  - interoception
+  - creativity
+  - neuroimaging

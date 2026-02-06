@@ -56,7 +56,13 @@
       "Bash(gcloud config:*)",
       "Bash(gcloud services enable:*)",
       "Bash(gcloud auth application-default login:*)",
-      "Bash(npm run responses:*)"
+      "Bash(npm run responses:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run:*)",
+      "Bash(pip install:*)",
+      "Bash(gdown:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }

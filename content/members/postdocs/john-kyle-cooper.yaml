@@ -9,4 +9,25 @@ role:
   en: Postdoctoral Fellow
   ja: 博士研究員
 
+bio:
+  en: |
+    Background in biomedical engineering/sciences with specializations in auditory neuroscience, virtual environments, and electroencephalography (EEG). Current work investigates the neural bases of insight during problem solving.
+  ja: |
+    生体医工学の背景を持ち、聴覚神経科学、仮想環境、脳波計測（EEG）を専門としています。現在は問題解決時の洞察の神経基盤を研究しています。
+
 image: /uploads/john-kyle-cooper.jpg
+
+email: johnkylecooper@g.ecc.u-tokyo.ac.jp
+
+research:
+  - Creativity
+  - Language
+  - Neuroimaging
+  - Insight
+  - Problem solving
+
+tags:
+  - creativity
+  - neuroimaging
+  - eeg
+  - insight

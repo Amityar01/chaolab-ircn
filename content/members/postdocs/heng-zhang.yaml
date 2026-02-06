@@ -9,4 +9,55 @@ role:
   en: Postdoctoral Fellow
   ja: 博士研究員
 
+bio:
+  en: |
+    I am a postdoctoral researcher at the International Research Center for Neurointelligence (IRCN), The University of Tokyo, working in collaboration with KTH Royal Institute of Technology. My research develops bio-inspired AI systems for computer vision and natural language processing by drawing on principles of predictive processing and self-organization in biological systems.
+
+    I focus on creating adaptive and robust learning frameworks that excel in dynamic, uncertain environments. My work spans unsupervised learning, dynamical systems, neural representations, and sequence learning. Through computational modeling of brain functions—particularly prediction and complex sequence processing—I aim to develop artificial intelligence that reflects the efficiency and resilience of biological cognition.
+  ja: |
+    東京大学国際高等研究所ニューロインテリジェンス国際研究機構（IRCN）の博士研究員で、KTH王立工科大学と共同研究を行っています。生物システムにおける予測処理と自己組織化の原理を活用し、コンピュータビジョンと自然言語処理のためのバイオインスパイアードAIシステムを開発しています。
+
+    動的で不確実な環境で優れた性能を発揮する適応的で堅牢な学習フレームワークの構築に注力しています。教師なし学習、力学系、神経表現、系列学習にまたがる研究を行っています。脳機能、特に予測と複雑な系列処理の計算モデリングを通じて、生物学的認知の効率性と回復力を反映した人工知能の開発を目指しています。
+
 image: /uploads/heng-zhang.jpg
+secondaryImage: /uploads/heng-zhang-new.jpg
+
+email: heng@ircn.jp
+
+links:
+  - type: Website
+    url: https://roger2148.github.io/
+    label:
+      en: Personal Website
+      ja: 個人サイト
+  - type: Google Scholar
+    url: https://scholar.google.com/citations?hl=en&authuser=1&user=qfpzRS0AAAAJ
+    label:
+      en: Google Scholar
+      ja: Google Scholar
+  - type: GitHub
+    url: https://github.com/Roger2148
+    label:
+      en: GitHub
+      ja: GitHub
+  - type: LinkedIn
+    url: https://linkedin.com/in/heng-zhang-9a348725a
+    label:
+      en: LinkedIn
+      ja: LinkedIn
+
+research:
+  - Bio-inspired artificial intelligence
+  - Predictive processing
+  - Self-organizing dynamical systems
+  - Unsupervised learning
+  - Robust computer vision
+  - Reservoir computing
+  - Neural representations
+  - Sequence learning
+
+tags:
+  - predictive-coding
+  - bio-inspired-ai
+  - computer-vision
+  - sequence-learning
