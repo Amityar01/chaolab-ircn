@@ -40,13 +40,14 @@
   --confusion: #64b5f6;
   --confirmed: #69f0ae;
 
-  /* Content */
+  /* Content - improved contrast with warm undertones */
   --card-glass: rgba(255, 255, 255, 0.03);
   --card-border: rgba(255, 255, 255, 0.08);
   --card-hover: rgba(255, 255, 255, 0.06);
-  --text-primary: #f1f5f9;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #9ca8b8;
+  --text-nav: #b8a88e;
 
   /* Accents */
   --accent-purple: #a78bfa;
@@ -103,13 +104,14 @@
   --confusion: #0078C1;
   --confirmed: #0d9488;
 
-  /* Content - IRCN navy for text on white */
+  /* Content - improved hierarchy with better separation */
   --card-glass: rgba(255, 255, 255, 0.9);
   --card-border: rgba(30, 58, 95, 0.12);
   --card-hover: rgba(255, 255, 255, 1);
-  --text-primary: #1e3a5f;
-  --text-secondary: #2d4a6f;
-  --text-muted: #3d5a7a;
+  --text-primary: #1a3352;
+  --text-secondary: #3d5a7a;
+  --text-muted: #5f7d99;
+  --text-nav: #2563a3;
 
   /* Accents - Daikin blue for links, IRCN gold for highlights */
   --accent-purple: #0078C1;
@@ -301,11 +303,12 @@ a:hover {
 .nav-link {
   font-family: 'Source Serif 4', serif;
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--text-nav, var(--text-muted));
   transition: color 0.2s;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
   color: var(--firefly-glow);
 }
 
@@ -1124,7 +1127,7 @@ a:hover {
 }
 
 [data-theme="light"] .nav-link {
-  color: var(--text-muted);
+  color: var(--text-nav);
 }
 
 [data-theme="light"] .nav-link:hover,
